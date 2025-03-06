@@ -19,7 +19,7 @@ class ItemData(NamedTuple):
 
 
 ITEMS = {
-#Progression
+#Progression, highest number among items is now 49
     'Progressive-Flare-Count': 47,
     'Progressive-Flare-Recharge':1,
     'Progressive-Carriable-Throwing':2,
@@ -46,6 +46,9 @@ ITEMS = {
     'Progressive-Traversal-Tool': 23,
     'Progressive-Utility': 24,
     'Progressive-Grenades': 25,
+    'Progressive-Resupply-Incremental-Cost':48,
+    'Progressive-Resupply-Start-Cost':49,
+    
 #Usefuls
     'Progressive-Flare-Throwing': 26, #Gets to be a trap/bad if over like 12
     'Progressive-Deposit-Speed': 27,
@@ -203,7 +206,18 @@ ITEMS_COUNT = {
         progression=9,
         useful=0,
         filler=0,
+),       
+    'Progressive-Resupply-Incremental-Cost':ItemData(
+        progression=2,
+        useful=0,
+        filler=0,
 ),
+    'Progressive-Resupply-Start-Cost':ItemData(
+        progression=4,
+        useful=1,
+        filler=0,
+),    
+
     'Progressive-Flare-Throwing':ItemData(
         progression=0,
         useful=6,
