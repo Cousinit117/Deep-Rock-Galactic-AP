@@ -1,56 +1,63 @@
 import logging
-from typing import List
+import os
+from typing import List, ClassVar
 import settings
 from BaseClasses import Tutorial, ItemClassification
 # from Fill import fast_fill
 from worlds.LauncherComponents import launch_subprocess
 from worlds.AutoWorld import World, WebWorld
 from ._items import ALL_ITEMS, ITEMS_COUNT, EVENT_ITEMS
-from ._locations import ALL_LOCATIONS
+from ._locations import location_init, remove_locations
 from ._regions import create_and_link_regions
 from ._options import DRGOptions
-from ._subclasses import DRGItem
+from ._subclasses import DRGItem, DRGLocation
 import json
+## BaseDirectory=r"E:\SteamLibrary\steamapps\common\Deep Rock Galactic\FSD\Mods"
 
 #2 lines taken from J&D, not actually sure what's important here, but it works.
 from worlds.AutoWorld import World, WebWorld
 from worlds.LauncherComponents import components, Component, launch_subprocess, Type, icon_paths
 
+class DRGSettings(settings.Group):
+    class RootDirectory(settings.UserFolderPath):
+        """
+        Path to Deep Rock Galactic installation subfolder "Mods" inside FSD. Should contain the readme.txt
+        Should look like :...\\Deep Rock Galactic\\FSD\\Mods
+        By Default this assumes you have DRG installed on C drive in standard location.
+        """
+        description = r"DRG needs /FSD/Mods folder Directory"
+    root_directory: RootDirectory = RootDirectory(r"C:/Program Files (x86)/Steam/steamapps/common/Deep Rock Galactic/FSD/Mods")
+
 def launch_client():
     from .client import launch
-    launch_subprocess(launch, name='DRGClient')
+    launch_subprocess(launch, name='DRG Client')
     
-components.append(Component("DRGClient",
+components.append(Component("DRG Client",
                             func=launch_client,
                             component_type=Type.CLIENT))
 
-#also taken from J&D, I dont think it works, but haven't tried. Also imported settings in line 3.
-# class DRGSettings(settings.Group):
-    # class RootDirectory(settings.UserFolderPath):
-        # """Path to Mods folder inside FSD containing the readme.txt
-        # Should look like :...\Deep Rock Galactic\FSD\Mods"""
-        # description = "Text File Directory"
-        # root_path = Utils.get_settings()["DRG_options"]["root_directory"]
-
 class DRGWebWorld(WebWorld):
     theme = 'stone'
-#No idea what I am doing. Trying to get a prompt to appear and ask user for FSD directory. Was trying to start with getting ANY DIRECTORY
-# class DRGSettings(settings.Group):
-    # class ModsFolderPath(settings.UserFolderPath):
-        # """"Directory that includes Deep Rock Galactic/FSD/Mods"""
-        # description = 'Need /FSD/Mods folder from your DRG install.'
-        # # ModsPath = settings.Group.__getattribute__(self,'Path')
-        # # TextDirectory = settings.FolderPath(ModsPath)
 
 class DRGWorld(World):
     game = 'Deep Rock Galactic'
     web = DRGWebWorld()
     options_dataclass = DRGOptions
     options = DRGOptions
-
+    settings: ClassVar[DRGSettings]
+    # try:
+        # if os.path.isdir(settings.get_settings()["deep_rock_galactic_options"]["root_directory"]): #this line is not valid, there is no settings anymore. Need to figure out why.
+            # root_directory: RootDirectory = settings.get_settings()["deep_rock_galactic_options"]["root_directory"]
+    # if os.path.isdir(r"C:\Program Files (x86)\Steam\steamapps\common\Deep Rock Galactic\Mods\FSD"):
+        # root_directory: RootDirectory = RootDirectory(r"C:\Program Files (x86)\Steam\steamapps\common\Deep Rock Galactic\FSD\Mods")
+    # else:
+        # root_directory: RootDirectory = input('Requesting User Input \n' + r"Please put the directory to your 'Deep Rock Galactic\FSD\Mods' folder here." + '\n')
+    # if settings.get_settings()["deep_rock_galactic_options"]["root_directory"] != None:
+        # RootDirectory = input('Requesting User Input \n' + r"Please put the directory to your 'Deep Rock Galactic\FSD\Mods' folder here." + '\n')
+    
     item_name_to_id = ALL_ITEMS
-    location_name_to_id = ALL_LOCATIONS
-
+    # location_name_to_id = ALL_LOCATIONS
+    location_name_to_id = location_init()
     event_items={}
 
     def __init__(self, multiworld, player):
@@ -114,8 +121,12 @@ class DRGWorld(World):
         Run early, after options are parsed but before locations or items are created.
         Execute /some/ options based stuff, like location deletions
         '''
-        
+        self.location_name_to_id = location_init()
+        # currently running remove locations in _regions.py
         return
+    
+    #moved from above
+    # location_name_to_id = None 
 
     def pre_fill(self):
         '''
@@ -132,7 +143,7 @@ class DRGWorld(World):
         '''
         Creates the Regions and Connects them.
         '''
-        create_and_link_regions(self.multiworld, self.player)
+        create_and_link_regions(self.multiworld, self.player, self.options, self.location_name_to_id)
 
     def set_rules(self):
         '''

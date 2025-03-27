@@ -48,6 +48,8 @@ ITEMS = {
     'Progressive-Grenades': 25,
     'Progressive-Resupply-Incremental-Cost':48,
     'Progressive-Resupply-Start-Cost':49,
+    'Progressive-Bosco-Revive':50,
+    'Progressive-Bosco-Gun':51,
     
 #Usefuls
     'Progressive-Flare-Throwing': 26, #Gets to be a trap/bad if over like 12
@@ -236,7 +238,7 @@ ITEMS_COUNT = {
     'Progressive-Sprint-Speed':ItemData(
         progression=0,
         useful=5,
-        filler=25,#was 15
+        filler=14,#was 15
 ),
     'Progressive-Max-Shield-Regen':ItemData(
         progression=0,
@@ -322,6 +324,16 @@ ITEMS_COUNT = {
         progression=0,
         useful=0,
         filler=2,
+),
+    'Progressive-Bosco-Revive':ItemData(
+        progression=8,
+        useful=0,
+        filler=0,
+),
+    'Progressive-Bosco-Gun':ItemData(
+        progression=4,
+        useful=4,
+        filler=0,
 ),
 }
 

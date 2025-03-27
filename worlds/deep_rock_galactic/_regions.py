@@ -3,7 +3,7 @@ from typing import NamedTuple, Callable
 from BaseClasses import CollectionState
 
 from ._subclasses import DRGLocation, DRGRegion
-from ._locations import *
+from ._locations import location_init, remove_locations, Biomes, MissionTypes, SecondaryObjectives
 from ._items import Generic_Progressives, Carrying_Buffs
 
 class RegionData(NamedTuple):
@@ -16,9 +16,7 @@ def create_region(multiworld, player, name, locations):
     region.add_locations(locations, DRGLocation)
     return region
 
-
-
-def create_and_link_regions(multiworld, player):
+def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS):
     
     def rule_generic_progressive4(state):
         return state.has_from_list(Generic_Progressives,player,6) #This number will need balancing later.
@@ -27,8 +25,65 @@ def create_and_link_regions(multiworld, player):
     def rule_carrying(state):
         return state.has_from_list(Carrying_Buffs,player,4) #This number will likely be in the range of 4-8.
     def rule_morkite(state):
-        return state.has('Progressive-Morkite-Mining',player,3) #This number is safe at 3. As far as a tracker goes, MAY be completable at 2. sometimes.      
+        return state.has('Progressive-Morkite-Mining',player,3) #This number is safe at 3. As far as a tracker goes, MAY be completable at 2. sometimes     
     
+    MissionsDefault=[Mission for Mission in ALL_LOCATIONS if (
+        'Egg Hunt' in Mission or 'Elimination' in Mission or 'On-site Refining' in Mission or 'Deep Scan' in Mission) \
+        and ('1' in Mission or '2' in Mission or '3' in Mission)
+        ]
+        
+    MissionsDefaultHaz4=[Mission for Mission in ALL_LOCATIONS if (
+        'Egg Hunt' in Mission or 'Elimination' in Mission or 'On-site Refining' in Mission or 'Deep Scan' in Mission) \
+        and '4' in Mission
+        ]
+
+    MissionsDefaultHaz5=[Mission for Mission in ALL_LOCATIONS if (
+        'Egg Hunt' in Mission or 'Elimination' in Mission or 'On-site Refining' in Mission or 'Deep Scan' in Mission) \
+        and '5' in Mission
+        ]
+    
+    MissionsCarrying123=[Mission for Mission in ALL_LOCATIONS if (
+        'Escort Duty' in Mission or 'Point Extraction' in Mission or 'Salvage Operation' in Mission) \
+        and ('1' in Mission or '2' in Mission or '3' in Mission)
+        ]
+
+    MissionsCarrying4=[Mission for Mission in ALL_LOCATIONS if (
+        'Escort Duty' in Mission or 'Point Extraction' in Mission or 'Salvage Operation' in Mission) \
+        and '4' in Mission
+        ]
+
+    MissionsCarrying5=[Mission for Mission in ALL_LOCATIONS if (
+        'Escort Duty' in Mission or 'Point Extraction' in Mission or 'Salvage Operation' in Mission) \
+        and '5' in Mission
+        ]
+
+    MissionsMining123=[Mission for Mission in ALL_LOCATIONS if
+        'Mining Expedition' in Mission \
+        and ('1' in Mission or '2' in Mission or '3' in Mission)
+        ]
+
+    MissionsMining4=[Mission for Mission in ALL_LOCATIONS if
+        'Mining Expedition' in Mission \
+        and '4' in Mission
+        ]
+    
+    MissionsMining5=[Mission for Mission in ALL_LOCATIONS if
+        'Mining Expedition' in Mission \
+        and '5' in Mission
+        ]
+
+    #Only one not plural. You probably hate it, change if you want
+    MissionVictory=[Mission for Mission in ALL_LOCATIONS if
+        'Industrial Sabotage' in Mission \
+        and '5' in Mission
+        ]
+
+    SecondariesDefault=[Secondary for Secondary in ALL_LOCATIONS if (
+        'Glyphid Eggs' in Secondary or 'Bha Barnacles' in Secondary or 'Apoca Blooms' in Secondary or 'Boolo Caps' in Secondary \
+        or 'Ebonuts' in Secondary or 'Alien Fossils' in Secondary or 'Fester Fleas' in Secondary or 'Dystrum' in Secondary or 'Hollomite' in Secondary)
+        ]
+
+    SecondariesCarrying=[Secondary for Secondary in ALL_LOCATIONS if 'Gunk Seeds' in Secondary]
     
     REGIONS = {
         'Menu': RegionData(connected_regions=['AlwaysAccessLocations', 'AlwaysAccessSecondaries', 'GenericHaz4', 'GenericHaz5', \
@@ -115,11 +170,15 @@ def create_and_link_regions(multiworld, player):
 # can also place "Victory" at "Final Boss" and set collection as win condition
 # self.multiworld.get_location("Final Boss", self.player).place_locked_item(self.create_event("Victory"))
 # self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player)
-
     
-    #Taz didn't change any of this, and doesn't know what it does.
+    #This is what changes number of locations. Will need to adjust this function later, and/or change how remove_locations works
+
+    remove_locations(ALL_LOCATIONS, options.locations_to_remove.value)
+    # ALL_LOCATIONS=remove_locations(ALL_LOCATIONS, 420)
+
     for region in REGIONS:
-        region_locations = {location: ALL_LOCATIONS[location] for location in REGIONS[region].locations}
+        #Added a check at the end of "if location in ALL_LOCATIONS"
+        region_locations = {location: ALL_LOCATIONS[location] for location in REGIONS[region].locations if location in ALL_LOCATIONS}
         multiworld.regions += [create_region(multiworld, player, region, region_locations)]
         # x=create_region(multiworld, player, region, region_locations)
         # print(x)
@@ -139,4 +198,3 @@ def create_and_link_regions(multiworld, player):
             )
 
 #Derp
-

@@ -9,40 +9,53 @@ import requests
 import time
 import re
 from NetUtils import ClientStatus
-import Utils
+import settings
 from CommonClient import gui_enabled, logger, get_base_parser, CommonContext, server_loop
+from ._locations import location_init
+from ._items import ALL_ITEMS
+import Utils
 
-#Testing:
-# import colorama
-# from asyncio import Task
-#
+# if os.path.isdir(settings.get_settings()["deep_rock_galactic_options"]["root_directory"]):
+    # BaseDirectory=settings.get_settings()["deep_rock_galactic_options"]["root_directory"]
+# else:
+    # BaseDirectory = input('Requesting User Input \n' + r"Please put the directory to your 'Deep Rock Galactic\FSD\Mods' folder here." + '\n')
 
 class DRGContext(CommonContext):
     game = "Deep Rock Galactic"
-    items_handling = 0b111  # Indicates you get items sent from other worlds.
+    items_handling = 0b111  # Indicates you get items sent from other world
+    options = Utils.get_options()
+    APChecklist="APChecklist.txt"
+    APLocationlist="APLocationlist.txt"
+    APLocationsChecked="APLocationsChecked.txt"
+    APLocationHelper="APLocationHelper.txt"
+    try:
+        BaseDirectory=settings.get_settings()["deep_rock_galactic_options"]["root_directory"]
+    except:
+        print("Make sure that your host.yaml has the correct directory.\nCurrently it seems to be invalid.")
+
+    # GameWorkingDirectory="" #defined later, typing hint
+    loc_name_to_id = location_init()
+    id_to_loc_name = {v: k for k, v in loc_name_to_id.items()}
+    item_name_to_id = ALL_ITEMS
+    id_to_item_name = {v: k for k, v in item_name_to_id.items()}
 
     def __init__(self, server_address, password):
         super(DRGContext, self).__init__(server_address, password)
+        
         # self.finished_game             = False
         self.server_state_synchronized = False
-        self.loc_name_to_id            = None
-        self.id_to_loc_name            = None
-        self.item_name_to_id           = None
-        self.id_to_item_name           = None
+        # self.loc_name_to_id            = None
+        # self.id_to_loc_name            = None
+        # self.item_name_to_id           = None
+        # self.id_to_item_name           = None
         self.new_locations             = set()
-        self.file_items                = 'E:\SteamLibrary\steamapps\common\Deep Rock Galactic\FSD\Mods\APChecklist.txt'
-        self.file_locations            = 'E:\SteamLibrary\steamapps\common\Deep Rock Galactic\FSD\Mods\APLocationlist.txt'
+        self.file_items                = ""# os.path.join(self.BaseDirectory,self.APChecklist)
+        self.file_locations            = ""# os.path.join(self.BaseDirectory,self.APLocationlist)
+        self.file_aplocations          = ""# os.path.join(self.BaseDirectory,self.APLocationsChecked)
+        self.file_locationhelper       = ""
         self.collected_items           = []
         self.finished_game             = False
 
-#edited 2/24/25
-        # try:
-            # auto_detect_root_directory = Utils.get_settings()["jakanddaxter_options"]["auto_detect_root_directory"]
-            # if auto_detect_root_directory:
-                # root_path = find_root_directory(ctx)
-            # else:
-                # root_path = Utils.get_settings()["jakanddaxter_options"]["root_directory"]
-#/edited 2/24/25            
     async def server_auth(self, password_requested: bool = False):
         if password_requested and not self.password:
             await super(DRGContext, self).server_auth(password_requested)
@@ -71,11 +84,40 @@ class DRGContext(CommonContext):
         if cmd in {"RoomInfo"}:
             print('roominfo received by client. Not really sure what this does yet for drg')
             pass
-
+        # print('on_package triggered')
         if cmd in {"Connected"}:
             asyncio.create_task(self.send_msgs([{"cmd": "GetDataPackage", "games": ["Deep Rock Galactic"]}]))
             self.locations_checked = set(args["checked_locations"])
+            SlotName=(self.slot_info[self.slot].name)#self.slot_info[self.slot].name returns the name of the slot you connected to
+            SlotName=SlotName.replace(" ","_")#DRG Needs to have underscores and no spaces
+            self.file_items                = os.path.join(self.BaseDirectory,SlotName,self.APChecklist)#Defines names, but they may not exist yet
+            self.file_locations            = os.path.join(self.BaseDirectory,SlotName,self.APLocationlist)
+            self.file_aplocations          = os.path.join(self.BaseDirectory,SlotName,self.APLocationsChecked)
+            self.file_locationhelper       = os.path.join(self.BaseDirectory,SlotName,self.APLocationHelper)
+            if not os.path.isdir(os.path.join(self.BaseDirectory,SlotName)):#Does slot directory/save exist? if no, make it and the files
+                os.mkdir(os.path.join(self.BaseDirectory,SlotName))
+                open(self.file_items, 'w')
+                open(self.file_locations, 'w')
+                open(self.file_aplocations, 'w')
+                with open(self.file_locationhelper, 'w') as f:
+                    #Make location helper here
+                    all_checked=set(args["checked_locations"])
+                    all_missing=set(args["missing_locations"])
+                    all_locations=all_checked.union(all_missing)
+                    locationhelper=set()
+                    for i in all_locations:
+                        locationhelper.add(self.id_to_loc_name[i])
+                    f.write("\n".join(list(locationhelper)))
+                    #HERE I SAY
+                
 
+            # if "missing_locations" in args:
+                # missing_locations=
+            # self.missing_locations = "\n".join(
+            # set(args["missing_locations"]) #This will be ints, that need to go through id_to_loc_name
+            # )
+            # Will need to get all checked_locations and all missing_locations, concat, then do all id_to_loc_name 
+            
         if cmd in {"ReceivedItems"}:
             start_index = args["index"]
             if start_index < len(self.collected_items):
@@ -96,6 +138,14 @@ class DRGContext(CommonContext):
                 self.data_package_DRG_cache(args)
                 self.server_state_synchronized = True
             asyncio.create_task(self.send_msgs([{'cmd': 'Sync'}])) # request new items
+        #Runs at bottom of package, so that items can in theory be init first
+        #This will let unreal see all the checked locations for in-game tracker.
+        if self.file_aplocations != "":
+            with open(self.file_aplocations, 'w') as file:
+                file.write('')
+            with open(self.file_aplocations, 'a') as file:
+                for location in self.locations_checked:
+                    file.write(self.location_names.lookup_in_game(location)+'\n') #Prints all checked locations by name, after getting them by ID
 
     def data_package_DRG_cache(self, args):
         self.loc_name_to_id = args["data"]["games"]["Deep Rock Galactic"]["location_name_to_id"]
@@ -106,7 +156,7 @@ class DRGContext(CommonContext):
     async def check_locations(self):
 
         if self.file_locations is None:
-            print('error, no locations file found,  attempting to create at referenced directory')
+            print('error, no locations file found')
             open(self.file_locations, "w")
             return
 
@@ -123,7 +173,7 @@ class DRGContext(CommonContext):
             
         locations = {self.loc_name_to_id[location] for location in locations if location in self.loc_name_to_id} #edited 2/24/25
         self.new_locations |= locations - self.locations_checked
-
+                    
     async def give_items(self, items, timeout=15.0):
         # sleep so we can get the datapackage and not miss any items that were sent to us while we didnt have our item id dicts
         timeout_timestamp = time.time() + timeout
@@ -159,7 +209,6 @@ class DRGContext(CommonContext):
                 ("Client", "Archipelago")
             ]
             base_title = "Archipelago DRG Client"
-
         self.ui = DRGManager(self)
         self.ui_task = asyncio.create_task(self.ui.async_run(), name="UI")
 
