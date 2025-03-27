@@ -15,11 +15,6 @@ from ._locations import location_init
 from ._items import ALL_ITEMS
 import Utils
 
-# if os.path.isdir(settings.get_settings()["deep_rock_galactic_options"]["root_directory"]):
-    # BaseDirectory=settings.get_settings()["deep_rock_galactic_options"]["root_directory"]
-# else:
-    # BaseDirectory = input('Requesting User Input \n' + r"Please put the directory to your 'Deep Rock Galactic\FSD\Mods' folder here." + '\n')
-
 class DRGContext(CommonContext):
     game = "Deep Rock Galactic"
     items_handling = 0b111  # Indicates you get items sent from other world
@@ -28,12 +23,13 @@ class DRGContext(CommonContext):
     APLocationlist="APLocationlist.txt"
     APLocationsChecked="APLocationsChecked.txt"
     APLocationHelper="APLocationHelper.txt"
+    #This will not run in source currently if your host.yaml does not contain a working directory
+    #It will try to open a file browsers to let you select, and that part will fail if ran from source, at least for me
     try:
         BaseDirectory=settings.get_settings()["deep_rock_galactic_options"]["root_directory"]
     except:
         print("Make sure that your host.yaml has the correct directory.\nCurrently it seems to be invalid.")
 
-    # GameWorkingDirectory="" #defined later, typing hint
     loc_name_to_id = location_init()
     id_to_loc_name = {v: k for k, v in loc_name_to_id.items()}
     item_name_to_id = ALL_ITEMS
@@ -41,9 +37,9 @@ class DRGContext(CommonContext):
 
     def __init__(self, server_address, password):
         super(DRGContext, self).__init__(server_address, password)
-        
-        # self.finished_game             = False
+
         self.server_state_synchronized = False
+        # below are now defined above in self, so, should delete them
         # self.loc_name_to_id            = None
         # self.id_to_loc_name            = None
         # self.item_name_to_id           = None
@@ -108,16 +104,8 @@ class DRGContext(CommonContext):
                     for i in all_locations:
                         locationhelper.add(self.id_to_loc_name[i])
                     f.write("\n".join(list(locationhelper)))
-                    #HERE I SAY
-                
 
-            # if "missing_locations" in args:
-                # missing_locations=
-            # self.missing_locations = "\n".join(
-            # set(args["missing_locations"]) #This will be ints, that need to go through id_to_loc_name
-            # )
-            # Will need to get all checked_locations and all missing_locations, concat, then do all id_to_loc_name 
-            
+
         if cmd in {"ReceivedItems"}:
             start_index = args["index"]
             if start_index < len(self.collected_items):
@@ -139,7 +127,8 @@ class DRGContext(CommonContext):
                 self.server_state_synchronized = True
             asyncio.create_task(self.send_msgs([{'cmd': 'Sync'}])) # request new items
         #Runs at bottom of package, so that items can in theory be init first
-        #This will let unreal see all the checked locations for in-game tracker.
+        #This will let unreal see all the checked locations for in-game tracker
+        #should this if statement be tabbed one more to the right, to put it in datapackage command?
         if self.file_aplocations != "":
             with open(self.file_aplocations, 'w') as file:
                 file.write('')
@@ -147,6 +136,7 @@ class DRGContext(CommonContext):
                 for location in self.locations_checked:
                     file.write(self.location_names.lookup_in_game(location)+'\n') #Prints all checked locations by name, after getting them by ID
 
+    #Since these are now defined in self already, do we need to do this again?
     def data_package_DRG_cache(self, args):
         self.loc_name_to_id = args["data"]["games"]["Deep Rock Galactic"]["location_name_to_id"]
         self.id_to_loc_name = {v: k for k, v in self.loc_name_to_id.items()}
@@ -157,13 +147,13 @@ class DRGContext(CommonContext):
 
         if self.file_locations is None:
             print('error, no locations file found')
-            open(self.file_locations, "w")
             return
 
         with open(self.file_locations, 'r') as f:
             locations = f.readlines()
         locations = {location.replace('\n','') for location in locations}
-        
+        #This for loop gives all locations of lower hazard than the mission that was completed
+        #This logic works now, but if deep dives (hazard 3.5, 6.5) were added, it would not function correctly
         for location in locations.copy():
             if location == 'Magma Core:Industrial Sabotage:5': continue
             if location[-1].isdigit():
