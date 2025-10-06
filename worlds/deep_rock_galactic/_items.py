@@ -19,7 +19,7 @@ class ItemData(NamedTuple):
 
 
 ITEMS = {
-#Progression, highest number among items is now 49
+#Progression, highest number among items is now 51
     'Progressive-Flare-Count': 47,
     'Progressive-Flare-Recharge':1,
     'Progressive-Carriable-Throwing':2,
@@ -49,8 +49,7 @@ ITEMS = {
     'Progressive-Resupply-Incremental-Cost':48,
     'Progressive-Resupply-Start-Cost':49,
     'Progressive-Bosco-Revive':50,
-    'Progressive-Bosco-Gun':51,
-    
+    'Progressive-Bosco-Gun':51, 
 #Usefuls
     'Progressive-Flare-Throwing': 26, #Gets to be a trap/bad if over like 12
     'Progressive-Deposit-Speed': 27,
@@ -74,7 +73,16 @@ ITEMS = {
     'Progressive-Fire-Resistance': 44,
     'Progressive-Radiation-Resistance': 45,
     'Progressive-Electric-Resistance': 46, #47 is start of list
-
+    'Progressive-BET-C': 57,
+#traps
+    'Trap-Extraction-Bulk': 52, #once per trap? MULTI OR SINGLE
+    'Trap-Cave-Haunting': 53, #one off, SINGLE
+    'Trap-Bedrock-Encasing': 54, #triggers once per trap, MULTI
+    'Trap-MULE-Coolant-Leak': 55, #one misson per trap?, MULTI OR SINGLE
+    'Trap-Not-The-Bees': 56, #triggers per trap, MULTI
+    'Trap-Phase-Bomb': 58, #trigger per trap, MULTI
+    'Trap-Jumpscare-Bulk': 59, #trigger per trap, MULTI
+    'Trap-Intoxication': 60, #trigger per trap, MULTI
 }
 ITEMS = {k: v + 1 << ITEM_BITSHIFT_DEFAULT for k, v in ITEMS.items()}
 
@@ -334,6 +342,59 @@ ITEMS_COUNT = {
         progression=4,
         useful=4,
         filler=0,
+),
+    'Trap-Extraction-Bulk':ItemData(
+        progression=0,
+        useful=0,
+        filler=0,
+        trap=3,
+),
+    'Trap-Cave-Haunting':ItemData(
+        progression=0,
+        useful=0,
+        filler=0,
+        trap=3,
+),
+    'Trap-Bedrock-Encasing':ItemData(
+        progression=0,
+        useful=0,
+        filler=0,
+        trap=5,
+),
+    'Trap-MULE-Coolant-Leak':ItemData(
+        progression=0,
+        useful=0,
+        filler=0,
+        trap=3,
+),
+    'Trap-Not-The-Bees':ItemData(
+        progression=0,
+        useful=0,
+        filler=0,
+        trap=10,
+),
+    'Trap-Phase-Bomb':ItemData(
+        progression=0,
+        useful=0,
+        filler=0,
+        trap=10,
+),
+    'Trap-Jumpscare-Bulk':ItemData(
+        progression=0,
+        useful=0,
+        filler=0,
+        trap=3,
+),
+    'Progressive-BET-C':ItemData(
+        progression=0,
+        useful=0,
+        filler=3,
+),
+    'Trap-Intoxication':ItemData(
+        progression=0,
+        useful=0,
+        filler=0,
+        trap=3,
 ),
 }
 

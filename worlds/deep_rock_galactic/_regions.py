@@ -26,9 +26,11 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS):
         return state.has_from_list(Carrying_Buffs,player,4) #This number will likely be in the range of 4-8.
     def rule_morkite(state):
         return state.has('Progressive-Morkite-Mining',player,3) #This number is safe at 3. As far as a tracker goes, MAY be completable at 2. sometimes     
-    
+    def rule_ammo(state):
+        return state.has('Progressive-Gun-Ammo',player,2) #Requires at least 2 ammo buffs
+
     MissionsDefault=[Mission for Mission in ALL_LOCATIONS if (
-        'Egg Hunt' in Mission or 'Elimination' in Mission or 'On-site Refining' in Mission or 'Deep Scan' in Mission) \
+        'Egg Hunt' in Mission or 'On-site Refining' in Mission or 'Deep Scan' in Mission) \
         and ('1' in Mission or '2' in Mission or '3' in Mission)
         ]
         
@@ -40,6 +42,21 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS):
     MissionsDefaultHaz5=[Mission for Mission in ALL_LOCATIONS if (
         'Egg Hunt' in Mission or 'Elimination' in Mission or 'On-site Refining' in Mission or 'Deep Scan' in Mission) \
         and '5' in Mission
+        ]
+    
+    MissionsAmmo123=[Mission for Mission in ALL_LOCATIONS if (
+        'Elimination' in Mission)
+        and ('1' in Mission or '2' in Mission or '3' in Mission)
+        ]
+
+    MissionsAmmo4=[Mission for Mission in ALL_LOCATIONS if (
+        'Elimination' in Mission)
+        and ('4' in Mission)
+        ]
+
+    MissionsAmmo5=[Mission for Mission in ALL_LOCATIONS if (
+        'Elimination' in Mission)
+        and ('5' in Mission)
         ]
     
     MissionsCarrying123=[Mission for Mission in ALL_LOCATIONS if (
@@ -80,14 +97,16 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS):
 
     SecondariesDefault=[Secondary for Secondary in ALL_LOCATIONS if (
         'Glyphid Eggs' in Secondary or 'Bha Barnacles' in Secondary or 'Apoca Blooms' in Secondary or 'Boolo Caps' in Secondary \
-        or 'Ebonuts' in Secondary or 'Alien Fossils' in Secondary or 'Fester Fleas' in Secondary or 'Dystrum' in Secondary or 'Hollomite' in Secondary)
+        or 'Ebonuts' in Secondary or 'Alien Fossils' in Secondary or 'Fester Fleas' in Secondary or 'Dystrum' in Secondary or 'Hollomite' in Secondary or 'Black Box' in Secondary or 'Oil Pumping' in Secondary or 'Scan' in Secondary)
         ]
 
-    SecondariesCarrying=[Secondary for Secondary in ALL_LOCATIONS if 'Gunk Seeds' in Secondary]
+    SecondariesCarrying=[Secondary for Secondary in ALL_LOCATIONS if ('Gunk Seeds' in Secondary or 'Mini Mules' in Secondary or 'Alien Eggs' in Secondary)]
+
+    SecondariesAmmo=[Secondary for Secondary in ALL_LOCATIONS if 'Elimination Eggs' in Secondary]
     
     REGIONS = {
         'Menu': RegionData(connected_regions=['AlwaysAccessLocations', 'AlwaysAccessSecondaries', 'GenericHaz4', 'GenericHaz5', \
-        'Mining123', 'Mining4', 'Mining5', 'Carrying123', 'Carrying4', 'Carrying5','CarryingSecondary','VictoryAccess']), 
+        'Mining123', 'Mining4', 'Mining5', 'Ammo123', 'Ammo4', 'Ammo5', 'AmmoSecondary', 'Carrying123', 'Carrying4', 'Carrying5','CarryingSecondary','VictoryAccess']), 
         # Should contain all
         
         'AlwaysAccessLocations': RegionData(
@@ -129,6 +148,30 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS):
             and rule_generic_progressive5(state),
             connected_regions        = [],
         ),
+
+        #Elimination missions require Progressive ammo checks to be completable
+        'Ammo123': RegionData(
+            locations    = MissionsAmmo123,
+            entrancerule = lambda state:    rule_ammo(state),
+            connected_regions        = [],
+        ),
+        'Ammo4': RegionData(
+            locations    = MissionsAmmo4,
+            entrancerule = lambda state:    rule_ammo(state) \
+            and rule_generic_progressive4(state),
+            connected_regions        = [],
+        ),
+        'Ammo5': RegionData(
+            locations    = MissionsAmmo5,
+            entrancerule = lambda state:    rule_ammo(state) \
+            and rule_generic_progressive5(state),
+            connected_regions        = [],
+        ),
+        'AmmoSecondary': RegionData(
+            locations    = SecondariesAmmo,
+            entrancerule = lambda state:    rule_ammo(state),
+            connected_regions        = [],
+        ),
         
         #Missions with carriable steps to complete require a few checks to be practical/completable
         'Carrying123': RegionData(
@@ -153,10 +196,11 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS):
             entrancerule = lambda state:    rule_carrying(state),
             connected_regions        = [],
         ),
+
         #Sabotage mission is a carrying type mission, and must be on Haz 5 for victory
         'VictoryAccess': RegionData(
             locations    =  MissionVictory, #Haz5 on magmacore, sabotage.
-            entrancerule = lambda state:    rule_carrying(state) \
+            entrancerule = lambda state:    rule_carrying(state) and rule_ammo(state) \
             and rule_generic_progressive5(state),
             connected_regions        = [],
         ),

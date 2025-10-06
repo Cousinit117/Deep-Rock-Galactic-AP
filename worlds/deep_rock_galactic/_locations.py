@@ -48,6 +48,12 @@ SecondaryObjectives=[
     'Fester Fleas',
     'Dystrum',
     'Hollomite',
+    'Black Box',
+    'Oil Pumping',
+    'Scan',
+    'Elimination Eggs',
+    'Mini Mules',
+    'Alien Eggs',
 ]
 
 def location_init():

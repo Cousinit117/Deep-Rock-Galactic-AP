@@ -56,6 +56,13 @@ class LocationsToRemove(Range):
     range_end   = 420
     default     = 0
 
+class UnRestricted(Toggle): ##Deathlink is enabled in DRG. If you write "Death-Link" into the "APCheckList" text document, and there is a number attached to it, it will send a deathlink. 
+    ##e.g. if it said Death-Link:3 before, and you write Death-Link:4 it will send a deathlink to the game. All players will die. 
+    """Remove Restrictions"""
+    ## this is probably bad to implement. more for example reasons than anything else
+    display_name = "Turn Off Restrictions"
+    default = False
+    visibility = Visibility.none
 
 class DeathLink(Toggle): ##Deathlink is enabled in DRG. If you write "Death-Link" into the "APCheckList" text document, and there is a number attached to it, it will send a deathlink. 
     ##e.g. if it said Death-Link:3 before, and you write Death-Link:4 it will send a deathlink to the game. All players will die. 
@@ -71,6 +78,7 @@ class DRGOptions(PerGameCommonOptions):
     max_hazard:         MaxHazard
     death_link:         DeathLink
     locations_to_remove: LocationsToRemove
+    remove_restrictions: UnRestricted
     # starting_movement_speed: StartingMovementSpeed
     # starting_ammo:      StartingAmmo
     
