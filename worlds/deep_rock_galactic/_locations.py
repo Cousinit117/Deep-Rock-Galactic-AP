@@ -56,6 +56,36 @@ SecondaryObjectives=[
     'Alien Eggs',
 ]
 
+Events=[
+    'Machine Event:Ebonite Mutation',
+    'Machine Event:Kursite Infection',
+    'Machine Event:Tritilyte Crystal',
+    'Machine Event:Omen Modular Exterminator',
+    'Seasonal 2:Prospector Drone',
+    'Seasonal 2:Prospector Data Deposit',
+    'Seasonal 2:Rival Communication Router',
+    'Seasonal 3:Meteor Impact',
+    'Seasonal 3:Meteor Shower',
+    'Seasonal 4:Rockpox Corruptor',
+    'Seasonal 5:Core Stone',
+]
+
+Warnings=[ #Missing New Ones
+    'Cave Leech Cluster',
+    'Elite Threat',
+    'Exploder Infestation',
+    'Haunted Cave',
+    'Lethal Enemies',
+    'Lithophage Outbreak',
+    'Low Oxygen',
+    'Mactera Plague',
+    'Parasites',
+    'Regenerative Bugs',
+    'Rival Presence',
+    'Shield Disruption',
+    'Swarmageddon',
+]
+
 def location_init():
     MissionPermute={} #very nested for loop creates array/index/list of all locations that could be read from DRG
     CurrentID=0
@@ -67,11 +97,28 @@ def location_init():
                 MissionPermute[f'{Biome}:{Mission}:{Hazard}']=CurrentID
                 CurrentID=CurrentID+1
 
+    #Secondary location, Azure Weald:Bha Barnacles
     for Biome in Biomes:
         for Secondary in SecondaryObjectives:
             MissionPermute[f'{Biome}:{Secondary}']=CurrentID
             CurrentID=CurrentID+1
-    #Secondary location, BIOME_LushDownpour:DestroyBhaBarnacles
+    
+    #Error Cube Checks
+    for i in range(1,10):
+        MissionPermute[f'Error Cubes:{i}']=CurrentID
+        CurrentID=CurrentID+1
+
+    #Events
+    for event in Events:
+        MissionPermute[f'{event}']=CurrentID
+        CurrentID=CurrentID+1
+
+    #Warnings
+    minwarnlvl = self.options.min_warning_haz.value #unsure please test
+    for warn in Warnings:
+        MissionPermute[f'Warning:{warn}:{minwarnlvl}']=CurrentID
+        CurrentID=CurrentID+1
+
     # 'MissionType_Facility',   #This is win condition only, requires carrying condition
     MissionPermute['Magma Core:Industrial Sabotage:5']=CurrentID
 

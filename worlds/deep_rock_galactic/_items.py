@@ -19,7 +19,7 @@ class ItemData(NamedTuple):
 
 
 ITEMS = {
-#Progression, highest number among items is now 51
+#Progression, highest number among items is now 60
     'Progressive-Flare-Count': 47,
     'Progressive-Flare-Recharge':1,
     'Progressive-Carriable-Throwing':2,
@@ -83,6 +83,14 @@ ITEMS = {
     'Trap-Phase-Bomb': 58, #trigger per trap, MULTI
     'Trap-Jumpscare-Bulk': 59, #trigger per trap, MULTI
     'Trap-Intoxication': 60, #trigger per trap, MULTI
+#anomolies
+    'Mutator-Critial-Weakness': 61,
+    'Mutator-Gold-Rush': 62,
+    'Mutator-Golden-Bugs': 63,
+    'Mutator-Low-Gravity': 64,
+    'Mutator-Mineral-Mania': 65,
+    'Mutator-Rich-Atmosphere': 66,
+    'Mutator-Volatile-Guts': 67, #missing new ones
 }
 ITEMS = {k: v + 1 << ITEM_BITSHIFT_DEFAULT for k, v in ITEMS.items()}
 
@@ -395,6 +403,41 @@ ITEMS_COUNT = {
         useful=0,
         filler=0,
         trap=3,
+),
+    'Mutator-Critial-Weakness':ItemData(
+        progression=0,
+        useful=0,
+        filler=1,
+),
+    'Mutator-Gold-Rush':ItemData(
+        progression=0,
+        useful=0,
+        filler=1,
+),
+    'Mutator-Golden-Bugs':ItemData(
+        progression=0,
+        useful=0,
+        filler=1,
+),
+    'Mutator-Low-Gravity':ItemData(
+        progression=0,
+        useful=0,
+        filler=1,
+),
+    'Mutator-Mineral-Mania':ItemData(
+        progression=0,
+        useful=0,
+        filler=1,
+),
+    'Mutator-Rich-Atmosphere':ItemData(
+        progression=0,
+        useful=0,
+        filler=1,
+),
+    'Mutator-Volatile-Guts':ItemData(
+        progression=0,
+        useful=0,
+        filler=1,
 ),
 }
 

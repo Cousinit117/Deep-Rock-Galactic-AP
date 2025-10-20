@@ -9,7 +9,6 @@ from Options import Choice, Range, Toggle, PerGameCommonOptions, StartInventoryP
     # # range_end = 10
     # # default = 1
 
-
 class MaxHazard(Choice):
     """Max Hazard Level"""
     display_name = "Maximum Hazard Level"
@@ -20,6 +19,20 @@ class MaxHazard(Choice):
     option_hazard_5 = 5
     default = 5
     visibility = Visibility.none
+
+class WarningHazardMin(Choice):
+    """Min Hazard Level for Warnings"""
+    display_name = "Minimum Hazard Level for Warnings"
+    option_hazard_1 = 1
+    option_hazard_2 = 2
+    option_hazard_3 = 3
+    option_hazard_4 = 4
+    option_hazard_5 = 5
+    default = 5
+
+#class EnableMinigames(Toggle): 
+    # display_name = "Enable Minigame Locations"
+    # default = False
 
 # class StartingMovementSpeed(Range):
     # """Sets the starting movement speed as a percent of base."""
@@ -56,14 +69,6 @@ class LocationsToRemove(Range):
     range_end   = 420
     default     = 0
 
-class UnRestricted(Toggle): ##Deathlink is enabled in DRG. If you write "Death-Link" into the "APCheckList" text document, and there is a number attached to it, it will send a deathlink. 
-    ##e.g. if it said Death-Link:3 before, and you write Death-Link:4 it will send a deathlink to the game. All players will die. 
-    """Remove Restrictions"""
-    ## this is probably bad to implement. more for example reasons than anything else
-    display_name = "Turn Off Restrictions"
-    default = False
-    visibility = Visibility.none
-
 class DeathLink(Toggle): ##Deathlink is enabled in DRG. If you write "Death-Link" into the "APCheckList" text document, and there is a number attached to it, it will send a deathlink. 
     ##e.g. if it said Death-Link:3 before, and you write Death-Link:4 it will send a deathlink to the game. All players will die. 
     """Death Link"""
@@ -74,11 +79,11 @@ class DeathLink(Toggle): ##Deathlink is enabled in DRG. If you write "Death-Link
 
 @dataclass
 class DRGOptions(PerGameCommonOptions):
-    start_inventory:    StartInventoryPool
-    max_hazard:         MaxHazard
-    death_link:         DeathLink
-    locations_to_remove: LocationsToRemove
-    remove_restrictions: UnRestricted
+    start_inventory:        StartInventoryPool
+    max_hazard:             MaxHazard
+    death_link:             DeathLink
+    locations_to_remove:    LocationsToRemove
+    min_warning_haz:        WarningHazardMin   
     # starting_movement_speed: StartingMovementSpeed
     # starting_ammo:      StartingAmmo
     
