@@ -20,15 +20,31 @@ class MaxHazard(Choice):
     default = 5
     visibility = Visibility.none
 
-class WarningHazardMin(Choice):
+#class WarningHazardMin(Choice):
     """Min Hazard Level for Warnings"""
-    display_name = "Minimum Hazard Level for Warnings"
-    option_hazard_1 = 1
-    option_hazard_2 = 2
-    option_hazard_3 = 3
-    option_hazard_4 = 4
-    option_hazard_5 = 5
-    default = 5
+    #display_name = "Minimum Hazard Level for Warnings"
+    #option_hazard_1 = 1
+    #option_hazard_2 = 2
+    #option_hazard_3 = 3
+    #option_hazard_4 = 4
+    #option_hazard_5 = 5
+    #default = 5
+
+class StartingClasses(Choice):
+    """Min Hazard Level for Warnings"""
+    display_name = "Available Starting Classes"
+    option_all = 0
+    option_gunner = 1
+    option_driller = 2
+    option_scout = 3
+    option_engineer = 4
+    default = 0
+
+class ErrorCubeChecks(Range):
+    """Sets the number of checks to be Error cubes"""
+    range_start = 0
+    range_end   = 20
+    default     = 10
 
 #class EnableMinigames(Toggle): 
     # display_name = "Enable Minigame Locations"
@@ -83,7 +99,9 @@ class DRGOptions(PerGameCommonOptions):
     max_hazard:             MaxHazard
     death_link:             DeathLink
     locations_to_remove:    LocationsToRemove
-    min_warning_haz:        WarningHazardMin   
+    #min_warning_haz:        WarningHazardMin
+    avail_classes:          StartingClasses
+    error_cube_checks:      ErrorCubeChecks   
     # starting_movement_speed: StartingMovementSpeed
     # starting_ammo:      StartingAmmo
     

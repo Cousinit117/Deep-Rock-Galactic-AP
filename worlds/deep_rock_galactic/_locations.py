@@ -61,16 +61,16 @@ Events=[
     'Machine Event:Kursite Infection',
     'Machine Event:Tritilyte Crystal',
     'Machine Event:Omen Modular Exterminator',
-    'Seasonal 2:Prospector Drone',
-    'Seasonal 2:Prospector Data Deposit',
-    'Seasonal 2:Rival Communication Router',
-    'Seasonal 3:Meteor Impact',
-    'Seasonal 3:Meteor Shower',
-    'Seasonal 4:Rockpox Corruptor',
-    'Seasonal 5:Core Stone',
+    #'Seasonal 2:Prospector Drone',
+    #'Seasonal 2:Prospector Data Deposit',
+    #'Seasonal 2:Rival Communication Router',
+    #'Seasonal 3:Meteor Impact',
+    #'Seasonal 3:Meteor Shower',
+    #'Seasonal 4:Rockpox Corruptor',
+    #'Seasonal 5:Core Stone',
 ]
 
-Warnings=[ #Missing New Ones
+Warnings=[ 
     'Cave Leech Cluster',
     'Elite Threat',
     'Exploder Infestation',
@@ -84,6 +84,8 @@ Warnings=[ #Missing New Ones
     'Rival Presence',
     'Shield Disruption',
     'Swarmageddon',
+    'Duck And Cover',
+    'Ebonite Outbreak',
 ]
 
 def location_init():
@@ -104,19 +106,23 @@ def location_init():
             CurrentID=CurrentID+1
     
     #Error Cube Checks
-    for i in range(1,10):
-        MissionPermute[f'Error Cubes:{i}']=CurrentID
-        CurrentID=CurrentID+1
+    errCubeNum = self.options.error_cube_checks.value
+    if (errorCubeNum > 0):
+        for i in range(1,errCubeNum):
+            MissionPermute[f'Error Cube:{i}']=CurrentID
+            CurrentID=CurrentID+1
 
     #Events
     for event in Events:
-        MissionPermute[f'{event}']=CurrentID
+        for Hazard in [1,2,3,4,5]:
+        MissionPermute[f'Event:{event}:{Hazard}']=CurrentID
         CurrentID=CurrentID+1
 
     #Warnings
     minwarnlvl = self.options.min_warning_haz.value #unsure please test
     for warn in Warnings:
-        MissionPermute[f'Warning:{warn}:{minwarnlvl}']=CurrentID
+        for Hazard in [1,2,3,4,5]:
+        MissionPermute[f'Warning:{warn}:{Hazard}']=CurrentID
         CurrentID=CurrentID+1
 
     # 'MissionType_Facility',   #This is win condition only, requires carrying condition

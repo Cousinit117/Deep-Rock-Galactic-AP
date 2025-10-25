@@ -159,6 +159,6 @@ class DRGWorld(World):
 
     def generate_output(self, output_directory: str):
         '''
-        Does nothing. DRG has no patch file.
+        Generate Option File
         '''
         return

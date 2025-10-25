@@ -19,7 +19,7 @@ class ItemData(NamedTuple):
 
 
 ITEMS = {
-#Progression, highest number among items is now 60
+#Progression, highest number among items is now 69
     'Progressive-Flare-Count': 47,
     'Progressive-Flare-Recharge':1,
     'Progressive-Carriable-Throwing':2,
@@ -59,13 +59,14 @@ ITEMS = {
     'Supply-Sentries': 31, #Cannot go over 1
     'Progressive-Rock-Mining': 32, #Cannot go over 2 
     'Dirt-Mining-Speed': 33, #Cannot go over 1
-    'Progressive-Hover-Boots': 34, #Should not exceed 4, may break.
-    'Progressive-See-You-In-Hell': 35, #May break over 4, not sure. would set cooldown to negative.
+    'Progressive-Hover-Boots': 34, #Should not exceed 4, may break. (Clamped at .5s)
+    'Progressive-See-You-In-Hell': 35, #May break over 4, not sure. would set cooldown to negative. (Clamped at .5s)
+    'Progressive-Bosco-Mining':69,
 #filler
     'Progressive-Carrying-Capacity': 36,
     'Progressive-Gold-Mining': 37, #No benefit to player, gold unused.
     'Resource-Mining-Strength': 38, #No effect above 1
-    'Progressive-Zipline-Speed': 39, #Higher than I want, but w/e
+    'Progressive-Gunner-Zipline': 39, #Higher than I want, but w/e
     'Progressive-Slow-Resistance': 40,
     'Progressive-Revive-Speed': 41,
     'Progressive-Cold-Resistance': 42, #max 2 currently for below checks.
@@ -90,7 +91,17 @@ ITEMS = {
     'Mutator-Low-Gravity': 64,
     'Mutator-Mineral-Mania': 65,
     'Mutator-Rich-Atmosphere': 66,
-    'Mutator-Volatile-Guts': 67, #missing new ones
+    'Mutator-Volatile-Guts': 67,
+    'Mutator-Blood-Sugar': 68,
+    #Skipped double exp and secret secondary
+#class progressives
+    'Progressive-Gunner-Shield':70,
+    'Progressive-Engineer-Platforms':71,
+    'Progressive-Engineer-Turrets':72,
+    'Progressive-Scout-Grapple':73,
+    'Progressive-Scout-FlareGun':74,
+    'Progressive-Driller-Drills':75,
+    'Progressive-Driller-C4':76,
 }
 ITEMS = {k: v + 1 << ITEM_BITSHIFT_DEFAULT for k, v in ITEMS.items()}
 
@@ -123,22 +134,22 @@ ITEMS_COUNT = {
     'Progressive-Movement-Speed':ItemData(
         progression=6,
         useful=5,
-        filler=20,#should be 0
+        filler=0,#should be 0
 ),
     'Progressive-RedSugar-Healing':ItemData(
         progression=2,
         useful=3,
-        filler=15,#was 5
+        filler=5,#was 5
 ),
     'Progressive-Resupply-Speed':ItemData(
         progression=2,
-        useful=10,
-        filler=10,#was 0
+        useful=5,
+        filler=5,#was 0
 ),
     'Progressive-Max-Health':ItemData(
         progression=15,
         useful=10,
-        filler=20,#was 0
+        filler=0,#was 0
 ),
     'Progressive-Max-Shield':ItemData(
         progression=5,
@@ -158,12 +169,12 @@ ITEMS_COUNT = {
     'Progressive-Melee-Damage':ItemData(
         progression=10,
         useful=0,
-        filler=10,#was 0
+        filler=5,#was 0
 ),
     'Progressive-Melee-Special-Damage':ItemData(
         progression=10,
         useful=0,
-        filler=10,#was 0
+        filler=5,#was 0
 ),
     'Progressive-Melee-Cooldown':ItemData(
         progression=4,
@@ -173,7 +184,7 @@ ITEMS_COUNT = {
     'Progressive-Melee-Range':ItemData(
         progression=5,
         useful=10,
-        filler=10,#was 0
+        filler=0,#was 0
 ),
     'Progressive-Vampirism':ItemData(
         progression=1,
@@ -207,7 +218,7 @@ ITEMS_COUNT = {
 ),
     'Progressive-Gun-Ammo':ItemData(
         progression=5,
-        useful=0,
+        useful=5,
         filler=0,
 ),
     'Progressive-Traversal-Tool':ItemData(
@@ -234,8 +245,7 @@ ITEMS_COUNT = {
         progression=4,
         useful=1,
         filler=0,
-),    
-
+),  
     'Progressive-Flare-Throwing':ItemData(
         progression=0,
         useful=6,
@@ -244,7 +254,7 @@ ITEMS_COUNT = {
     'Progressive-Deposit-Speed':ItemData(
         progression=0,
         useful=2,
-        filler=15,
+        filler=10,
 ),
     'Progressive-Fall-Resistance':ItemData(
         progression=0,
@@ -254,7 +264,7 @@ ITEMS_COUNT = {
     'Progressive-Sprint-Speed':ItemData(
         progression=0,
         useful=5,
-        filler=14,#was 15
+        filler=5,#was 15
 ),
     'Progressive-Max-Shield-Regen':ItemData(
         progression=0,
@@ -287,24 +297,24 @@ ITEMS_COUNT = {
         filler=0,
 ),
     'Progressive-Carrying-Capacity':ItemData(
-        progression=0,
-        useful=8,
-        filler=12,
+        progression=2,
+        useful=6,
+        filler=10,
 ),
     'Progressive-Gold-Mining':ItemData(
         progression=0,
         useful=0,
-        filler=9,
+        filler=5,
 ),
     'Resource-Mining-Strength':ItemData(
         progression=0,
         useful=0,
         filler=1,
 ),
-    'Progressive-Zipline-Speed':ItemData(
+    'Progressive-Gunner-Zipline':ItemData(
         progression=0,
         useful=0,
-        filler=16,
+        filler=5,
 ),
     'Progressive-Slow-Resistance':ItemData(
         progression=0,
@@ -314,7 +324,7 @@ ITEMS_COUNT = {
     'Progressive-Revive-Speed':ItemData(
         progression=0,
         useful=0,
-        filler=20,#was 10
+        filler=10,#was 10
 ),
     'Progressive-Cold-Resistance':ItemData(
         progression=0,
@@ -342,8 +352,8 @@ ITEMS_COUNT = {
         filler=2,
 ),
     'Progressive-Bosco-Revive':ItemData(
-        progression=8,
-        useful=0,
+        progression=4,
+        useful=4,
         filler=0,
 ),
     'Progressive-Bosco-Gun':ItemData(
@@ -406,8 +416,8 @@ ITEMS_COUNT = {
 ),
     'Mutator-Critial-Weakness':ItemData(
         progression=0,
-        useful=0,
-        filler=1,
+        useful=1,
+        filler=0,
 ),
     'Mutator-Gold-Rush':ItemData(
         progression=0,
@@ -421,8 +431,8 @@ ITEMS_COUNT = {
 ),
     'Mutator-Low-Gravity':ItemData(
         progression=0,
-        useful=0,
-        filler=1,
+        useful=1,
+        filler=0,
 ),
     'Mutator-Mineral-Mania':ItemData(
         progression=0,
@@ -431,13 +441,58 @@ ITEMS_COUNT = {
 ),
     'Mutator-Rich-Atmosphere':ItemData(
         progression=0,
-        useful=0,
-        filler=1,
+        useful=1,
+        filler=0,
 ),
     'Mutator-Volatile-Guts':ItemData(
         progression=0,
         useful=0,
         filler=1,
+),
+    'Mutator-Blood-Sugar':ItemData(
+        progression=0,
+        useful=0,
+        filler=1,
+),
+    'Progressive-Bosco-Mining':ItemData(
+        progression=0,
+        useful=0,
+        filler=5,
+),
+    'Progressive-Gunner-Shield':ItemData(
+        progression=2,
+        useful=2,
+        filler=0,
+),
+    'Progressive-Engineer-Platforms':ItemData(
+        progression=3,
+        useful=3,
+        filler=0,
+),
+    'Progressive-Engineer-Turrets':ItemData(
+        progression=1,
+        useful=2,
+        filler=0,
+),
+    'Progressive-Scout-Grapple':ItemData(
+        progression=2,
+        useful=2,
+        filler=0,
+),
+    'Progressive-Scout-FlareGun':ItemData(
+        progression=2,
+        useful=3,
+        filler=0,
+),
+    'Progressive-Driller-Drills':ItemData(
+        progression=3,
+        useful=3,
+        filler=0,
+),
+    'Progressive-Driller-C4':ItemData(
+        progression=1,
+        useful=3,
+        filler=0,
 ),
 }
 

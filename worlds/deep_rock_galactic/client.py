@@ -23,6 +23,7 @@ class DRGContext(CommonContext):
     APLocationlist="APLocationlist.txt"
     APLocationsChecked="APLocationsChecked.txt"
     APLocationHelper="APLocationHelper.txt"
+    APSettings="APSettings.txt"
     #This will not run in source currently if your host.yaml does not contain a working directory
     #It will try to open a file browsers to let you select, and that part will fail if ran from source, at least for me
     try:
@@ -90,6 +91,7 @@ class DRGContext(CommonContext):
             self.file_locations            = os.path.join(self.BaseDirectory,SlotName,self.APLocationlist)
             self.file_aplocations          = os.path.join(self.BaseDirectory,SlotName,self.APLocationsChecked)
             self.file_locationhelper       = os.path.join(self.BaseDirectory,SlotName,self.APLocationHelper)
+            self.file_settings             = os.path.join(self.BaseDirectory,SlotName,self.APSettings)
             if not os.path.isdir(os.path.join(self.BaseDirectory,SlotName)):#Does slot directory/save exist? if no, make it and the files
                 os.mkdir(os.path.join(self.BaseDirectory,SlotName))
                 open(self.file_items, 'w')
@@ -104,7 +106,11 @@ class DRGContext(CommonContext):
                     for i in all_locations:
                         locationhelper.add(self.id_to_loc_name[i])
                     f.write("\n".join(list(locationhelper)))
-
+                with open(self.file_settings, 'w') as f:
+                    minWarnHaz = self.options.min_warning_haz.value
+                    cubesNeeded = self.options.error_cube_checks.value
+                    classStart = self.options.avail_classes.value
+                    f.write(f"WarnHazMin:{minWarnHaz},CubesNeeded:{cubesNeeded},StartingClass:{classStart}")
 
         if cmd in {"ReceivedItems"}:
             start_index = args["index"]
