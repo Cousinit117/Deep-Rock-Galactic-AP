@@ -4,10 +4,6 @@ from ._subclasses import DRGItem
 
 ITEM_BITSHIFT_DEFAULT       = 16
 
-
-
-
-
 #Do we need to add "Victory" as an item? And force its location to be on the Haz 5 sabotage?
 
 class ItemData(NamedTuple):
@@ -19,7 +15,7 @@ class ItemData(NamedTuple):
 
 
 ITEMS = {
-#Progression, highest number among items is now 69
+#Progression, highest number among items is now 82
     'Progressive-Flare-Count': 47,
     'Progressive-Flare-Recharge':1,
     'Progressive-Carriable-Throwing':2,
@@ -102,6 +98,15 @@ ITEMS = {
     'Progressive-Scout-FlareGun':74,
     'Progressive-Driller-Drills':75,
     'Progressive-Driller-C4':76,
+    'Class-Gunner':77,
+    'Class-Driller':78,
+    'Class-Scout':79,
+    'Class-Engineer':80,
+    'Progressive-Weapon-Upgrades':83,
+    'Overclocks-Unlocked':84,
+#spacerig stuff
+    'Open-Bar':81,
+    'Free-Drink':82,
 }
 ITEMS = {k: v + 1 << ITEM_BITSHIFT_DEFAULT for k, v in ITEMS.items()}
 
@@ -154,7 +159,7 @@ ITEMS_COUNT = {
     'Progressive-Max-Shield':ItemData(
         progression=5,
         useful=5,
-        filler=0,
+        filler=5,
 ),
     'Progressive-Shield-Regen-Delay':ItemData(
         progression=4,
@@ -177,7 +182,7 @@ ITEMS_COUNT = {
         filler=5,#was 0
 ),
     'Progressive-Melee-Cooldown':ItemData(
-        progression=4,
+        progression=5,
         useful=0,
         filler=0,
 ),
@@ -219,25 +224,25 @@ ITEMS_COUNT = {
     'Progressive-Gun-Ammo':ItemData(
         progression=5,
         useful=5,
-        filler=0,
+        filler=5,
 ),
     'Progressive-Traversal-Tool':ItemData(
-        progression=2,
-        useful=0,
+        progression=5,
+        useful=5,
         filler=0,
 ),
     'Progressive-Utility':ItemData(
-        progression=2,
-        useful=0,
+        progression=5,
+        useful=5,
         filler=0,
 ),
     'Progressive-Grenades':ItemData(
-        progression=9,
-        useful=0,
+        progression=6,
+        useful=4,
         filler=0,
 ),       
     'Progressive-Resupply-Incremental-Cost':ItemData(
-        progression=2,
+        progression=3,
         useful=0,
         filler=0,
 ),
@@ -268,7 +273,7 @@ ITEMS_COUNT = {
 ),
     'Progressive-Max-Shield-Regen':ItemData(
         progression=0,
-        useful=19,
+        useful=18,
         filler=0,
 ),
     'Supply-Sentries':ItemData(
@@ -365,13 +370,13 @@ ITEMS_COUNT = {
         progression=0,
         useful=0,
         filler=0,
-        trap=3,
+        trap=5,
 ),
     'Trap-Cave-Haunting':ItemData(
         progression=0,
         useful=0,
         filler=0,
-        trap=3,
+        trap=5,
 ),
     'Trap-Bedrock-Encasing':ItemData(
         progression=0,
@@ -401,7 +406,7 @@ ITEMS_COUNT = {
         progression=0,
         useful=0,
         filler=0,
-        trap=3,
+        trap=5,
 ),
     'Progressive-BET-C':ItemData(
         progression=0,
@@ -412,7 +417,7 @@ ITEMS_COUNT = {
         progression=0,
         useful=0,
         filler=0,
-        trap=3,
+        trap=5,
 ),
     'Mutator-Critial-Weakness':ItemData(
         progression=0,
@@ -461,7 +466,7 @@ ITEMS_COUNT = {
 ),
     'Progressive-Gunner-Shield':ItemData(
         progression=2,
-        useful=2,
+        useful=3,
         filler=0,
 ),
     'Progressive-Engineer-Platforms':ItemData(
@@ -476,7 +481,7 @@ ITEMS_COUNT = {
 ),
     'Progressive-Scout-Grapple':ItemData(
         progression=2,
-        useful=2,
+        useful=3,
         filler=0,
 ),
     'Progressive-Scout-FlareGun':ItemData(
@@ -490,8 +495,48 @@ ITEMS_COUNT = {
         filler=0,
 ),
     'Progressive-Driller-C4':ItemData(
-        progression=1,
+        progression=2,
         useful=3,
+        filler=0,
+),
+    'Class-Gunner':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Class-Driller':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Class-Scout':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Class-Engineer':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Open-Bar':ItemData(
+        progression=0,
+        useful=1,
+        filler=0,
+),
+    'Free-Drink':ItemData(
+        progression=0,
+        useful=0,
+        filler=20,
+),
+    'Progressive-Weapon-Upgrades':ItemData(
+        progression=5,
+        useful=0,
+        filler=0,
+),
+    'Overclocks-Unlocked':ItemData(
+        progression=1,
+        useful=0,
         filler=0,
 ),
 }
@@ -531,6 +576,10 @@ Generic_Progressives = [ #Includes most but not all of progression checks.
     'Progressive-Traversal-Tool',
     'Progressive-Utility',
     'Progressive-Grenades',
+    'Class-Gunner',
+    'Class-Driller',
+    'Class-Scout',
+    'Class-Engineer',
 ]
 Carrying_Buffs = [
 'Progressive-Carriable-Throwing',

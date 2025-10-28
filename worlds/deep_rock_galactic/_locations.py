@@ -106,8 +106,8 @@ def location_init():
             CurrentID=CurrentID+1
     
     #Error Cube Checks
-    errCubeNum = self.options.error_cube_checks.value
-    if (errorCubeNum > 0):
+    errCubeNum = 10 #self.options.error_cube_checks.value
+    if errCubeNum > 0:
         for i in range(1,errCubeNum):
             MissionPermute[f'Error Cube:{i}']=CurrentID
             CurrentID=CurrentID+1
@@ -115,15 +115,15 @@ def location_init():
     #Events
     for event in Events:
         for Hazard in [1,2,3,4,5]:
-        MissionPermute[f'Event:{event}:{Hazard}']=CurrentID
-        CurrentID=CurrentID+1
+            MissionPermute[f'Event:{event}:{Hazard}']=CurrentID
+            CurrentID=CurrentID+1
 
     #Warnings
-    minwarnlvl = self.options.min_warning_haz.value #unsure please test
+    #minwarnlvl = self.options.min_warning_haz.value #unsure please test
     for warn in Warnings:
         for Hazard in [1,2,3,4,5]:
-        MissionPermute[f'Warning:{warn}:{Hazard}']=CurrentID
-        CurrentID=CurrentID+1
+            MissionPermute[f'Warning:{warn}:{Hazard}']=CurrentID
+            CurrentID=CurrentID+1
 
     # 'MissionType_Facility',   #This is win condition only, requires carrying condition
     MissionPermute['Magma Core:Industrial Sabotage:5']=CurrentID

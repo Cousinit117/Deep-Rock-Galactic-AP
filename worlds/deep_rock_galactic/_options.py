@@ -10,7 +10,7 @@ from Options import Choice, Range, Toggle, PerGameCommonOptions, StartInventoryP
     # # default = 1
 
 class MaxHazard(Choice):
-    """Max Hazard Level"""
+    """Max Hazard Level (Not Yet Functional, Defaults to 5)"""
     display_name = "Maximum Hazard Level"
     option_hazard_1 = 1
     option_hazard_2 = 2
@@ -31,7 +31,7 @@ class MaxHazard(Choice):
     #default = 5
 
 class StartingClasses(Choice):
-    """Min Hazard Level for Warnings"""
+    """Set you starting class (Not Yet Functional, set in starting items instead)"""
     display_name = "Available Starting Classes"
     option_all = 0
     option_gunner = 1
@@ -41,7 +41,7 @@ class StartingClasses(Choice):
     default = 0
 
 class ErrorCubeChecks(Range):
-    """Sets the number of checks to be Error cubes"""
+    """Sets the number of checks to be Error cubes (Not Yet Functional, Defaults to 10)"""
     range_start = 0
     range_end   = 20
     default     = 10
