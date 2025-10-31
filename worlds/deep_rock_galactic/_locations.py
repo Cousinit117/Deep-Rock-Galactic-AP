@@ -68,6 +68,7 @@ Events=[
     #'Seasonal 3:Meteor Shower',
     #'Seasonal 4:Rockpox Corruptor',
     #'Seasonal 5:Core Stone',
+    #seasonal events make too many locations for now
 ]
 
 Warnings=[ 
