@@ -19,9 +19,9 @@ def create_region(multiworld, player, name, locations):
 def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS):
     
     def rule_generic_progressive4(state):
-        return state.has_from_list(Generic_Progressives,player,6) #This number will need balancing later.
+        return state.has_from_list(Generic_Progressives,player,10) #This number will need balancing later.
     def rule_generic_progressive5(state):
-        return state.has_from_list(Generic_Progressives,player,15) #This number will need heavy balancing later.
+        return state.has_from_list(Generic_Progressives,player,25) #This number will need heavy balancing later.
     def rule_carrying(state):
         return state.has_from_list(Carrying_Buffs,player,4) #This number will likely be in the range of 4-8.
     def rule_morkite(state):

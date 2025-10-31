@@ -57,10 +57,10 @@ SecondaryObjectives=[
 ]
 
 Events=[
-    'Machine Event:Ebonite Mutation',
-    'Machine Event:Kursite Infection',
-    'Machine Event:Tritilyte Crystal',
-    'Machine Event:Omen Modular Exterminator',
+    'Ebonite Mutation',
+    'Kursite Infection',
+    'Tritilyte Crystal',
+    'Omen Modular Exterminator',
     #'Seasonal 2:Prospector Drone',
     #'Seasonal 2:Prospector Data Deposit',
     #'Seasonal 2:Rival Communication Router',

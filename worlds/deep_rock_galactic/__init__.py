@@ -68,7 +68,7 @@ class DRGWorld(World):
         slot_data.update(self.options.as_dict('death_link'))
         return slot_data
 
-    def create_item(self, item_name: str, item_classification) -> DRGItem:
+    def create_item(self, item_name: str, item_classification = ItemClassification.filler) -> DRGItem:
         '''
         Returns created DRGItem
         '''

@@ -102,7 +102,7 @@ ITEMS = {
     'Class-Driller':78,
     'Class-Scout':79,
     'Class-Engineer':80,
-    'Progressive-Weapon-Upgrades':83,
+    'Progressive-Gear-Upgrades':83,
     'Overclocks-Unlocked':84,
 #spacerig stuff
     'Open-Bar':81,
@@ -529,7 +529,7 @@ ITEMS_COUNT = {
         useful=0,
         filler=20,
 ),
-    'Progressive-Weapon-Upgrades':ItemData(
+    'Progressive-Gear-Upgrades':ItemData(
         progression=5,
         useful=0,
         filler=0,
@@ -580,6 +580,8 @@ Generic_Progressives = [ #Includes most but not all of progression checks.
     'Class-Driller',
     'Class-Scout',
     'Class-Engineer',
+    'Progressive-Gear-Upgrades',
+    'Overclocks-Unlocked',
 ]
 Carrying_Buffs = [
 'Progressive-Carriable-Throwing',
