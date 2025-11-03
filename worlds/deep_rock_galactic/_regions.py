@@ -3,7 +3,7 @@ from typing import NamedTuple, Callable
 from BaseClasses import CollectionState
 
 from ._subclasses import DRGLocation, DRGRegion
-from ._locations import location_init, remove_locations, Biomes, MissionTypes, SecondaryObjectives
+from ._locations import location_init, remove_locations, Biomes, MissionTypes, SecondaryObjectives, Events, Warnings
 from ._items import Generic_Progressives, Carrying_Buffs
 
 class RegionData(NamedTuple):
@@ -35,12 +35,12 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS):
         ]
         
     MissionsDefaultHaz4=[Mission for Mission in ALL_LOCATIONS if (
-        'Egg Hunt' in Mission or 'Elimination' in Mission or 'On-site Refining' in Mission or 'Deep Scan' in Mission) \
+        'Egg Hunt' in Mission or 'On-site Refining' in Mission or 'Deep Scan' in Mission) \
         and '4' in Mission
         ]
 
     MissionsDefaultHaz5=[Mission for Mission in ALL_LOCATIONS if (
-        'Egg Hunt' in Mission or 'Elimination' in Mission or 'On-site Refining' in Mission or 'Deep Scan' in Mission) \
+        'Egg Hunt' in Mission or 'On-site Refining' in Mission or 'Deep Scan' in Mission) \
         and '5' in Mission
         ]
     
@@ -89,6 +89,35 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS):
         and '5' in Mission
         ]
 
+    ErrorCubes=[Mission for Mission in ALL_LOCATIONS if
+        'Error Cube' in Mission
+        ]
+
+    Events123=[Mission for Mission in ALL_LOCATIONS if
+        'Event' in Mission \
+        and ('1' in Mission or '2' in Mission or '3' in Mission)
+        ]
+    Events4=[Mission for Mission in ALL_LOCATIONS if
+        'Event' in Mission and '4' in Mission
+        ]
+        
+    Events5=[Mission for Mission in ALL_LOCATIONS if
+        'Event' in Mission and '5' in Mission
+        ]
+        
+    Warnings123=[Mission for Mission in ALL_LOCATIONS if
+        'Warning' in Mission \
+        and ('1' in Mission or '2' in Mission or '3' in Mission)
+        ]
+        
+    Warnings4=[Mission for Mission in ALL_LOCATIONS if
+        'Warning' in Mission and '4' in Mission
+        ]
+        
+    Warnings5=[Mission for Mission in ALL_LOCATIONS if
+        'Warning' in Mission and '5' in Mission
+        ]
+
     #Only one not plural. You probably hate it, change if you want
     MissionVictory=[Mission for Mission in ALL_LOCATIONS if
         'Industrial Sabotage' in Mission \
@@ -97,16 +126,18 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS):
 
     SecondariesDefault=[Secondary for Secondary in ALL_LOCATIONS if (
         'Glyphid Eggs' in Secondary or 'Bha Barnacles' in Secondary or 'Apoca Blooms' in Secondary or 'Boolo Caps' in Secondary \
-        or 'Ebonuts' in Secondary or 'Alien Fossils' in Secondary or 'Fester Fleas' in Secondary or 'Dystrum' in Secondary or 'Hollomite' in Secondary or 'Black Box' in Secondary or 'Oil Pumping' in Secondary or 'Scan' in Secondary)
+        or 'Ebonuts' in Secondary or 'Alien Fossils' in Secondary or 'Fester Fleas' in Secondary or 'Dystrum' in Secondary or \
+        'Hollomite' in Secondary or 'Black Box' in Secondary or 'Oil Pumping' in Secondary or 'Secondary Scan' in Secondary)
         ]
 
     SecondariesCarrying=[Secondary for Secondary in ALL_LOCATIONS if ('Gunk Seeds' in Secondary or 'Mini Mules' in Secondary or 'Alien Eggs' in Secondary)]
 
-    SecondariesAmmo=[Secondary for Secondary in ALL_LOCATIONS if 'Elimination Eggs' in Secondary]
+    SecondariesAmmo=[Secondary for Secondary in ALL_LOCATIONS if 'Dreadnought Eggs' in Secondary]
     
     REGIONS = {
         'Menu': RegionData(connected_regions=['AlwaysAccessLocations', 'AlwaysAccessSecondaries', 'GenericHaz4', 'GenericHaz5', \
-        'Mining123', 'Mining4', 'Mining5', 'Ammo123', 'Ammo4', 'Ammo5', 'AmmoSecondary', 'Carrying123', 'Carrying4', 'Carrying5','CarryingSecondary','VictoryAccess']), 
+        'Mining123', 'Mining4', 'Mining5', 'Ammo123', 'Ammo4', 'Ammo5', 'AmmoSecondary', 'Carrying123', 'Carrying4', 'Carrying5', \
+        'CarryingSecondary','ErrorCubes','Events123','Events4','Events5','Warnings123','Warnings4','Warnings5','VictoryAccess']), 
         # Should contain all
         
         'AlwaysAccessLocations': RegionData(
@@ -197,6 +228,47 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS):
             connected_regions        = [],
         ),
 
+        #Cubes
+        'ErrorCubes': RegionData(
+            locations    = ErrorCubes,
+            entrancerule = lambda state: True,#No Access restrictions
+            connected_regions        = [],
+        ),
+
+        #Events
+        'Events123': RegionData(
+            locations    = Events123,
+            entrancerule = lambda state: True,#No Access restrictions
+            connected_regions        = [],
+        ),
+        'Events4': RegionData(
+            locations    = Events4,
+            entrancerule = lambda state:    rule_generic_progressive4(state),
+            connected_regions        = [],
+        ),
+        'Events5': RegionData(
+            locations    = Events5,
+            entrancerule = lambda state:    rule_generic_progressive5(state),
+            connected_regions        = [],
+        ),
+
+        #Warnings
+        'Warnings123': RegionData(
+            locations    = Warnings123,
+            entrancerule = lambda state: True,#No Access restrictions
+            connected_regions        = [],
+        ),
+        'Warnings4': RegionData(
+            locations    = Warnings4,
+            entrancerule = lambda state:    rule_generic_progressive4(state),
+            connected_regions        = [],
+        ),
+        'Warnings5': RegionData(
+            locations    = Warnings5,
+            entrancerule = lambda state:    rule_generic_progressive5(state),
+            connected_regions        = [],
+        ),
+
         #Sabotage mission is a carrying type mission, and must be on Haz 5 for victory
         'VictoryAccess': RegionData(
             locations    =  MissionVictory, #Haz5 on magmacore, sabotage.
@@ -217,12 +289,14 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS):
     
     #This is what changes number of locations. Will need to adjust this function later, and/or change how remove_locations works
 
-    remove_locations(ALL_LOCATIONS, options.locations_to_remove.value)
-    # ALL_LOCATIONS=remove_locations(ALL_LOCATIONS, 420)
-
+    # remove_locations(ALL_LOCATIONS, options.locations_to_remove.value)
+    # remove_locations(ALL_LOCATIONS,100)
+    ALL_LOCATIONS=remove_locations(ALL_LOCATIONS,81)
+    # print(REGIONS)
     for region in REGIONS:
         #Added a check at the end of "if location in ALL_LOCATIONS"
         region_locations = {location: ALL_LOCATIONS[location] for location in REGIONS[region].locations if location in ALL_LOCATIONS}
+        
         multiworld.regions += [create_region(multiworld, player, region, region_locations)]
         # x=create_region(multiworld, player, region, region_locations)
         # print(x)

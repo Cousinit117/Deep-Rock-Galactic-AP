@@ -50,8 +50,8 @@ SecondaryObjectives=[
     'Hollomite',
     'Black Box',
     'Oil Pumping',
-    'Scan',
-    'Elimination Eggs',
+    'Secondary Scan',
+    'Dreadnought Eggs',
     'Mini Mules',
     'Alien Eggs',
 ]

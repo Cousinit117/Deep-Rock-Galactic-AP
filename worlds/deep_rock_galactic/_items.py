@@ -278,7 +278,7 @@ ITEMS_COUNT = {
 ),
     'Supply-Sentries':ItemData(
         progression=0,
-        useful=1,
+        useful=10,
         filler=0,
 ),
     'Progressive-Rock-Mining':ItemData(
@@ -421,43 +421,43 @@ ITEMS_COUNT = {
 ),
     'Mutator-Critial-Weakness':ItemData(
         progression=0,
-        useful=1,
+        useful=2,
         filler=0,
 ),
     'Mutator-Gold-Rush':ItemData(
         progression=0,
         useful=0,
-        filler=1,
+        filler=2,
 ),
     'Mutator-Golden-Bugs':ItemData(
         progression=0,
         useful=0,
-        filler=1,
+        filler=2,
 ),
     'Mutator-Low-Gravity':ItemData(
         progression=0,
         useful=1,
-        filler=0,
+        filler=1,
 ),
     'Mutator-Mineral-Mania':ItemData(
         progression=0,
         useful=0,
-        filler=1,
+        filler=2,
 ),
     'Mutator-Rich-Atmosphere':ItemData(
         progression=0,
         useful=1,
-        filler=0,
+        filler=1,
 ),
     'Mutator-Volatile-Guts':ItemData(
         progression=0,
         useful=0,
-        filler=1,
+        filler=2,
 ),
     'Mutator-Blood-Sugar':ItemData(
         progression=0,
         useful=0,
-        filler=1,
+        filler=2,
 ),
     'Progressive-Bosco-Mining':ItemData(
         progression=0,
@@ -531,7 +531,7 @@ ITEMS_COUNT = {
 ),
     'Progressive-Gear-Upgrades':ItemData(
         progression=5,
-        useful=0,
+        useful=2,
         filler=0,
 ),
     'Overclocks-Unlocked':ItemData(
