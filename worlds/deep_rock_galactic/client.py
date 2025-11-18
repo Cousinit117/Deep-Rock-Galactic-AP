@@ -18,7 +18,7 @@ import Utils
 class DRGContext(CommonContext):
     game = "Deep Rock Galactic"
     items_handling = 0b111  # Indicates you get items sent from other world
-    slot_data = True
+    #slot_data = True
     options = Utils.get_options()
     APChecklist="APChecklist.txt"
     APLocationlist="APLocationlist.txt"
@@ -88,7 +88,7 @@ class DRGContext(CommonContext):
         if cmd in {"Connected"}:
             asyncio.create_task(self.send_msgs([{"cmd": "GetDataPackage", "games": ["Deep Rock Galactic"]}]))
             self.locations_checked = set(args["checked_locations"])
-            self.data_slot = set(args["slot_data"])
+            self.slot_data = args["slot_data"]
             SlotName=(self.slot_info[self.slot].name)#self.slot_info[self.slot].name returns the name of the slot you connected to
             SlotName=SlotName.replace(" ","_")#DRG Needs to have underscores and no spaces
             self.file_items                = os.path.join(self.BaseDirectory,SlotName,self.APChecklist)#Defines names, but they may not exist yet
@@ -111,9 +111,9 @@ class DRGContext(CommonContext):
                         locationhelper.add(self.id_to_loc_name[i])
                     f.write("\n".join(list(locationhelper)))
                 with open(self.file_settings, 'w') as f:
-                    maxWarnHaz = self.data_slot["max_hazard"]
-                    cubesNeeded = self.data_slot["error_cube_checks"]
-                    classStart = self.data_slot["avail_classes"]
+                    maxWarnHaz = self.slot_data["max_hazard"]
+                    cubesNeeded = self.slot_data["error_cube_checks"]
+                    classStart = self.slot_data["avail_classes"]
                     f.write(f"WarnHazMax:{maxWarnHaz},CubesNeeded:{cubesNeeded},StartingClass:{classStart}")
 
         if cmd in {"ReceivedItems"}:
