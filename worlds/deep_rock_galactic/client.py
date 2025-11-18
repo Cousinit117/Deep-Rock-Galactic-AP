@@ -11,13 +11,14 @@ import re
 from NetUtils import ClientStatus
 import settings
 from CommonClient import gui_enabled, logger, get_base_parser, CommonContext, server_loop
-from ._locations import location_init
-from ._items import ALL_ITEMS
+from .locations import location_init
+from .items import ALL_ITEMS
 import Utils
 
 class DRGContext(CommonContext):
     game = "Deep Rock Galactic"
     items_handling = 0b111  # Indicates you get items sent from other world
+    slot_data = True
     options = Utils.get_options()
     APChecklist="APChecklist.txt"
     APLocationlist="APLocationlist.txt"
@@ -50,14 +51,16 @@ class DRGContext(CommonContext):
         self.file_locations            = ""# os.path.join(self.BaseDirectory,self.APLocationlist)
         self.file_aplocations          = ""# os.path.join(self.BaseDirectory,self.APLocationsChecked)
         self.file_locationhelper       = ""
+        self.file_settings             = ""
         self.collected_items           = []
         self.finished_game             = False
+        self.want_slot_data            = True
 
     async def server_auth(self, password_requested: bool = False):
         if password_requested and not self.password:
             await super(DRGContext, self).server_auth(password_requested)
         await self.get_username()
-        await self.send_connect()
+        await self.send_connect(slot_data = True)
 
     async def connection_closed(self):
         self.server_state_synchronized = False
@@ -85,6 +88,7 @@ class DRGContext(CommonContext):
         if cmd in {"Connected"}:
             asyncio.create_task(self.send_msgs([{"cmd": "GetDataPackage", "games": ["Deep Rock Galactic"]}]))
             self.locations_checked = set(args["checked_locations"])
+            self.data_slot = set(args["slot_data"])
             SlotName=(self.slot_info[self.slot].name)#self.slot_info[self.slot].name returns the name of the slot you connected to
             SlotName=SlotName.replace(" ","_")#DRG Needs to have underscores and no spaces
             self.file_items                = os.path.join(self.BaseDirectory,SlotName,self.APChecklist)#Defines names, but they may not exist yet
@@ -107,10 +111,10 @@ class DRGContext(CommonContext):
                         locationhelper.add(self.id_to_loc_name[i])
                     f.write("\n".join(list(locationhelper)))
                 with open(self.file_settings, 'w') as f:
-                    minWarnHaz = self.options.min_warning_haz.value
-                    cubesNeeded = self.options.error_cube_checks.value
-                    classStart = self.options.avail_classes.value
-                    f.write(f"WarnHazMin:{minWarnHaz},CubesNeeded:{cubesNeeded},StartingClass:{classStart}")
+                    maxWarnHaz = self.data_slot["max_hazard"]
+                    cubesNeeded = self.data_slot["error_cube_checks"]
+                    classStart = self.data_slot["avail_classes"]
+                    f.write(f"WarnHazMax:{maxWarnHaz},CubesNeeded:{cubesNeeded},StartingClass:{classStart}")
 
         if cmd in {"ReceivedItems"}:
             start_index = args["index"]

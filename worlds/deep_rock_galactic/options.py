@@ -9,15 +9,15 @@ from Options import Choice, Range, Toggle, ItemDict, PerGameCommonOptions, Start
     # # range_end = 10
     # # default = 1
 
-#class MaxHazard(Choice):
-    # """Max Hazard Level (Not Yet Functional, Defaults to 5)"""
-    #display_name = "Maximum Hazard Level"
-    #option_hazard_1 = 1
-    #option_hazard_2 = 2
-    #option_hazard_3 = 3
-    #option_hazard_4 = 4
-    #option_hazard_5 = 5
-    #default = 5
+class MaxHazard(Choice):
+    """Max Hazard Level (Not Yet Functional, Defaults to 5)"""
+    display_name = "Maximum Hazard Level"
+    option_hazard_1 = 1
+    option_hazard_2 = 2
+    option_hazard_3 = 3
+    option_hazard_4 = 4
+    option_hazard_5 = 5
+    default = 5
     #visibility = Visibility.none
 
 #class WarningHazardMin(Choice):
@@ -30,21 +30,21 @@ from Options import Choice, Range, Toggle, ItemDict, PerGameCommonOptions, Start
     #option_hazard_5 = 5
     #default = 5
 
-#class StartingClasses(Choice):
-    # """Set you starting class (Not Yet Functional, set in starting items instead)"""
-    #display_name = "Available Starting Classes"
-    #option_all = 0
-    #option_gunner = 1
-    #option_driller = 2
-    #option_scout = 3
-    #option_engineer = 4
-    #default = 0
+class StartingClasses(Choice):
+    """Set you starting class (Not Yet Functional, set in starting items instead)"""
+    display_name = "Available Starting Class"
+    option_all = 0
+    option_gunner = 1
+    option_driller = 2
+    option_scout = 3
+    option_engineer = 4
+    default = 0
 
-#class ErrorCubeChecks(Range):
-    # """Sets the number of checks to be Error cubes (Not Yet Functional, Defaults to 10)"""
-    #range_start = 0
-    #range_end   = 20
-    #default     = 10
+class ErrorCubeChecks(Range):
+    """Sets the number of checks to be Error cubes (Not Yet Functional, Defaults to 10)"""
+    range_start = 0
+    range_end   = 20
+    default     = 10
 
 #class EnableMinigames(Toggle): 
     # display_name = "Enable Minigame Locations"
@@ -82,12 +82,12 @@ class LocationsToRemove(Range):
      """Removes locations from the placer. Will make upper power cap lower, can make victory much more difficult."""
      display_name = "Locations to Remove"
      range_start = 0
-     range_end   = 420
+     range_end   = 300
      default     = 0
 
-class StartInventory(ItemDict):
-    """You can use one of the following to set your starting class (Default Gunner): For ALL classes use {'Class-Gunner': 1,'Class-Driller': 1, 'Class-Scout': 1,'Class-Engineer': 1}. For Gunner use {'Class-Gunner': 1}. For Driller use {'Class-Driller': 1}. For Scout use {'Class-Scout': 1}. For Engineer use {'Class-Engineer': 1}."""
-    default={'Class-Gunner': 1}
+#class StartInventory(ItemDict):
+    #"""You can use one of the following to set your starting class (Default Gunner): For ALL classes use {Class-Gunner: 1,Class-Driller: 1,Class-Scout: 1,Class-Engineer: 1}. For Gunner use {Class-Gunner: 1}. For Driller use {Class-Driller: 1}. For Scout use {Class-Scout: 1}. For Engineer use {Class-Engineer: 1}."""
+    #default={'Class-Gunner': 1}
 
 class DeathLink(Toggle): ##Deathlink is enabled in DRG. If you write "Death-Link" into the "APCheckList" text document, and there is a number attached to it, it will send a deathlink. 
     ##e.g. if it said Death-Link:3 before, and you write Death-Link:4 it will send a deathlink to the game. All players will die. 
@@ -99,13 +99,13 @@ class DeathLink(Toggle): ##Deathlink is enabled in DRG. If you write "Death-Link
 
 @dataclass
 class DRGOptions(PerGameCommonOptions):
-    start_inventory:        StartInventory
-    #max_hazard:             MaxHazard
+    #start_inventory:        StartInventory
+    max_hazard:             MaxHazard
     death_link:             DeathLink
     locations_to_remove:    LocationsToRemove
     #min_warning_haz:        WarningHazardMin
-    #avail_classes:          StartingClasses
-    #error_cube_checks:      ErrorCubeChecks   
+    avail_classes:          StartingClasses
+    error_cube_checks:      ErrorCubeChecks   
     # starting_movement_speed: StartingMovementSpeed
     # starting_ammo:      StartingAmmo
     

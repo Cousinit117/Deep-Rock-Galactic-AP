@@ -6,11 +6,11 @@ from BaseClasses import Tutorial, ItemClassification
 # from Fill import fast_fill
 from worlds.LauncherComponents import launch_subprocess
 from worlds.AutoWorld import World, WebWorld
-from ._items import ALL_ITEMS, ITEMS_COUNT, EVENT_ITEMS
-from ._locations import location_init, remove_locations
-from ._regions import create_and_link_regions
-from ._options import DRGOptions
-from ._subclasses import DRGItem, DRGLocation
+from .items import ALL_ITEMS, ITEMS_COUNT, EVENT_ITEMS
+from .locations import location_init, remove_locations
+from .regions import create_and_link_regions
+from .options import DRGOptions
+from .subclasses import DRGItem, DRGLocation
 import json
 ## BaseDirectory=r"E:\SteamLibrary\steamapps\common\Deep Rock Galactic\FSD\Mods"
 
@@ -43,7 +43,7 @@ class DRGWorld(World):
     game = 'Deep Rock Galactic'
     web = DRGWebWorld()
     options_dataclass = DRGOptions
-    options = DRGOptions
+    options: DRGOptions
     settings: ClassVar[DRGSettings]
     # try:
         # if os.path.isdir(settings.get_settings()["deep_rock_galactic_options"]["root_directory"]): #this line is not valid, there is no settings anymore. Need to figure out why.
@@ -65,7 +65,7 @@ class DRGWorld(World):
 
     def fill_slot_data(self) -> dict:
         slot_data = {}
-        slot_data.update(self.options.as_dict('death_link'))
+        slot_data.update(self.options.as_dict('death_link','max_hazard','error_cube_checks','avail_classes'))
         return slot_data
 
     def create_item(self, item_name: str, item_classification = ItemClassification.filler) -> DRGItem:
