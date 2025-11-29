@@ -61,14 +61,6 @@ Events=[
     'Kursite Infection',
     'Tritilyte Crystal',
     'Omen Modular Exterminator',
-    #'Seasonal 2:Prospector Drone',
-    #'Seasonal 2:Prospector Data Deposit',
-    #'Seasonal 2:Rival Communication Router',
-    #'Seasonal 3:Meteor Impact',
-    #'Seasonal 3:Meteor Shower',
-    #'Seasonal 4:Rockpox Corruptor',
-    #'Seasonal 5:Core Stone',
-    #seasonal events make too many locations for now
 ]
 
 Warnings=[ 
@@ -89,7 +81,7 @@ Warnings=[
     'Ebonite Outbreak',
 ]
 
-def location_init():
+def location_init(cubeCount = 15, minigames = True):
     MissionPermute={} #very nested for loop creates array/index/list of all locations that could be read from DRG
     CurrentID=0
     # May separate this out. Not sure if that is easier, or if making separate functions to delete specific permutes is easier.
@@ -97,19 +89,19 @@ def location_init():
     for Biome in Biomes:
         for Mission in MissionTypes:
             for Hazard in [1,2,3,4,5]:
-                MissionPermute[f'{Biome}:{Mission}:{Hazard}']=CurrentID
+                MissionPermute[f'OBJ:{Biome}:{Mission}:{Hazard}']=CurrentID
                 CurrentID=CurrentID+1
 
-    #Secondary location, Azure Weald:Bha Barnacles
-    for Biome in Biomes:
-        for Secondary in SecondaryObjectives:
-            MissionPermute[f'{Biome}:{Secondary}']=CurrentID
+    #Secondary location, Azure Weald:5
+    for Secondary in SecondaryObjectives:
+        for Hazard in [1,2,3,4,5]:
+            MissionPermute[f'Secondary:{Secondary}:{Hazard}']=CurrentID
             CurrentID=CurrentID+1
     
     #Error Cube Checks
-    errCubeNum = 10 #self.options.error_cube_checks.value
+    errCubeNum = cubeCount #10
     if errCubeNum > 0:
-        for i in range(1,errCubeNum):
+        for i in range(1,errCubeNum+1):
             MissionPermute[f'Error Cube:{i}']=CurrentID
             CurrentID=CurrentID+1
 
@@ -119,6 +111,17 @@ def location_init():
             MissionPermute[f'Event:{event}:{Hazard}']=CurrentID
             CurrentID=CurrentID+1
 
+    #Minigames
+    if minigames:
+        for i in range(1,7):
+            MissionPermute[f'JettyBoot:{i*5}']=CurrentID
+            CurrentID=CurrentID+1
+
+    #Shop Items
+    for i in range(1,26):
+        MissionPermute[f'Shop Item:{i}']=CurrentID
+        CurrentID=CurrentID+1
+
     #Warnings
     #minwarnlvl = self.options.min_warning_haz.value #unsure please test
     for warn in Warnings:
@@ -127,35 +130,46 @@ def location_init():
             CurrentID=CurrentID+1
 
     # 'MissionType_Facility',   #This is win condition only, requires carrying condition
-    MissionPermute['Magma Core:Industrial Sabotage:5']=CurrentID
+    MissionPermute['OBJ:Magma Core:Industrial Sabotage:5']=CurrentID
 
     ALL_LOCATIONS = {k: v + 1 << (LOCATION_BITSHIFT_DEFAULT) for k, v in MissionPermute.items()}
     return ALL_LOCATIONS
 
-def remove_locations(ALL_LOCATIONS, LocationDifference):
+def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = True):
     CurrentID=0
-    ForbiddableLocations={}
+    RemovableLocations=[]
+    MustRemove=[]
     for Biome in Biomes:
         for Mission in MissionTypes:
             for Hazard in [2,3,4,5]:
-                ForbiddableLocations[f'{Biome}:{Mission}:{Hazard}']=CurrentID
-                CurrentID=CurrentID+1
-    for Biome in Biomes:
-        for Secondary in SecondaryObjectives:
-            ForbiddableLocations[f'{Biome}:{Secondary}']=CurrentID
-            CurrentID=CurrentID+1
+                RemovableLocations.append(f'OBJ:{Biome}:{Mission}:{Hazard}')
+    for Secondary in SecondaryObjectives:
+        for Hazard in [2,3,4,5]:
+            RemovableLocations.append(f'Secondary:{Secondary}:{Hazard}')
+    if not MiniGames:
+        for i in range(1,6):
+            MustRemove.append(f'JettyBoot:{i}')
+    for i in range(15,Cubes,-1):
+        MustRemove.append(f'Error Cube:{i}')
+
 
     #This subtracts a number of locations from the pool semi-randomly.
     # LocationDifference=0    #self.options.locations_to_remove.value
     # world.multiworld.random
     
-    def remove_random_dict_items(DictStart,DictToRemove, NumToRemove):
-        # Get a random sample of keys to remove
-        keys_to_remove = random.sample(list(DictToRemove.keys()), NumToRemove)
+    def remove_random_dict_items(DictStart, DictRemoveRand, DictRemoveMust, NumToRemove):
+        
+        keys_must = DictRemoveMust
+        for key in keys_must:
+            del DictStart[key]
+            #NumToRemove -= 1
+
         # Remove the selected items from the dictionary
         if NumToRemove > 0:
+            keys_to_remove = random.sample(DictRemoveRand, NumToRemove)
             for key in keys_to_remove:
                 del DictStart[key]
         return DictStart
-    TRUNC_ALL_LOCATIONS = remove_random_dict_items(ALL_LOCATIONS, ForbiddableLocations, LocationDifference)    
+    
+    TRUNC_ALL_LOCATIONS = remove_random_dict_items(ALL_LOCATIONS, RemovableLocations, MustRemove, LocationDifference)    
     return TRUNC_ALL_LOCATIONS

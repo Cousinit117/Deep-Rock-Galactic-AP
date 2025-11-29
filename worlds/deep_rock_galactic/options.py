@@ -10,7 +10,7 @@ from Options import Choice, Range, Toggle, ItemDict, PerGameCommonOptions, Start
     # # default = 1
 
 class MaxHazard(Choice):
-    """Max Hazard Level (Not Yet Functional, Defaults to 5)"""
+    """Max Hazard Level (Defaults to 5) [NOT YET FUNCTIONAL]"""
     display_name = "Maximum Hazard Level"
     option_hazard_1 = 1
     option_hazard_2 = 2
@@ -31,8 +31,8 @@ class MaxHazard(Choice):
     #default = 5
 
 class StartingClasses(Choice):
-    """Set you starting class (Not Yet Functional, set in starting items instead)"""
-    display_name = "Available Starting Class"
+    """Set you starting class"""
+    display_name = "Chosen Starting Class"
     option_all = 0
     option_gunner = 1
     option_driller = 2
@@ -41,14 +41,25 @@ class StartingClasses(Choice):
     default = 0
 
 class ErrorCubeChecks(Range):
-    """Sets the number of checks to be Error cubes (Not Yet Functional, Defaults to 10)"""
+    """Sets the number of checks to be Error cubes (Defaults to 10)"""
     range_start = 0
-    range_end   = 20
+    range_end   = 15
     default     = 10
 
-#class EnableMinigames(Toggle): 
-    # display_name = "Enable Minigame Locations"
-    # default = False
+class EnableMinigames(Toggle): 
+    """Turns on/off Jetty Boot as a check"""
+    display_name = "Enable Minigame Locations"
+    default = True
+
+class EnableTraps(Toggle): 
+    """Turns on/off Trap Items"""
+    display_name = "Enable Traps"
+    default = True
+
+class DeathLinkAll(Toggle):
+    """Sets whether deathlink will kill all palyers, or just a single dwarf at random (in multiplayer)"""
+    display_name = "Should Deathlink Kill All Players?"
+    default = True
 
 # class StartingMovementSpeed(Range):
     # """Sets the starting movement speed as a percent of base."""
@@ -79,33 +90,52 @@ class ErrorCubeChecks(Range):
     # visibility = Visibility.none
 
 class LocationsToRemove(Range):
-     """Removes locations from the placer. Will make upper power cap lower, can make victory much more difficult."""
-     display_name = "Locations to Remove"
-     range_start = 0
-     range_end   = 300
-     default     = 0
-
-#class StartInventory(ItemDict):
-    #"""You can use one of the following to set your starting class (Default Gunner): For ALL classes use {Class-Gunner: 1,Class-Driller: 1,Class-Scout: 1,Class-Engineer: 1}. For Gunner use {Class-Gunner: 1}. For Driller use {Class-Driller: 1}. For Scout use {Class-Scout: 1}. For Engineer use {Class-Engineer: 1}."""
-    #default={'Class-Gunner': 1}
+    """Removes locations from the placer. Will make upper power cap lower, can make victory much more difficult."""
+    display_name = "Locations to Remove"
+    range_start = 0
+    range_end   = 150
+    default     = 0
 
 class DeathLink(Toggle): ##Deathlink is enabled in DRG. If you write "Death-Link" into the "APCheckList" text document, and there is a number attached to it, it will send a deathlink. 
     ##e.g. if it said Death-Link:3 before, and you write Death-Link:4 it will send a deathlink to the game. All players will die. 
-    """Death Link"""
+    """Death Link (Currently only Recieves Deaths, doesn't send them)"""
     ## this is probably bad to implement. more for example reasons than anything else
     display_name = "Death Link Enabled"
     default = False
 
+class AvgCoinShopPrices(Range):
+    """Set the avg coin shop price. This will determine the cost of APCoin Shop Items in game."""
+    display_name = "Average Coin Shop Prices"
+    range_start = 1
+    range_end   = 30
+    default     = 5
+
+class GoldToCoinConversionRate(Range):
+    """Set the value of Gold Gathered to APCoin Conversion Rate. For example setting this to 100 would mean 100x gathered gold gets you 1x APCoin."""
+    display_name = "Gold to APCoin Conversion Rate"
+    range_start = 5
+    range_end   = 500
+    default     = 50
+
+class BeerMatToCoinConversionRate(Range):
+    """Set the value of Beer Materials to APCoin Conversion Rate. For example setting this to 5 would mean 5x gathered beer materials gets you 1x APCoin."""
+    display_name = "Beer Materials to APCoin Conversion Rate"
+    range_start = 1
+    range_end   = 50
+    default     = 2
 
 @dataclass
 class DRGOptions(PerGameCommonOptions):
-    #start_inventory:        StartInventory
     max_hazard:             MaxHazard
     death_link:             DeathLink
+    death_link_all:         DeathLinkAll
     locations_to_remove:    LocationsToRemove
-    #min_warning_haz:        WarningHazardMin
     avail_classes:          StartingClasses
-    error_cube_checks:      ErrorCubeChecks   
-    # starting_movement_speed: StartingMovementSpeed
-    # starting_ammo:      StartingAmmo
+    error_cube_checks:      ErrorCubeChecks
+    traps_on:               EnableTraps
+    minigames_on:           EnableMinigames
+    coin_shop_prices:       AvgCoinShopPrices  
+    gold_to_coin_rate:      GoldToCoinConversionRate
+    beermat_to_coin_rate:   BeerMatToCoinConversionRate
+
     

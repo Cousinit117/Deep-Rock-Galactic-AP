@@ -9,7 +9,7 @@ from worlds.AutoWorld import World, WebWorld
 from .items import ALL_ITEMS, ITEMS_COUNT, EVENT_ITEMS
 from .locations import location_init, remove_locations
 from .regions import create_and_link_regions
-from .options import DRGOptions
+from .options import DRGOptions, ErrorCubeChecks, EnableMinigames
 from .subclasses import DRGItem, DRGLocation
 import json
 ## BaseDirectory=r"E:\SteamLibrary\steamapps\common\Deep Rock Galactic\FSD\Mods"
@@ -54,10 +54,10 @@ class DRGWorld(World):
         # root_directory: RootDirectory = input('Requesting User Input \n' + r"Please put the directory to your 'Deep Rock Galactic\FSD\Mods' folder here." + '\n')
     # if settings.get_settings()["deep_rock_galactic_options"]["root_directory"] != None:
         # RootDirectory = input('Requesting User Input \n' + r"Please put the directory to your 'Deep Rock Galactic\FSD\Mods' folder here." + '\n')
-    
+
     item_name_to_id = ALL_ITEMS
-    # location_name_to_id = ALL_LOCATIONS
     location_name_to_id = location_init()
+    #location_name_to_id = location_init(int(self.options.error_cube_count.value),bool(self.options.minigames_on.value))
     event_items={}
 
     def __init__(self, multiworld, player):
@@ -65,7 +65,15 @@ class DRGWorld(World):
 
     def fill_slot_data(self) -> dict:
         slot_data = {}
-        slot_data.update(self.options.as_dict('death_link','max_hazard','error_cube_checks','avail_classes'))
+        slot_data.update(self.options.as_dict('death_link','death_link_all','max_hazard','error_cube_checks','avail_classes','traps_on','minigames_on','coin_shop_prices','gold_to_coin_rate','beermat_to_coin_rate'))
+        
+        ShopItemsDict = {}
+        for i in range(1,26):
+            thisLoc = self.multiworld.get_location(f"Shop Item:{i}", self.player)
+            ShopItemsDict[f"Shop Item:{i}"] = {"player" : int(thisLoc.item.player), "item" : str(thisLoc.item.name)}
+
+        slot_data.update({"shop_items" : ShopItemsDict})
+
         return slot_data
 
     def create_item(self, item_name: str, item_classification = ItemClassification.filler) -> DRGItem:
@@ -101,7 +109,8 @@ class DRGWorld(World):
             item_pool += [self.create_item(item_name, ItemClassification.progression) for _ in range(counts.progression)]
             item_pool += [self.create_item(item_name, ItemClassification.useful     ) for _ in range(counts.useful     )]
             item_pool += [self.create_item(item_name, ItemClassification.filler     ) for _ in range(counts.filler     )]
-            item_pool += [self.create_item(item_name, ItemClassification.trap       ) for _ in range(counts.trap       )]
+            if bool(self.options.traps_on):
+                item_pool += [self.create_item(item_name, ItemClassification.trap       ) for _ in range(counts.trap       )]
         # if len(item_pool) != len(ALL_LOCATIONS):
             # print(f'something really bad happened! AP created {len(item_pool)} items, but found {len(ALL_LOCATIONS)} locations. These two numbers should be the same!')
         # alternatively, we can pad with fillers. This is usually the option when you may have variable numbers of locations (ie: sanity)
@@ -121,7 +130,9 @@ class DRGWorld(World):
         Run early, after options are parsed but before locations or items are created.
         Execute /some/ options based stuff, like location deletions
         '''
-        self.location_name_to_id = location_init()
+        self.location_name_to_id = location_init()#int(self.options.error_cube_checks.value),bool(self.options.minigames_on.value))
+    
+        #print(f"{self.location_name_to_id}")
         # currently running remove locations in _regions.py
         return
     
@@ -135,7 +146,7 @@ class DRGWorld(World):
         '''
         self.get_pre_fill_items_dictionary()
         victory_item=self.event_items['Victory']
-        self.multiworld.get_location("Magma Core:Industrial Sabotage:5", self.player).place_locked_item(victory_item)
+        self.multiworld.get_location("OBJ:Magma Core:Industrial Sabotage:5", self.player).place_locked_item(victory_item)
         self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player)
         
 

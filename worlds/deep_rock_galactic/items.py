@@ -520,14 +520,14 @@ ITEMS_COUNT = {
         filler=0,
 ),
     'Open-Bar':ItemData(
-        progression=0,
-        useful=1,
+        progression=1,
+        useful=0,
         filler=0,
 ),
     'Free-Drink':ItemData(
         progression=0,
         useful=0,
-        filler=20,
+        filler=10,
 ),
     'Progressive-Gear-Upgrades':ItemData(
         progression=5,
