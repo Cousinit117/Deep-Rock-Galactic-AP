@@ -163,28 +163,28 @@ class DRGContext(CommonContext):
                     for i in all_locations:
                         locationhelper.add(self.id_to_loc_name[i])
                     f.write("\n".join(list(locationhelper)))
-                #prints and save file settings for the mod to read
-                with open(self.file_settings, 'w') as f:
-                    maxWarnHaz = self.slot_data["max_hazard"]
-                    cubesNeeded = self.slot_data["error_cube_checks"]
-                    classStart = self.slot_data["avail_classes"]
-                    trapsOn = self.slot_data["traps_on"]
-                    deathlinkOn = self.slot_data["death_link"]
-                    deathlinkAll = self.slot_data["death_link_all"]
-                    minigameOn = self.slot_data["minigames_on"]
-                    APCoinCost = self.slot_data["coin_shop_prices"]
-                    goldToCoin = self.slot_data["gold_to_coin_rate"]
-                    beerToCoin = self.slot_data["beermat_to_coin_rate"]
-                    f.write(f"WarnHazMax:{maxWarnHaz},CubesNeeded:{cubesNeeded},StartingClass:{classStart},TrapsEnabled:{trapsOn},DeathLink:{deathlinkOn},DeathAll:{deathlinkAll},MinigamesEnabled:{minigameOn},APCoinCost:{APCoinCost},GoldToCoin:{goldToCoin},BeerToCoin:{beerToCoin}")
-                #prints and saves the shop items for the mod to read
-                with open(self.file_shop, 'w') as f:
-                    shopItemDict = self.slot_data["shop_items"]
-                    for shopKey in shopItemDict:
-                        #print(f"{shopKey}={shopItemDict[shopKey]}")
-                        sName = shopKey
-                        itemDict = shopItemDict[shopKey]
-                        playerN = self.slot_info[itemDict["player"]].name
-                        f.write(f"{shopKey}|{playerN}={itemDict["item"]}\n")
+            #prints and save file settings for the mod to read
+            with open(self.file_settings, 'w') as f:
+                maxWarnHaz = self.slot_data["max_hazard"]
+                cubesNeeded = self.slot_data["error_cube_checks"]
+                classStart = self.slot_data["avail_classes"]
+                trapsOn = self.slot_data["traps_on"]
+                deathlinkOn = self.slot_data["death_link"]
+                deathlinkAll = self.slot_data["death_link_all"]
+                minigameOn = self.slot_data["minigames_on"]
+                APCoinCost = self.slot_data["coin_shop_prices"]
+                goldToCoin = self.slot_data["gold_to_coin_rate"]
+                beerToCoin = self.slot_data["beermat_to_coin_rate"]
+                f.write(f"WarnHazMax:{maxWarnHaz},CubesNeeded:{cubesNeeded},StartingClass:{classStart},TrapsEnabled:{trapsOn},DeathLink:{deathlinkOn},DeathAll:{deathlinkAll},MinigamesEnabled:{minigameOn},APCoinCost:{APCoinCost},GoldToCoin:{goldToCoin},BeerToCoin:{beerToCoin}")
+            #prints and saves the shop items for the mod to read
+            with open(self.file_shop, 'w') as f:
+                shopItemDict = self.slot_data["shop_items"]
+                for shopKey in shopItemDict:
+                    #print(f"{shopKey}={shopItemDict[shopKey]}")
+                    sName = shopKey
+                    itemDict = shopItemDict[shopKey]
+                    playerN = self.slot_info[itemDict["player"]].name
+                    f.write(f"{shopKey}|{playerN}={itemDict["item"]}\n")
 
         #handle getting new items
         if cmd in {"ReceivedItems"}:
