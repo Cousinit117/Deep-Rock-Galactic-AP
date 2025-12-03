@@ -9,7 +9,7 @@ from worlds.AutoWorld import World, WebWorld
 from .items import ALL_ITEMS, ITEMS_COUNT, EVENT_ITEMS
 from .locations import location_init, remove_locations
 from .regions import create_and_link_regions
-from .options import DRGOptions, ErrorCubeChecks, EnableMinigames
+from .options import DRGOptions
 from .subclasses import DRGItem, DRGLocation
 import json
 ## BaseDirectory=r"E:\SteamLibrary\steamapps\common\Deep Rock Galactic\FSD\Mods"
@@ -65,7 +65,9 @@ class DRGWorld(World):
 
     def fill_slot_data(self) -> dict:
         slot_data = {}
-        slot_data.update(self.options.as_dict('death_link','death_link_all','max_hazard','error_cube_checks','avail_classes','traps_on','minigames_on','coin_shop_prices','gold_to_coin_rate','beermat_to_coin_rate'))
+        slot_data.update(self.options.as_dict('death_link','death_link_all','max_hazard',\
+            'error_cube_checks','avail_classes','traps_on','minigames_on','coin_shop_prices',\
+            'gold_to_coin_rate','beermat_to_coin_rate','progression_diff'))
         
         ShopItemsDict = {}
         for i in range(1,26):
@@ -154,7 +156,20 @@ class DRGWorld(World):
         '''
         Creates the Regions and Connects them.
         '''
-        create_and_link_regions(self.multiworld, self.player, self.options, self.location_name_to_id)
+        difficulty = [5,10,25,4,3,2] #Deault Easy [Haz3, Haz4, Haz5, Carry, Morkite, Ammo] Prog / 122
+        match int(self.options.progression_diff.value):
+            case 1: #easy
+                difficulty = [2,8,10,2,1,1] #10%
+            case 1: #normal
+                difficulty = [5,10,25,3,2,1] #20%
+            case 2: #hard
+                difficulty = [10,20,40,4,3,2] #33%
+            case 3: #harder
+                difficulty = [20,40,60,6,3,3] #50%
+            case 4: #completionist
+                difficulty = [30,60,90,8,3,4] #75%
+
+        create_and_link_regions(self.multiworld, self.player, self.options, self.location_name_to_id, difficulty)
 
     def set_rules(self):
         '''

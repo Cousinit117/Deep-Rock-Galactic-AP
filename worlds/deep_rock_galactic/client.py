@@ -175,7 +175,8 @@ class DRGContext(CommonContext):
                 APCoinCost = self.slot_data["coin_shop_prices"]
                 goldToCoin = self.slot_data["gold_to_coin_rate"]
                 beerToCoin = self.slot_data["beermat_to_coin_rate"]
-                f.write(f"WarnHazMax:{maxWarnHaz},CubesNeeded:{cubesNeeded},StartingClass:{classStart},TrapsEnabled:{trapsOn},DeathLink:{deathlinkOn},DeathAll:{deathlinkAll},MinigamesEnabled:{minigameOn},APCoinCost:{APCoinCost},GoldToCoin:{goldToCoin},BeerToCoin:{beerToCoin}")
+                progDiff = self.slot_data["progression_diff"]
+                f.write(f"WarnHazMax:{maxWarnHaz},CubesNeeded:{cubesNeeded},StartingClass:{classStart},TrapsEnabled:{trapsOn},DeathLink:{deathlinkOn},DeathAll:{deathlinkAll},MinigamesEnabled:{minigameOn},APCoinCost:{APCoinCost},GoldToCoin:{goldToCoin},BeerToCoin:{beerToCoin},ProgDiff:{progDiff}")
             #prints and saves the shop items for the mod to read
             with open(self.file_shop, 'w') as f:
                 shopItemDict = self.slot_data["shop_items"]

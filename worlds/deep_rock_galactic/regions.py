@@ -16,20 +16,20 @@ def create_region(multiworld, player, name, locations):
     region.add_locations(locations, DRGLocation)
     return region
 
-def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS):
+def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr = [5,10,25,4,3,2]):
     
     def rule_generic_progressive3(state):
-        return state.has_from_list(Generic_Progressives,player,5) #This number will need balancing later.
+        return state.has_from_list(Generic_Progressives,player,diffArr[0]) #This number will need balancing later.
     def rule_generic_progressive4(state):
-        return state.has_from_list(Generic_Progressives,player,10) #This number will need balancing later.
+        return state.has_from_list(Generic_Progressives,player,diffArr[1]) #This number will need balancing later.
     def rule_generic_progressive5(state):
-        return state.has_from_list(Generic_Progressives,player,25) #This number will need heavy balancing later.
+        return state.has_from_list(Generic_Progressives,player,diffArr[2]) #This number will need heavy balancing later.
     def rule_carrying(state):
-        return state.has_from_list(Carrying_Buffs,player,4) #This number will likely be in the range of 4-8.
+        return state.has_from_list(Carrying_Buffs,player,diffArr[3]) #This number will likely be in the range of 4-8.
     def rule_morkite(state):
-        return state.has('Progressive-Morkite-Mining',player,3) #This number is safe at 3. As far as a tracker goes, MAY be completable at 2. sometimes     
+        return state.has('Progressive-Morkite-Mining',player,diffArr[4]) #This number is safe at 3. As far as a tracker goes, MAY be completable at 2. sometimes     
     def rule_ammo(state):
-        return state.has('Progressive-Gun-Ammo',player,2) #Requires at least 2 ammo buffs
+        return state.has('Progressive-Gun-Ammo',player,diffArr[5]) #Requires at least 2 ammo buffs
 
     MissionsDefault=[Mission for Mission in ALL_LOCATIONS if (
         'Egg Hunt' in Mission or 'On-site Refining' in Mission or 'Deep Scan' in Mission) \
