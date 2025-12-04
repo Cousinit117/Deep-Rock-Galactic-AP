@@ -21,13 +21,13 @@ class MaxHazard(Choice):
     #visibility = Visibility.none
 
 class ProgressionDifficulty(Choice):
-    """Determines how high the progressive check locks are for each sphere. (Completion by Diff Easy=10%, Normal=25%, Hard=33%, Harder=50%, Completion=75%)"""
+    """Determines how high the progressive check locks are for each sphere. (Completion by Diff LeafLover=10%, Normal=25%, Hard=33%, Lethal=50%, Karl=75%)"""
     display_name = "Progression Lock Difficulty"
-    option_easy = 1
+    option_leaflover = 1
     option_normal = 2
     option_hard = 3
-    option_harder = 4
-    option_completionist = 5
+    option_lethal = 4
+    option_karl = 5
     default = 2
 
 #class WarningHazardMin(Choice):
