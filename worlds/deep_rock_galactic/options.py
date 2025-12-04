@@ -20,6 +20,16 @@ class MaxHazard(Choice):
     default = 5
     #visibility = Visibility.none
 
+class ProgressionDifficulty(Choice):
+    """Determines how high the progressive check locks are for each sphere. (Completion by Diff LeafLover=10%, Normal=25%, Hard=33%, Lethal=50%, Karl=75%)"""
+    display_name = "Progression Lock Difficulty"
+    option_leaflover = 1
+    option_normal = 2
+    option_hard = 3
+    option_lethal = 4
+    option_karl = 5
+    default = 2
+
 #class WarningHazardMin(Choice):
     # """Min Hazard Level for Warnings"""
     #display_name = "Minimum Hazard Level for Warnings"
@@ -127,6 +137,7 @@ class BeerMatToCoinConversionRate(Range):
 @dataclass
 class DRGOptions(PerGameCommonOptions):
     max_hazard:             MaxHazard
+    progression_diff:       ProgressionDifficulty
     death_link:             DeathLink
     death_link_all:         DeathLinkAll
     locations_to_remove:    LocationsToRemove

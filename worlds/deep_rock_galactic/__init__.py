@@ -9,7 +9,7 @@ from worlds.AutoWorld import World, WebWorld
 from .items import ALL_ITEMS, ITEMS_COUNT, EVENT_ITEMS
 from .locations import location_init, remove_locations
 from .regions import create_and_link_regions
-from .options import DRGOptions, ErrorCubeChecks, EnableMinigames
+from .options import DRGOptions
 from .subclasses import DRGItem, DRGLocation
 import json
 ## BaseDirectory=r"E:\SteamLibrary\steamapps\common\Deep Rock Galactic\FSD\Mods"
@@ -45,15 +45,6 @@ class DRGWorld(World):
     options_dataclass = DRGOptions
     options: DRGOptions
     settings: ClassVar[DRGSettings]
-    # try:
-        # if os.path.isdir(settings.get_settings()["deep_rock_galactic_options"]["root_directory"]): #this line is not valid, there is no settings anymore. Need to figure out why.
-            # root_directory: RootDirectory = settings.get_settings()["deep_rock_galactic_options"]["root_directory"]
-    # if os.path.isdir(r"C:\Program Files (x86)\Steam\steamapps\common\Deep Rock Galactic\Mods\FSD"):
-        # root_directory: RootDirectory = RootDirectory(r"C:\Program Files (x86)\Steam\steamapps\common\Deep Rock Galactic\FSD\Mods")
-    # else:
-        # root_directory: RootDirectory = input('Requesting User Input \n' + r"Please put the directory to your 'Deep Rock Galactic\FSD\Mods' folder here." + '\n')
-    # if settings.get_settings()["deep_rock_galactic_options"]["root_directory"] != None:
-        # RootDirectory = input('Requesting User Input \n' + r"Please put the directory to your 'Deep Rock Galactic\FSD\Mods' folder here." + '\n')
 
     item_name_to_id = ALL_ITEMS
     location_name_to_id = location_init()
@@ -65,7 +56,9 @@ class DRGWorld(World):
 
     def fill_slot_data(self) -> dict:
         slot_data = {}
-        slot_data.update(self.options.as_dict('death_link','death_link_all','max_hazard','error_cube_checks','avail_classes','traps_on','minigames_on','coin_shop_prices','gold_to_coin_rate','beermat_to_coin_rate'))
+        slot_data.update(self.options.as_dict('death_link','death_link_all','max_hazard',\
+            'error_cube_checks','avail_classes','traps_on','minigames_on','coin_shop_prices',\
+            'gold_to_coin_rate','beermat_to_coin_rate','progression_diff'))
         
         ShopItemsDict = {}
         for i in range(1,26):
@@ -154,7 +147,22 @@ class DRGWorld(World):
         '''
         Creates the Regions and Connects them.
         '''
-        create_and_link_regions(self.multiworld, self.player, self.options, self.location_name_to_id)
+        difficulty = [5,10,25,4,3,2] #Deault Easy [Haz3, Haz4, Haz5, Carry, Morkite, Ammo] Prog / 122
+        match int(self.options.progression_diff.value):
+            case 1: #leaflover
+                difficulty = [2,8,10,2,1,1] #10%
+            case 2: #normal
+                difficulty = [5,10,25,3,2,2] #20%
+            case 3: #hard
+                difficulty = [10,20,40,4,3,2] #33%
+            case 4: #lethal
+                difficulty = [20,40,60,6,3,3] #50%
+            case 5: #karl
+                difficulty = [30,60,90,8,3,4] #75%
+            case _: #default
+                difficulty = [5,10,25,3,2,2] #20%
+
+        create_and_link_regions(self.multiworld, self.player, self.options, self.location_name_to_id, difficulty)
 
     def set_rules(self):
         '''

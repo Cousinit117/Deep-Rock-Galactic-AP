@@ -165,17 +165,18 @@ class DRGContext(CommonContext):
                     f.write("\n".join(list(locationhelper)))
             #prints and save file settings for the mod to read
             with open(self.file_settings, 'w') as f:
-                maxWarnHaz = self.slot_data["max_hazard"]
-                cubesNeeded = self.slot_data["error_cube_checks"]
-                classStart = self.slot_data["avail_classes"]
-                trapsOn = self.slot_data["traps_on"]
-                deathlinkOn = self.slot_data["death_link"]
-                deathlinkAll = self.slot_data["death_link_all"]
-                minigameOn = self.slot_data["minigames_on"]
-                APCoinCost = self.slot_data["coin_shop_prices"]
-                goldToCoin = self.slot_data["gold_to_coin_rate"]
-                beerToCoin = self.slot_data["beermat_to_coin_rate"]
-                f.write(f"WarnHazMax:{maxWarnHaz},CubesNeeded:{cubesNeeded},StartingClass:{classStart},TrapsEnabled:{trapsOn},DeathLink:{deathlinkOn},DeathAll:{deathlinkAll},MinigamesEnabled:{minigameOn},APCoinCost:{APCoinCost},GoldToCoin:{goldToCoin},BeerToCoin:{beerToCoin}")
+                maxWarnHaz = self.slot_data.get("max_hazard",5)
+                cubesNeeded = self.slot_data.get("error_cube_checks",10)
+                classStart = self.slot_data.get("avail_classes",0)
+                trapsOn = self.slot_data.get("traps_on",1)
+                deathlinkOn = self.slot_data.get("death_link",0)
+                deathlinkAll = self.slot_data.get("death_link_all",1)
+                minigameOn = self.slot_data.get("minigames_on",1)
+                APCoinCost = self.slot_data.get("coin_shop_prices",5)
+                goldToCoin = self.slot_data.get("gold_to_coin_rate",50)
+                beerToCoin = self.slot_data.get("beermat_to_coin_rate",2)
+                progDiff = self.slot_data.get("progression_diff",2)
+                f.write(f"WarnHazMax:{maxWarnHaz},CubesNeeded:{cubesNeeded},StartingClass:{classStart},TrapsEnabled:{trapsOn},DeathLink:{deathlinkOn},DeathAll:{deathlinkAll},MinigamesEnabled:{minigameOn},APCoinCost:{APCoinCost},GoldToCoin:{goldToCoin},BeerToCoin:{beerToCoin},ProgDiff:{progDiff}")
             #prints and saves the shop items for the mod to read
             with open(self.file_shop, 'w') as f:
                 shopItemDict = self.slot_data["shop_items"]
@@ -319,6 +320,7 @@ class DRGContext(CommonContext):
         #This logic works now, but if deep dives (hazard 3.5, 6.5) were added, it would not function correctly
         for location in locations.copy():
             if location == 'Magma Core:Industrial Sabotage:5': continue
+            if "Shop Item" in location: continue
             if location[-1].isdigit():
                 hazard_lvl = int(location[-1:])
                 for i in range(1, hazard_lvl):
