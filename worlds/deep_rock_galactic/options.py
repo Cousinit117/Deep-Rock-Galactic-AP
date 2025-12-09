@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from Options import Choice, Range, Toggle, ItemDict, PerGameCommonOptions, StartInventory, Visibility
+from Options import Choice, Range, Toggle, ItemDict, PerGameCommonOptions, StartInventory, Visibility, DeathLink
 
 
 # # class MoneyMultiplier(Range):
@@ -23,7 +23,7 @@ class MaxHazard(Choice):
 class ProgressionDifficulty(Choice):
     """Determines how high the progressive check locks are for each sphere. (Completion by Diff LeafLover=10%, Normal=25%, Hard=33%, Lethal=50%, Karl=75%)"""
     display_name = "Progression Lock Difficulty"
-    option_leaflover = 1
+    option_easy = 1
     option_normal = 2
     option_hard = 3
     option_lethal = 4
@@ -106,12 +106,12 @@ class LocationsToRemove(Range):
     range_end   = 150
     default     = 0
 
-class DeathLink(Toggle): ##Deathlink is enabled in DRG. If you write "Death-Link" into the "APCheckList" text document, and there is a number attached to it, it will send a deathlink. 
+#class DeathLink(Toggle): ##Deathlink is enabled in DRG. If you write "Death-Link" into the "APCheckList" text document, and there is a number attached to it, it will send a deathlink. 
     ##e.g. if it said Death-Link:3 before, and you write Death-Link:4 it will send a deathlink to the game. All players will die. 
     """Death Link (Currently only Recieves Deaths, doesn't send them)"""
     ## this is probably bad to implement. more for example reasons than anything else
-    display_name = "Death Link Enabled"
-    default = False
+    #display_name = "Death Link Enabled"
+    #default = False
 
 class AvgCoinShopPrices(Range):
     """Set the avg coin shop price. This will determine the cost of APCoin Shop Items in game."""

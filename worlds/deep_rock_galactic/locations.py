@@ -113,8 +113,8 @@ def location_init(cubeCount = 15, minigames = True):
 
     #Minigames
     if minigames:
-        for i in range(1,7):
-            MissionPermute[f'JettyBoot:{i*5}']=CurrentID
+        for i in [5,10,15,20,25,30]:
+            MissionPermute[f'JettyBoot:{i}']=CurrentID
             CurrentID=CurrentID+1
 
     #Shop Items
@@ -147,7 +147,7 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
         for Hazard in [2,3,4,5]:
             RemovableLocations.append(f'Secondary:{Secondary}:{Hazard}')
     if not MiniGames:
-        for i in range(1,6):
+        for i in [5,10,15,20,25,30]:
             MustRemove.append(f'JettyBoot:{i}')
     for i in range(15,Cubes,-1):
         MustRemove.append(f'Error Cube:{i}')

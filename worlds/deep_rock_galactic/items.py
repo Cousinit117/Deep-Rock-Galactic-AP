@@ -81,7 +81,7 @@ ITEMS = {
     'Trap-Jumpscare-Bulk': 59, #trigger per trap, MULTI
     'Trap-Intoxication': 60, #trigger per trap, MULTI
 #anomolies
-    'Mutator-Critial-Weakness': 61,
+    'Mutator-Critical-Weakness': 61,
     'Mutator-Gold-Rush': 62,
     'Mutator-Golden-Bugs': 63,
     'Mutator-Low-Gravity': 64,
@@ -419,7 +419,7 @@ ITEMS_COUNT = {
         filler=0,
         trap=5,
 ),
-    'Mutator-Critial-Weakness':ItemData(
+    'Mutator-Critical-Weakness':ItemData(
         progression=0,
         useful=2,
         filler=0,

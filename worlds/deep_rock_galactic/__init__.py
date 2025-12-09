@@ -149,7 +149,7 @@ class DRGWorld(World):
         '''
         difficulty = [5,10,25,4,3,2] #Deault Easy [Haz3, Haz4, Haz5, Carry, Morkite, Ammo] Prog / 122
         match int(self.options.progression_diff.value):
-            case 1: #leaflover
+            case 1: #leaflover / easy
                 difficulty = [2,8,10,2,1,1] #10%
             case 2: #normal
                 difficulty = [5,10,25,3,2,2] #20%
