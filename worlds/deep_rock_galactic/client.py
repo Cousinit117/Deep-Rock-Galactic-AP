@@ -9,6 +9,7 @@ import requests
 import time
 import re
 from NetUtils import ClientStatus
+from .deathlink import handle_check_deathlink
 import settings
 from CommonClient import gui_enabled, logger, get_base_parser, CommonContext, server_loop
 from .locations import location_init
@@ -88,10 +89,14 @@ class DRGContext(CommonContext):
         self.file_aplocations          = ""# os.path.join(self.BaseDirectory,self.APLocationsChecked)
         self.file_locationhelper       = ""
         self.file_settings             = ""
-        self.file_deathlink            = ""
+        self.file_deathget             = ""
+        self.file_deathsend            = ""
         self.collected_items           = []
         self.finished_game             = False
         self.want_slot_data            = True
+        self.deathlinkOn               = False
+        self.death_link_message        = ""
+        self.received_death_link       = False
 
     def set_location_data(self):
         self.loc_name_to_id = location_init()#int(self.slot_data["error_cube_checks"]),bool(self.slot_data["minigames_on"]))
@@ -151,14 +156,15 @@ class DRGContext(CommonContext):
             self.file_locationhelper       = os.path.join(self.BaseDirectory,SlotName,self.APLocationHelper)
             self.file_settings             = os.path.join(self.BaseDirectory,SlotName,self.APSettings)
             self.file_shop                 = os.path.join(self.BaseDirectory,SlotName,self.APShop)
-            self.file_deathlink           = os.path.join(self.BaseDirectory,SlotName,self.APDeathLink)
+            self.file_deathget             = os.path.join(self.BaseDirectory,SlotName,self.APDeathLink)
             #only print these files first time the save is loaded
             if not os.path.isdir(os.path.join(self.BaseDirectory,SlotName)):#Does slot directory/save exist? if no, make it and the files
                 os.mkdir(os.path.join(self.BaseDirectory,SlotName))
                 open(self.file_items, 'w')
                 open(self.file_locations, 'w')
                 open(self.file_aplocations, 'w')
-                open(self.file_deathlink, 'w')
+                open(self.file_deathget, 'w')
+                open(self.file_deathsend, 'w')
                 with open(self.file_locationhelper, 'w') as f:
                     #Make location helper here
                     all_checked=set(args["checked_locations"])
@@ -174,7 +180,7 @@ class DRGContext(CommonContext):
                 cubesNeeded = self.slot_data["error_cube_checks"]
                 classStart = self.slot_data["avail_classes"]
                 trapsOn = self.slot_data["traps_on"]
-                deathlinkOn = self.slot_data["death_link"]
+                self.deathlinkOn = self.slot_data["death_link"]
                 deathlinkAll = self.slot_data["death_link_all"]
                 minigameOn = self.slot_data["minigames_on"]
                 APCoinCost = self.slot_data["coin_shop_prices"]
@@ -374,14 +380,13 @@ class DRGContext(CommonContext):
         self.ui = DRGManager(self)
         self.ui_task = asyncio.create_task(self.ui.async_run(), name="UI")
 
-    def on_deathlink(self, args): #IN PROGRESS
+    def on_deathlink(self, data: Utils.Dict[str, Utils.Any]) -> None: #IN PROGRESS
         #time = args["time"]
-        cause = args["cause"]
-        source = ["source"]
-        with open(self.file_deathlink, 'w') as f:
-            # nuke the txt file and shove it in. Can do so by just opening file with mode='w' (no append)
-            f.write(f"now,{cause},{source}")
-
+        super().on_deathlink(data)
+        cause = data.get("cause","")
+        source = data["source"]
+        self.death_link_message = (f"now,{cause},{source}")
+        self.received_death_link = True
 
 async def DRG_watcher(ctx: DRGContext):
     while not ctx.exit_event.is_set():
@@ -395,6 +400,9 @@ async def DRG_watcher(ctx: DRGContext):
                 if ctx.new_locations:
                     message = [{"cmd": 'LocationChecks', "locations": list(ctx.new_locations)}]
                     await ctx.send_msgs(message)
+                #New Deathlink Code
+                if ctx.deathlinkOn:
+                    await handle_check_deathlink
         except Exception as e:
             print(e)
         await asyncio.sleep(5.0)
