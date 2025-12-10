@@ -81,77 +81,136 @@ Warnings=[
     'Ebonite Outbreak',
 ]
 
-def location_init(cubeCount = 15, minigames = True):
+def getLocationGroup(group = "MainObj"):
+    thisList=[]
+    match group:
+        case "MainObj": #Get Main Objs
+            for Biome in Biomes:
+                for Mission in MissionTypes:
+                    for Hazard in [1,2,3,4,5]:
+                        thisList.append(f'OBJ:{Biome}:{Mission}:{Hazard}')
+        case "SecObj": #Get Sec Objs
+            for Secondary in SecondaryObjectives:
+                for Hazard in [1,2,3,4,5]:
+                    thisList.append(f'Secondary:{Secondary}:{Hazard}')
+        case "ErrCube":
+            for i in range(1,16):
+                thisList.append(f'Error Cube:{i}')
+        case "Events":
+            for event in Events:
+                for Hazard in [1,2,3,4,5]:
+                    thisList.append(f'Event:{event}:{Hazard}')
+        case "Minigames":
+            for i in [5,10,15,20,25,30]:
+                thisList.append(f'JettyBoot:{i}')
+        case "Shop":
+            for i in range(1,26):
+                thisList.append(f'Shop Item:{i}')
+        case "GoldRush":
+            for i in range(50,15000,50):
+                thisList.append(f'Gold Rush:{i}')
+        case "Warnings":
+            for warn in Warnings:
+                for Hazard in [1,2,3,4,5]:
+                    thisList.append(f'Warning:{warn}:{Hazard}')
+
+    return thisList
+
+def location_init():
     MissionPermute={} #very nested for loop creates array/index/list of all locations that could be read from DRG
     CurrentID=0
     # May separate this out. Not sure if that is easier, or if making separate functions to delete specific permutes is easier.
-    # e.g. below but for Haz 1, then 2, 
-    for Biome in Biomes:
-        for Mission in MissionTypes:
-            for Hazard in [1,2,3,4,5]:
-                MissionPermute[f'OBJ:{Biome}:{Mission}:{Hazard}']=CurrentID
-                CurrentID=CurrentID+1
+    # e.g. below but for Haz 1, then 2,
 
-    #Secondary location, Azure Weald:5
-    for Secondary in SecondaryObjectives:
-        for Hazard in [1,2,3,4,5]:
-            MissionPermute[f'Secondary:{Secondary}:{Hazard}']=CurrentID
-            CurrentID=CurrentID+1
+    #Mission Obj Locations
+    ObjList = getLocationGroup("MainObj")
+    for x in ObjList:
+        MissionPermute[x]=CurrentID
+        CurrentID+=1
+
+    #Secondary locations
+    SecList = getLocationGroup("SecObj")
+    for x in SecList:
+        MissionPermute[x]=CurrentID
+        CurrentID+=1
     
     #Error Cube Checks
-    errCubeNum = cubeCount #10
-    if errCubeNum > 0:
-        for i in range(1,errCubeNum+1):
-            MissionPermute[f'Error Cube:{i}']=CurrentID
-            CurrentID=CurrentID+1
+    ErrList = getLocationGroup("ErrCube")
+    for x in ErrList:
+        MissionPermute[x]=CurrentID
+        CurrentID+=1
 
     #Events
-    for event in Events:
-        for Hazard in [1,2,3,4,5]:
-            MissionPermute[f'Event:{event}:{Hazard}']=CurrentID
-            CurrentID=CurrentID+1
+    EvList = getLocationGroup("Events")
+    for x in EvList:
+        MissionPermute[x]=CurrentID
+        CurrentID+=1
 
     #Minigames
-    if minigames:
-        for i in range(1,7):
-            MissionPermute[f'JettyBoot:{i*5}']=CurrentID
-            CurrentID=CurrentID+1
+    MGList = getLocationGroup("Minigames")
+    for x in MGList:
+        MissionPermute[x]=CurrentID
+        CurrentID+=1
 
     #Shop Items
-    for i in range(1,26):
-        MissionPermute[f'Shop Item:{i}']=CurrentID
-        CurrentID=CurrentID+1
+    ShopList = getLocationGroup("Shop")
+    for x in ShopList:
+        MissionPermute[x]=CurrentID
+        CurrentID+=1
+
+    #Gold Rush
+    GoldList = getLocationGroup("GoldRush")
+    for x in GoldList:
+        MissionPermute[x]=CurrentID
+        CurrentID+=1
 
     #Warnings
-    #minwarnlvl = self.options.min_warning_haz.value #unsure please test
-    for warn in Warnings:
-        for Hazard in [1,2,3,4,5]:
-            MissionPermute[f'Warning:{warn}:{Hazard}']=CurrentID
-            CurrentID=CurrentID+1
+    WarnList = getLocationGroup("Warnings")
+    for x in WarnList:
+        MissionPermute[x]=CurrentID
+        CurrentID+=1
 
     # 'MissionType_Facility',   #This is win condition only, requires carrying condition
     MissionPermute['OBJ:Magma Core:Industrial Sabotage:5']=CurrentID
+    CurrentID+=1
+    # Mission Goal Gold Rush
+    MissionPermute['Gold Rush:RICH']=CurrentID
+
 
     ALL_LOCATIONS = {k: v + 1 << (LOCATION_BITSHIFT_DEFAULT) for k, v in MissionPermute.items()}
     return ALL_LOCATIONS
 
-def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = True):
+def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = True, Goal = 1):
     CurrentID=0
     RemovableLocations=[]
     MustRemove=[]
-    for Biome in Biomes:
-        for Mission in MissionTypes:
-            for Hazard in [2,3,4,5]:
-                RemovableLocations.append(f'OBJ:{Biome}:{Mission}:{Hazard}')
+    if Goal == 1:
+        for Biome in Biomes:
+            for Mission in MissionTypes:
+                for Hazard in [2,3,4,5]:
+                    RemovableLocations.append(f'OBJ:{Biome}:{Mission}:{Hazard}')
     for Secondary in SecondaryObjectives:
         for Hazard in [2,3,4,5]:
             RemovableLocations.append(f'Secondary:{Secondary}:{Hazard}')
     if not MiniGames:
-        for i in range(1,6):
-            MustRemove.append(f'JettyBoot:{i}')
+        MustRemove.extend(getLocationGroup("Minigames"))
     for i in range(15,Cubes,-1):
         MustRemove.append(f'Error Cube:{i}')
-
+    match Goal:
+        case 1: #default ind sabo haz 5
+            #Remove Goldrush Goals, locations -401
+            MustRemove.extend(getLocationGroup("GoldRush"))
+            MustRemove.append(f'Gold Rush:RICH')
+        case 2: #goldrush
+            #Remove Main Goals, locations -361
+            MustRemove.extend(getLocationGroup("MainObj"))
+            MustRemove.append(f'OBJ:Magma Core:Industrial Sabotage:5')
+        case 3: #hunter
+        case 4: #world tour
+        case _:
+            #Remove Goldrush Goals, locations -401
+            MustRemove.extend(getLocationGroup("GoldRush"))
+            MustRemove.append(f'Gold Rush:RICH')
 
     #This subtracts a number of locations from the pool semi-randomly.
     # LocationDifference=0    #self.options.locations_to_remove.value
@@ -161,8 +220,9 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
         
         keys_must = DictRemoveMust
         for key in keys_must:
-            del DictStart[key]
-            #NumToRemove -= 1
+            if key in DictStart:
+                del DictStart[key]
+                #NumToRemove -= 1
 
         # Remove the selected items from the dictionary
         if NumToRemove > 0:

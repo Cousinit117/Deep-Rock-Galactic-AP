@@ -491,7 +491,7 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
     if not bool(options.traps_on.value):
         trapRemoval = 48
     totalToRemove = baseRemoval + trapRemoval + options.locations_to_remove.value #81
-    ALL_LOCATIONS=remove_locations(ALL_LOCATIONS,totalToRemove,int(options.error_cube_checks.value),bool(options.minigames_on.value))
+    ALL_LOCATIONS=remove_locations(ALL_LOCATIONS,totalToRemove,int(options.error_cube_checks.value),bool(options.minigames_on.value),int(options.goal_mode.value))
     # print(REGIONS)
     for region in REGIONS:
         #Added a check at the end of "if location in ALL_LOCATIONS"

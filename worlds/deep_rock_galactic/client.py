@@ -52,6 +52,7 @@ class DRGContext(CommonContext):
     game = "Deep Rock Galactic"
     items_handling = 0b111  # Indicates you get items sent from other world
     #slot_data = True
+    tags = ["DeathLink"]
     options = Utils.get_options()
     APChecklist="APChecklist.txt"
     APLocationlist="APLocationlist.txt"
@@ -61,6 +62,7 @@ class DRGContext(CommonContext):
     APShop="APShop.txt"
     APHints="APHints.txt"
     APMsgs="APMsgs.txt"
+    APDeathLink="APDeathLink.txt"
     #This will not run in source currently if your host.yaml does not contain a working directory
     #It will try to open a file browsers to let you select, and that part will fail if ran from source, at least for me
     try:
@@ -86,6 +88,7 @@ class DRGContext(CommonContext):
         self.file_aplocations          = ""# os.path.join(self.BaseDirectory,self.APLocationsChecked)
         self.file_locationhelper       = ""
         self.file_settings             = ""
+        self.file_deathlink            = ""
         self.collected_items           = []
         self.finished_game             = False
         self.want_slot_data            = True
@@ -148,12 +151,14 @@ class DRGContext(CommonContext):
             self.file_locationhelper       = os.path.join(self.BaseDirectory,SlotName,self.APLocationHelper)
             self.file_settings             = os.path.join(self.BaseDirectory,SlotName,self.APSettings)
             self.file_shop                 = os.path.join(self.BaseDirectory,SlotName,self.APShop)
+            self.file_deathlink           = os.path.join(self.BaseDirectory,SlotName,self.APDeathLink)
             #only print these files first time the save is loaded
             if not os.path.isdir(os.path.join(self.BaseDirectory,SlotName)):#Does slot directory/save exist? if no, make it and the files
                 os.mkdir(os.path.join(self.BaseDirectory,SlotName))
                 open(self.file_items, 'w')
                 open(self.file_locations, 'w')
                 open(self.file_aplocations, 'w')
+                open(self.file_deathlink, 'w')
                 with open(self.file_locationhelper, 'w') as f:
                     #Make location helper here
                     all_checked=set(args["checked_locations"])
@@ -165,18 +170,21 @@ class DRGContext(CommonContext):
                     f.write("\n".join(list(locationhelper)))
             #prints and save file settings for the mod to read
             with open(self.file_settings, 'w') as f:
-                maxWarnHaz = self.slot_data.get("max_hazard",5)
-                cubesNeeded = self.slot_data.get("error_cube_checks",10)
-                classStart = self.slot_data.get("avail_classes",0)
-                trapsOn = self.slot_data.get("traps_on",1)
-                deathlinkOn = self.slot_data.get("death_link",0)
-                deathlinkAll = self.slot_data.get("death_link_all",1)
-                minigameOn = self.slot_data.get("minigames_on",1)
-                APCoinCost = self.slot_data.get("coin_shop_prices",5)
-                goldToCoin = self.slot_data.get("gold_to_coin_rate",50)
-                beerToCoin = self.slot_data.get("beermat_to_coin_rate",2)
+                goalMode = self.slot_data["goal_mode"]
+                cubesNeeded = self.slot_data["error_cube_checks"]
+                classStart = self.slot_data["avail_classes"]
+                trapsOn = self.slot_data["traps_on"]
+                deathlinkOn = self.slot_data["death_link"]
+                deathlinkAll = self.slot_data["death_link_all"]
+                minigameOn = self.slot_data["minigames_on"]
+                APCoinCost = self.slot_data["coin_shop_prices"]
+                goldToCoin = self.slot_data["gold_to_coin_rate"]
+                beerToCoin = self.slot_data["beermat_to_coin_rate"]
                 progDiff = self.slot_data.get("progression_diff",2)
-                f.write(f"WarnHazMax:{maxWarnHaz},CubesNeeded:{cubesNeeded},StartingClass:{classStart},TrapsEnabled:{trapsOn},DeathLink:{deathlinkOn},DeathAll:{deathlinkAll},MinigamesEnabled:{minigameOn},APCoinCost:{APCoinCost},GoldToCoin:{goldToCoin},BeerToCoin:{beerToCoin},ProgDiff:{progDiff}")
+                f.write(f"Goal:{goalMode},CubesNeeded:{cubesNeeded},StartingClass:{classStart},\
+                    TrapsEnabled:{trapsOn},DeathLink:{deathlinkOn},DeathAll:{deathlinkAll},\
+                    MinigamesEnabled:{minigameOn},APCoinCost:{APCoinCost},GoldToCoin:{goldToCoin},\
+                    BeerToCoin:{beerToCoin},ProgDiff:{progDiff}")
             #prints and saves the shop items for the mod to read
             with open(self.file_shop, 'w') as f:
                 shopItemDict = self.slot_data["shop_items"]
@@ -230,27 +238,26 @@ class DRGContext(CommonContext):
             if "type" in args: #check that its a data packet
                 if args["type"] == "Hint": #check that it's a hint
                     self.updateHints()
-                if args["type"] == "ItemSend": #item sending message
-                    thisMsg = args["data"]
-                    finalMsg = ""
-                    if len(thisMsg) == 6: #self find
-                        slot = int(thisMsg[0]["text"])
-                        player = self.slot_info[slot].name
-                        item = self.getItemNameFromGame(int(thisMsg[2]["text"]),slot) #self.id_to_item_name[int(thisMsg[2]["text"])]
-                        location = self.getLocNameFromGame(int(thisMsg[4]["text"]),slot) #self.id_to_loc_name[int(thisMsg[4]["text"])]
-                        finalMsg = f"{player} found their {item} ({location})"
-                    if len(thisMsg) == 8: #other find
-                        slot_f = int(thisMsg[0]["text"])
-                        slot_r = int(thisMsg[4]["text"])
-                        player_f = self.slot_info[slot_f].name
-                        player_r = self.slot_info[slot_r].name
-                        item = self.getItemNameFromGame(int(thisMsg[2]["text"]),slot_r) #self.id_to_item_name[int(thisMsg[2]["text"])]
-                        location = self.getLocNameFromGame(int(thisMsg[6]["text"]),slot_f) #self.id_to_loc_name[int(thisMsg[6]["text"])]
-                        finalMsg = f"{player_f} sent {item} to {player_r} ({location})"
-                    #print(f"{finalMsg}")
-                    if os.path.isdir(os.path.join(self.BaseDirectory,SlotName)):
-                        with open(self.file_msgs, 'w') as f:
-                            f.write(f"{finalMsg}")
+                #if args["type"] == "ItemSend": #item sending message
+                    #thisMsg = args["data"]
+                    #finalMsg = ""
+                    #if len(thisMsg) == 6: #self find
+                        #slot = int(thisMsg[0]["text"])
+                        #player = self.slot_info[slot].name
+                        #item = self.getItemNameFromGame(int(thisMsg[2]["text"]),slot) #self.id_to_item_name[int(thisMsg[2]["text"])]
+                        #location = self.getLocNameFromGame(int(thisMsg[4]["text"]),slot) #self.id_to_loc_name[int(thisMsg[4]["text"])]
+                        #finalMsg = f"{player} found their {item} ({location})"
+                    #if len(thisMsg) == 8: #other find
+                        #slot_f = int(thisMsg[0]["text"])
+                        #slot_r = int(thisMsg[4]["text"])
+                        #player_f = self.slot_info[slot_f].name
+                        #player_r = self.slot_info[slot_r].name
+                        #item = self.getItemNameFromGame(int(thisMsg[2]["text"]),slot_r) #self.id_to_item_name[int(thisMsg[2]["text"])]
+                        #location = self.getLocNameFromGame(int(thisMsg[6]["text"]),slot_f) #self.id_to_loc_name[int(thisMsg[6]["text"])]
+                        #finalMsg = f"{player_f} sent {item} to {player_r} ({location})"
+                    #if os.path.isdir(os.path.join(self.BaseDirectory,SlotName)):
+                        #with open(self.file_msgs, 'w') as f:
+                            #f.write(f"{finalMsg}")
 
         #for recieving the raw hints info command
         if cmd in {"Retrieved"}:
@@ -337,9 +344,9 @@ class DRGContext(CommonContext):
         if timeout_timestamp > timeout_timestamp:
             print('error in give items. Could not synchronize id_to_item_name before timeout, possibly did not receive datapackage packet.')
             return
-        print('RECEIVED ITEM LIST:')
+        #print('RECEIVED ITEM LIST:')
         items = [self.id_to_item_name[item.item] for item in items]
-        print(items)
+        #print(items)
         if self.file_items is None:
             print('error, no items file found, attempting to create at referenced directory')
             open(self.file_items, "w")
@@ -366,6 +373,14 @@ class DRGContext(CommonContext):
             base_title = "Archipelago DRG Client"
         self.ui = DRGManager(self)
         self.ui_task = asyncio.create_task(self.ui.async_run(), name="UI")
+
+    def on_deathlink(self, args): #IN PROGRESS
+        #time = args["time"]
+        cause = args["cause"]
+        source = ["source"]
+        with open(self.file_deathlink, 'w') as f:
+            # nuke the txt file and shove it in. Can do so by just opening file with mode='w' (no append)
+            f.write(f"now,{cause},{source}")
 
 
 async def DRG_watcher(ctx: DRGContext):
