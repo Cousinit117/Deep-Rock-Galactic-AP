@@ -63,7 +63,8 @@ class DRGContext(CommonContext):
     APShop="APShop.txt"
     APHints="APHints.txt"
     APMsgs="APMsgs.txt"
-    APDeathLink="APDeathLink.txt"
+    APDeathGet="APDeathGet.txt"
+    APDeathSend="APDeathSend.txt"
     #This will not run in source currently if your host.yaml does not contain a working directory
     #It will try to open a file browsers to let you select, and that part will fail if ran from source, at least for me
     try:
@@ -156,7 +157,8 @@ class DRGContext(CommonContext):
             self.file_locationhelper       = os.path.join(self.BaseDirectory,SlotName,self.APLocationHelper)
             self.file_settings             = os.path.join(self.BaseDirectory,SlotName,self.APSettings)
             self.file_shop                 = os.path.join(self.BaseDirectory,SlotName,self.APShop)
-            self.file_deathget             = os.path.join(self.BaseDirectory,SlotName,self.APDeathLink)
+            self.file_deathget             = os.path.join(self.BaseDirectory,SlotName,self.APDeathGet)
+            self.file_deathsend            = os.path.join(self.BaseDirectory,SlotName,self.APDeathSend)
             #only print these files first time the save is loaded
             if not os.path.isdir(os.path.join(self.BaseDirectory,SlotName)):#Does slot directory/save exist? if no, make it and the files
                 os.mkdir(os.path.join(self.BaseDirectory,SlotName))
@@ -176,19 +178,19 @@ class DRGContext(CommonContext):
                     f.write("\n".join(list(locationhelper)))
             #prints and save file settings for the mod to read
             with open(self.file_settings, 'w') as f:
-                goalMode = self.slot_data["goal_mode"]
-                cubesNeeded = self.slot_data["error_cube_checks"]
-                classStart = self.slot_data["avail_classes"]
-                trapsOn = self.slot_data["traps_on"]
-                self.deathlinkOn = self.slot_data["death_link"]
-                deathlinkAll = self.slot_data["death_link_all"]
-                minigameOn = self.slot_data["minigames_on"]
-                APCoinCost = self.slot_data["coin_shop_prices"]
-                goldToCoin = self.slot_data["gold_to_coin_rate"]
-                beerToCoin = self.slot_data["beermat_to_coin_rate"]
+                cubesNeeded = self.slot_data.get("error_cube_checks",10)
+                classStart = self.slot_data.get("avail_classes",0)
+                trapsOn = self.slot_data.get("traps_on",0)
+                self.deathlinkOn = self.slot_data.get("death_link",0)
+                deathlinkAll = self.slot_data.get("death_link_all",1)
+                minigameOn = self.slot_data.get("minigames_on",1)
+                APCoinCost = self.slot_data.get("coin_shop_prices",5)
+                goldToCoin = self.slot_data.get("gold_to_coin_rate",50)
+                beerToCoin = self.slot_data.get("beermat_to_coin_rate",2)
                 progDiff = self.slot_data.get("progression_diff",2)
+                goalMode = self.slot_data.get("goal_mode",1)
                 f.write(f"Goal:{goalMode},CubesNeeded:{cubesNeeded},StartingClass:{classStart},\
-                    TrapsEnabled:{trapsOn},DeathLink:{deathlinkOn},DeathAll:{deathlinkAll},\
+                    TrapsEnabled:{trapsOn},DeathLink:{self.deathlinkOn},DeathAll:{deathlinkAll},\
                     MinigamesEnabled:{minigameOn},APCoinCost:{APCoinCost},GoldToCoin:{goldToCoin},\
                     BeerToCoin:{beerToCoin},ProgDiff:{progDiff}")
             #prints and saves the shop items for the mod to read
@@ -402,7 +404,7 @@ async def DRG_watcher(ctx: DRGContext):
                     await ctx.send_msgs(message)
                 #New Deathlink Code
                 if ctx.deathlinkOn:
-                    await handle_check_deathlink
+                    await handle_check_deathlink(ctx)
         except Exception as e:
             print(e)
         await asyncio.sleep(5.0)

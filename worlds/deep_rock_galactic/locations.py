@@ -205,8 +205,8 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
             #Remove Main Goals, locations -361
             MustRemove.extend(getLocationGroup("MainObj"))
             MustRemove.append(f'OBJ:Magma Core:Industrial Sabotage:5')
-        case 3: #hunter
-        case 4: #world tour
+        #case 3: #hunter
+        #case 4: #world tour
         case _:
             #Remove Goldrush Goals, locations -401
             MustRemove.extend(getLocationGroup("GoldRush"))

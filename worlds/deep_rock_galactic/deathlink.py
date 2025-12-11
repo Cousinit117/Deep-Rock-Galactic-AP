@@ -1,19 +1,12 @@
-import random
+import asyncio
 import os
+import random
 
 from typing import TYPE_CHECKING, List
 if TYPE_CHECKING:
 		from .client import DRGContext
 
-def is_file_empty(file_path):
-    """
-    Checks if a file is empty using os.path.getsize().
-    Returns True if the file is empty, False otherwise.
-    Raises FileNotFoundError if the file does not exist.
-    """
-    return os.path.getsize(file_path) == 0
-
-async def handle_receive_deathlink(ctx: 'DRGContext', message: str = "A Dwarf Died in DRG"):
+async def handle_receive_deathlink(ctx: 'DRGContext', message: str = "Deathlink Received"):
 	"""Resolves the effects of a deathlink received from the multiworld based on the options selected by the player"""
 	#chosen_effects: List[str] = ctx.slot_data["death_link_effect"]
 	#effect = random.choice(chosen_effects)
@@ -27,13 +20,16 @@ async def handle_check_deathlink(ctx: 'DRGContext'):
 		ctx.received_death_link = False
 		await handle_receive_deathlink(ctx, ctx.death_link_message)
 
-     # Check if we should send out a death link
+    # Check if we should send out a death link
 	#result = await ctx.game_interface.get_deathlink()
-	result = await ctx.is_file_empty(ctx.file_deathsend)
-	if not result:
-		messages = [f"Lost their beard to {result}"]
+	result = ""
+	if not os.path.getsize(ctx.file_deathsend) == 0:
+		with open(ctx.file_deathsend, 'r') as file:
+			result = file.read()
+		messages = [f"lost their beard to {result}"]
 
-	if ctx.slot is not None:
-		player = ctx.player_names[ctx.slot]
-		message = random.choice(messages)
-		await ctx.send_death(f"{player} {message}")
+		if ctx.slot is not None:
+			player = ctx.player_names[ctx.slot]
+			message = random.choice(messages)
+			await ctx.send_death(f"{player} {message}")
+			open(ctx.file_deathsend, 'w') #clear deathlink send file
