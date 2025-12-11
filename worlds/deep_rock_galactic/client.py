@@ -165,8 +165,6 @@ class DRGContext(CommonContext):
                 open(self.file_items, 'w')
                 open(self.file_locations, 'w')
                 open(self.file_aplocations, 'w')
-                open(self.file_deathget, 'w')
-                open(self.file_deathsend, 'w')
                 with open(self.file_locationhelper, 'w') as f:
                     #Make location helper here
                     all_checked=set(args["checked_locations"])
@@ -176,6 +174,9 @@ class DRGContext(CommonContext):
                     for i in all_locations:
                         locationhelper.add(self.id_to_loc_name[i])
                     f.write("\n".join(list(locationhelper)))
+            #Sets Deathlink files to blank on connect
+            open(self.file_deathget, 'w')
+            open(self.file_deathsend, 'w')
             #prints and save file settings for the mod to read
             with open(self.file_settings, 'w') as f:
                 cubesNeeded = self.slot_data.get("error_cube_checks",10)
@@ -189,10 +190,10 @@ class DRGContext(CommonContext):
                 beerToCoin = self.slot_data.get("beermat_to_coin_rate",2)
                 progDiff = self.slot_data.get("progression_diff",2)
                 goalMode = self.slot_data.get("goal_mode",1)
-                f.write(f"Goal:{goalMode},CubesNeeded:{cubesNeeded},StartingClass:{classStart},\
-                    TrapsEnabled:{trapsOn},DeathLink:{self.deathlinkOn},DeathAll:{deathlinkAll},\
-                    MinigamesEnabled:{minigameOn},APCoinCost:{APCoinCost},GoldToCoin:{goldToCoin},\
-                    BeerToCoin:{beerToCoin},ProgDiff:{progDiff}")
+                f.write(f"Goal:{goalMode},CubesNeeded:{cubesNeeded},StartingClass:{classStart},"
+                    f"TrapsEnabled:{trapsOn},DeathLink:{self.deathlinkOn},DeathAll:{deathlinkAll},"
+                    f"MinigamesEnabled:{minigameOn},APCoinCost:{APCoinCost},GoldToCoin:{goldToCoin},"
+                    f"BeerToCoin:{beerToCoin},ProgDiff:{progDiff}")
             #prints and saves the shop items for the mod to read
             with open(self.file_shop, 'w') as f:
                 shopItemDict = self.slot_data["shop_items"]

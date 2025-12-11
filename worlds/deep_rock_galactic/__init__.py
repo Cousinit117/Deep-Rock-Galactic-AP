@@ -156,7 +156,13 @@ class DRGWorld(World):
         '''
         self.get_pre_fill_items_dictionary()
         victory_item=self.event_items['Victory']
-        self.multiworld.get_location("OBJ:Magma Core:Industrial Sabotage:5", self.player).place_locked_item(victory_item)
+
+        print(f'Goal Mode Val:{self.options.goal_mode.value}')
+        if self.options.goal_mode.value == 2: #goldrush win condition
+            self.multiworld.get_location("Gold Rush:RICH", self.player).place_locked_item(victory_item)
+        else: #default win condition = Haz 5 Caretaker
+            self.multiworld.get_location("OBJ:Magma Core:Industrial Sabotage:5", self.player).place_locked_item(victory_item)
+        
         self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player)
         
 

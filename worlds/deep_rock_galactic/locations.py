@@ -85,6 +85,7 @@ def getLocationGroup(group = "MainObj"):
     thisList=[]
     match group:
         case "MainObj": #Get Main Objs
+            thisList.append('OBJ:Magma Core:Industrial Sabotage:5')
             for Biome in Biomes:
                 for Mission in MissionTypes:
                     for Hazard in [1,2,3,4,5]:
@@ -107,7 +108,8 @@ def getLocationGroup(group = "MainObj"):
             for i in range(1,26):
                 thisList.append(f'Shop Item:{i}')
         case "GoldRush":
-            for i in range(50,15000,50):
+            thisList.append('Gold Rush:RICH')
+            for i in range(50,15050,50):
                 thisList.append(f'Gold Rush:{i}')
         case "Warnings":
             for warn in Warnings:
@@ -170,13 +172,6 @@ def location_init():
         MissionPermute[x]=CurrentID
         CurrentID+=1
 
-    # 'MissionType_Facility',   #This is win condition only, requires carrying condition
-    MissionPermute['OBJ:Magma Core:Industrial Sabotage:5']=CurrentID
-    CurrentID+=1
-    # Mission Goal Gold Rush
-    MissionPermute['Gold Rush:RICH']=CurrentID
-
-
     ALL_LOCATIONS = {k: v + 1 << (LOCATION_BITSHIFT_DEFAULT) for k, v in MissionPermute.items()}
     return ALL_LOCATIONS
 
@@ -184,7 +179,7 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
     CurrentID=0
     RemovableLocations=[]
     MustRemove=[]
-    if Goal == 1:
+    if Goal == 1: #Only Removable if Possible with Goal 1
         for Biome in Biomes:
             for Mission in MissionTypes:
                 for Hazard in [2,3,4,5]:
@@ -198,19 +193,15 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
         MustRemove.append(f'Error Cube:{i}')
     match Goal:
         case 1: #default ind sabo haz 5
-            #Remove Goldrush Goals, locations -401
             MustRemove.extend(getLocationGroup("GoldRush"))
-            MustRemove.append(f'Gold Rush:RICH')
         case 2: #goldrush
-            #Remove Main Goals, locations -361
             MustRemove.extend(getLocationGroup("MainObj"))
-            MustRemove.append(f'OBJ:Magma Core:Industrial Sabotage:5')
         #case 3: #hunter
         #case 4: #world tour
         case _:
             #Remove Goldrush Goals, locations -401
             MustRemove.extend(getLocationGroup("GoldRush"))
-            MustRemove.append(f'Gold Rush:RICH')
+            print(f'Goal is defaulted')
 
     #This subtracts a number of locations from the pool semi-randomly.
     # LocationDifference=0    #self.options.locations_to_remove.value
