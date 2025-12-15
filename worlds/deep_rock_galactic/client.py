@@ -190,10 +190,13 @@ class DRGContext(CommonContext):
                 beerToCoin = self.slot_data.get("beermat_to_coin_rate",2)
                 progDiff = self.slot_data.get("progression_diff",2)
                 goalMode = self.slot_data.get("goal_mode",1)
+                startStats = self.slot_data.get("starting_stats",3)
+                goldRushVal = self.slot_data.get("gold_rush_val",15000)
                 f.write(f"Goal:{goalMode},CubesNeeded:{cubesNeeded},StartingClass:{classStart},"
                     f"TrapsEnabled:{trapsOn},DeathLink:{self.deathlinkOn},DeathAll:{deathlinkAll},"
                     f"MinigamesEnabled:{minigameOn},APCoinCost:{APCoinCost},GoldToCoin:{goldToCoin},"
-                    f"BeerToCoin:{beerToCoin},ProgDiff:{progDiff}")
+                    f"BeerToCoin:{beerToCoin},ProgDiff:{progDiff},StartStats:{startStats},"
+                    f"GoldRushVal:{goldRushVal}")
             #prints and saves the shop items for the mod to read
             with open(self.file_shop, 'w') as f:
                 shopItemDict = self.slot_data["shop_items"]
@@ -336,6 +339,7 @@ class DRGContext(CommonContext):
         #This logic works now, but if deep dives (hazard 3.5, 6.5) were added, it would not function correctly
         for location in locations.copy():
             if location == 'Magma Core:Industrial Sabotage:5': continue
+            if location == 'Gold Rush:RICH': continue
             if "Shop Item" in location: continue
             if location[-1].isdigit():
                 hazard_lvl = int(location[-1:])

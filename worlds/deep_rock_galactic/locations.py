@@ -109,7 +109,7 @@ def getLocationGroup(group = "MainObj"):
                 thisList.append(f'Shop Item:{i}')
         case "GoldRush":
             thisList.append('Gold Rush:RICH')
-            for i in range(50,15050,50):
+            for i in range(50,20050,50):
                 thisList.append(f'Gold Rush:{i}')
         case "Warnings":
             for warn in Warnings:
@@ -175,7 +175,7 @@ def location_init():
     ALL_LOCATIONS = {k: v + 1 << (LOCATION_BITSHIFT_DEFAULT) for k, v in MissionPermute.items()}
     return ALL_LOCATIONS
 
-def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = True, Goal = 1):
+def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = True, Goal = 1, GoldRushVal = 15000):
     CurrentID=0
     RemovableLocations=[]
     MustRemove=[]
@@ -191,6 +191,8 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
         MustRemove.extend(getLocationGroup("Minigames"))
     for i in range(15,Cubes,-1):
         MustRemove.append(f'Error Cube:{i}')
+    for i in range(20050,GoldRushVal,-50):
+        MustRemove.append(f'Gold Rush:{i}')
     match Goal:
         case 1: #default ind sabo haz 5
             MustRemove.extend(getLocationGroup("GoldRush"))

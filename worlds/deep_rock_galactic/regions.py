@@ -498,10 +498,13 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
     # remove_locations(ALL_LOCATIONS,100)
     baseRemoval = 3
     trapRemoval = 0
+    classRemoval = 0
     if not bool(options.traps_on.value):
         trapRemoval = 48
-    totalToRemove = baseRemoval + trapRemoval + options.locations_to_remove.value #81
-    ALL_LOCATIONS=remove_locations(ALL_LOCATIONS,totalToRemove,int(options.error_cube_checks.value),bool(options.minigames_on.value),int(options.goal_mode.value))
+    if options.avail_classes.value == 0:
+        classRemoval = 4
+    totalToRemove = baseRemoval + trapRemoval + classRemoval + options.locations_to_remove.value #81
+    ALL_LOCATIONS=remove_locations(ALL_LOCATIONS,totalToRemove,int(options.error_cube_checks.value),bool(options.minigames_on.value),int(options.goal_mode.value),int(options.gold_rush_val.value))
     # print(REGIONS)
     for region in REGIONS:
         #Added a check at the end of "if location in ALL_LOCATIONS"

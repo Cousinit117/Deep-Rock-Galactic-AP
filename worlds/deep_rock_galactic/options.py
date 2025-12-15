@@ -3,7 +3,7 @@ from Options import Choice, Range, Toggle, ItemDict, PerGameCommonOptions, Start
 
 
 class Goal(Choice):
-    """Set The Current Run Goal [Working Options = haz5_caretaker (default), goldrush]"""
+    """Set The Current Run Goal [Working Options = haz5_caretaker (default), goldrush, hunter (in dev)]"""
     display_name = "Goal of the Run"
     option_haz5_caretaker = 1
     option_goldrush = 2
@@ -11,6 +11,20 @@ class Goal(Choice):
     #option_worldtour = 4
     default = 1
     #visibility = Visibility.none
+
+class GoldRushGoalValue(Range):
+    """Set The Current Gold Rush Gold needed (if that's your goal)"""
+    display_name = "Goal Gold for Gold Rush"
+    range_start = 7500
+    range_end   = 20000
+    default     = 15000
+
+#class HunterTrophyAmount(Range):
+    #"""Set The Current Hunter Trophies Needed per enemy (if that's your goal)"""
+    #display_name = "Trophy Hunter Goal Amount"
+    #range_start = 1
+    #range_end   = 20
+    #default     = 5
 
 class ProgressionDifficulty(Choice):
     """Determines how high the progressive check locks are for each sphere. (Completion by Diff LeafLover=10%, Normal=25%, Hard=33%, Lethal=50%, Karl=75%)"""
@@ -21,6 +35,16 @@ class ProgressionDifficulty(Choice):
     option_lethal = 4
     option_karl = 5
     default = 2
+
+class StartingStats(Choice):
+    """Determine how hard your starting stats are. this also affects your maximum stats reached"""
+    display_name = "Starting Stats"
+    option_easy_x3 = 1
+    option_easier_x2 = 2
+    option_normal = 3
+    option_harder_half = 4
+    option_hardest_quarter = 5
+    default = 3
 
 class StartingClasses(Choice):
     """Set you starting class"""
@@ -84,7 +108,9 @@ class BeerMatToCoinConversionRate(Range):
 @dataclass
 class DRGOptions(PerGameCommonOptions):
     progression_diff:       ProgressionDifficulty
+    starting_stats:         StartingStats
     goal_mode:              Goal
+    gold_rush_val:          GoldRushGoalValue
     death_link:             DeathLink
     death_link_all:         DeathLinkAll
     locations_to_remove:    LocationsToRemove
@@ -94,6 +120,5 @@ class DRGOptions(PerGameCommonOptions):
     minigames_on:           EnableMinigames
     coin_shop_prices:       AvgCoinShopPrices  
     gold_to_coin_rate:      GoldToCoinConversionRate
-    beermat_to_coin_rate:   BeerMatToCoinConversionRate
-
-    
+    beermat_to_coin_rate:   BeerMatToCoinConversionRate 
+    #hunter_trophies:        HunterTrophyAmount 
