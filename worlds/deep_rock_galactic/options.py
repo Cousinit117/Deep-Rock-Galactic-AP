@@ -39,12 +39,10 @@ class ProgressionDifficulty(Choice):
 class StartingStats(Choice):
     """Determine how hard your starting stats are. this also affects your maximum stats reached"""
     display_name = "Starting Stats"
-    option_easy_x3 = 1
-    option_easier_x2 = 2
-    option_normal = 3
-    option_harder_half = 4
-    option_hardest_quarter = 5
-    default = 3
+    option_easier_x2 = 1
+    option_normal = 2
+    option_harder_half = 3
+    default = 2
 
 class StartingClasses(Choice):
     """Set you starting class"""
