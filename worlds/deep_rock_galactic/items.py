@@ -551,6 +551,11 @@ ALL_ITEMS = {
     **EVENT_ITEMS,
 }
 
+EXTRA_FILLER_ITEMS = {
+    #Contains only extra items used for filler generation
+    'Free-Drink':83,
+}
+
 #Item group hardcode
 Generic_Progressives = [ #Includes most but not all of progression checks. 
     'Progressive-Flare-Count',
@@ -584,8 +589,16 @@ Generic_Progressives = [ #Includes most but not all of progression checks.
     'Overclocks-Unlocked',
 ]
 Carrying_Buffs = [
-'Progressive-Carriable-Throwing',
-'Progressive-Carrying-Speed',
+    'Progressive-Carriable-Throwing',
+    'Progressive-Carrying-Speed',
+]
+
+#Checks for Generation
+CLASS_ITEM_CHECK = [
+    'Class-Gunner',
+    'Class-Driller',
+    'Class-Scout',
+    'Class-Engineer',
 ]
 #state.has_from_list(Generic_Progressives,player,5)
 #has_from_list(self, items: Iterable[str], player: int, count: int) 

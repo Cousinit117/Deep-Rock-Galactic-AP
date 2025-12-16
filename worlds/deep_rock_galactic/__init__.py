@@ -6,7 +6,7 @@ from BaseClasses import Tutorial, ItemClassification
 # from Fill import fast_fill
 from worlds.LauncherComponents import launch_subprocess
 from worlds.AutoWorld import World, WebWorld
-from .items import ALL_ITEMS, ITEMS_COUNT, EVENT_ITEMS
+from .items import ALL_ITEMS, ITEMS_COUNT, EVENT_ITEMS, CLASS_ITEM_CHECK, EXTRA_FILLER_ITEMS
 from .locations import location_init, remove_locations
 from .regions import create_and_link_regions
 from .options import DRGOptions
@@ -56,9 +56,11 @@ class DRGWorld(World):
 
     def fill_slot_data(self) -> dict:
         slot_data = {}
-        slot_data.update(self.options.as_dict('death_link','death_link_all','max_hazard',\
+        
+        slot_data.update(self.options.as_dict('death_link','death_link_all','goal_mode',\
             'error_cube_checks','avail_classes','traps_on','minigames_on','coin_shop_prices',\
-            'gold_to_coin_rate','beermat_to_coin_rate','progression_diff'))
+            'gold_to_coin_rate','beermat_to_coin_rate','progression_diff','starting_stats',\
+            'gold_rush_val'))
         
         ShopItemsDict = {}
         for i in range(1,26):
@@ -85,7 +87,7 @@ class DRGWorld(World):
         '''
         Returns random filler item.
         '''
-        item_name = self.random.choice(FILLER_ITEMS)
+        item_name = self.random.choice(EXTRA_FILLER_ITEMS)
         item_classification = ItemClassification.filler
         created_item = DRGItem(item_name, item_classification, self.item_name_to_id[item_name], self.player)
 
@@ -96,19 +98,21 @@ class DRGWorld(World):
         
         item_pool = []
         for item_name in ALL_ITEMS:
+            #skip event items because they have set locations
             if item_name in EVENT_ITEMS:
                 continue
             counts = ITEMS_COUNT[item_name]
+            #skip adding classes to item pool because they start unlocked
+            if (item_name in CLASS_ITEM_CHECK) and (self.options.avail_classes.value == 0):
+                continue
+            #generate Rest of Items
             item_pool += [self.create_item(item_name, ItemClassification.progression) for _ in range(counts.progression)]
             item_pool += [self.create_item(item_name, ItemClassification.useful     ) for _ in range(counts.useful     )]
             item_pool += [self.create_item(item_name, ItemClassification.filler     ) for _ in range(counts.filler     )]
             if bool(self.options.traps_on):
                 item_pool += [self.create_item(item_name, ItemClassification.trap       ) for _ in range(counts.trap       )]
-        # if len(item_pool) != len(ALL_LOCATIONS):
-            # print(f'something really bad happened! AP created {len(item_pool)} items, but found {len(ALL_LOCATIONS)} locations. These two numbers should be the same!')
-        # alternatively, we can pad with fillers. This is usually the option when you may have variable numbers of locations (ie: sanity)
-        # Creating filler for unfilled locations. Should do something more intelligent for tracking # known and ACTIVE locations.
-        # item_pool += [self.create_item_filler_random() for _ in range(len(ALL_LOCATIONS) - len(item_pool))]        
+        
+        #add to multiworld pool
         self.multiworld.itempool += item_pool
         
     def get_pre_fill_items_dictionary(self):
@@ -155,7 +159,15 @@ class DRGWorld(World):
         '''
         self.get_pre_fill_items_dictionary()
         victory_item=self.event_items['Victory']
-        self.multiworld.get_location("OBJ:Magma Core:Industrial Sabotage:5", self.player).place_locked_item(victory_item)
+
+        #print(f'Goal Mode Val:{self.options.goal_mode.value}')
+        if self.options.goal_mode.value == 2: #goldrush win condition
+            self.multiworld.get_location("Gold Rush:RICH", self.player).place_locked_item(victory_item)
+        #elif self.options.goal_mode.value == 3: #trophy hunter win condition
+            #self.multiworld.get_location("Trophy Hunter:MASTERED", self.player).place_locked_item(victory_item)
+        else: #default win condition = Haz 5 Caretaker
+            self.multiworld.get_location("OBJ:Magma Core:Industrial Sabotage:5", self.player).place_locked_item(victory_item)
+        
         self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player)
         
 

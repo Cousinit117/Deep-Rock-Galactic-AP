@@ -2,23 +2,29 @@ from dataclasses import dataclass
 from Options import Choice, Range, Toggle, ItemDict, PerGameCommonOptions, StartInventory, Visibility, DeathLink
 
 
-# # class MoneyMultiplier(Range):
-    # # """Money Multiplier"""
-    # # display_name = "Money Multiplier"
-    # # range_start = 1
-    # # range_end = 10
-    # # default = 1
-
-class MaxHazard(Choice):
-    """Max Hazard Level (Defaults to 5) [NOT YET FUNCTIONAL]"""
-    display_name = "Maximum Hazard Level"
-    option_hazard_1 = 1
-    option_hazard_2 = 2
-    option_hazard_3 = 3
-    option_hazard_4 = 4
-    option_hazard_5 = 5
-    default = 5
+class Goal(Choice):
+    """Set The Current Run Goal [Working Options = haz5_caretaker (default), goldrush, hunter (in dev)]"""
+    display_name = "Goal of the Run"
+    option_haz5_caretaker = 1
+    option_goldrush = 2
+    #option_hunter = 3
+    #option_worldtour = 4
+    default = 1
     #visibility = Visibility.none
+
+class GoldRushGoalValue(Range):
+    """Set The Current Gold Rush Gold needed (if that's your goal)"""
+    display_name = "Goal Gold for Gold Rush"
+    range_start = 7500
+    range_end   = 20000
+    default     = 15000
+
+#class HunterTrophyAmount(Range):
+    #"""Set The Current Hunter Trophies Needed per enemy (if that's your goal)"""
+    #display_name = "Trophy Hunter Goal Amount"
+    #range_start = 1
+    #range_end   = 20
+    #default     = 5
 
 class ProgressionDifficulty(Choice):
     """Determines how high the progressive check locks are for each sphere. (Completion by Diff LeafLover=10%, Normal=25%, Hard=33%, Lethal=50%, Karl=75%)"""
@@ -30,15 +36,13 @@ class ProgressionDifficulty(Choice):
     option_karl = 5
     default = 2
 
-#class WarningHazardMin(Choice):
-    # """Min Hazard Level for Warnings"""
-    #display_name = "Minimum Hazard Level for Warnings"
-    #option_hazard_1 = 1
-    #option_hazard_2 = 2
-    #option_hazard_3 = 3
-    #option_hazard_4 = 4
-    #option_hazard_5 = 5
-    #default = 5
+class StartingStats(Choice):
+    """Determine how hard your starting stats are. this also affects your maximum stats reached"""
+    display_name = "Starting Stats"
+    option_easier_x2 = 1
+    option_normal = 2
+    option_harder_half = 3
+    default = 2
 
 class StartingClasses(Choice):
     """Set you starting class"""
@@ -71,47 +75,12 @@ class DeathLinkAll(Toggle):
     display_name = "Should Deathlink Kill All Players?"
     default = True
 
-# class StartingMovementSpeed(Range):
-    # """Sets the starting movement speed as a percent of base."""
-    # range_start = 0.7
-    # range_end   = 2.0
-    # default     = 0.7
-    # visibility = Visibility.none
-
-# class StartingAmmo(Range):
-    # """Sets the starting ammo as a percent of base capacity."""
-    # range_start = 0.1
-    # range_end   = 1.0
-    # default     = 0.25
-    # visibility = Visibility.none
-
-# class StartingShield(Range):
-    # """Sets the starting shield. Base is 25"""
-    # range_start = 0.1
-    # range_end   = 1.0
-    # default     = 0.25
-    # visibility = Visibility.none
-
-# class StartingAmmo(Range):
-    # """Sets the starting ammo as a percent of base capacity."""
-    # range_start = 0.1
-    # range_end   = 1.0
-    # default     = 0.25
-    # visibility = Visibility.none
-
 class LocationsToRemove(Range):
     """Removes locations from the placer. Will make upper power cap lower, can make victory much more difficult."""
     display_name = "Locations to Remove"
     range_start = 0
     range_end   = 150
     default     = 0
-
-#class DeathLink(Toggle): ##Deathlink is enabled in DRG. If you write "Death-Link" into the "APCheckList" text document, and there is a number attached to it, it will send a deathlink. 
-    ##e.g. if it said Death-Link:3 before, and you write Death-Link:4 it will send a deathlink to the game. All players will die. 
-    """Death Link (Currently only Recieves Deaths, doesn't send them)"""
-    ## this is probably bad to implement. more for example reasons than anything else
-    #display_name = "Death Link Enabled"
-    #default = False
 
 class AvgCoinShopPrices(Range):
     """Set the avg coin shop price. This will determine the cost of APCoin Shop Items in game."""
@@ -136,8 +105,10 @@ class BeerMatToCoinConversionRate(Range):
 
 @dataclass
 class DRGOptions(PerGameCommonOptions):
-    max_hazard:             MaxHazard
     progression_diff:       ProgressionDifficulty
+    starting_stats:         StartingStats
+    goal_mode:              Goal
+    gold_rush_val:          GoldRushGoalValue
     death_link:             DeathLink
     death_link_all:         DeathLinkAll
     locations_to_remove:    LocationsToRemove
@@ -147,6 +118,5 @@ class DRGOptions(PerGameCommonOptions):
     minigames_on:           EnableMinigames
     coin_shop_prices:       AvgCoinShopPrices  
     gold_to_coin_rate:      GoldToCoinConversionRate
-    beermat_to_coin_rate:   BeerMatToCoinConversionRate
-
-    
+    beermat_to_coin_rate:   BeerMatToCoinConversionRate 
+    #hunter_trophies:        HunterTrophyAmount 

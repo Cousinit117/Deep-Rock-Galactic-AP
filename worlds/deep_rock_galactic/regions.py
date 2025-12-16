@@ -36,6 +36,10 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
         and ('1' in Mission or '2' in Mission)
         ]
 
+    GoldRush=[Mission for Mission in ALL_LOCATIONS if
+        'Gold Rush' in Mission
+        ]
+
     MissionsDefaultHaz3=[Mission for Mission in ALL_LOCATIONS if (
         'Egg Hunt' in Mission or 'On-site Refining' in Mission or 'Deep Scan' in Mission) \
         and ('3' in Mission)
@@ -216,7 +220,7 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
     SecondariesAmmo5=[Secondary for Secondary in ALL_LOCATIONS if (('Dreadnought Eggs' in Secondary) and ('5' in Secondary))]
     
     REGIONS = {
-        'Menu': RegionData(connected_regions=['AlwaysAccessLocations', 'GenericHaz4', 'GenericHaz5', \
+        'Menu': RegionData(connected_regions=['AlwaysAccessLocations', 'GoldRush', 'GenericHaz4', 'GenericHaz5', \
         'Ammo12', 'Ammo3', 'Ammo4', 'Ammo5', \
         'Carrying12', 'Carrying3', 'Carrying4', 'Carrying5', \
         'Mining12', 'Mining3', 'Mining4', 'Mining5', \
@@ -470,17 +474,23 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
             connected_regions        = [],
         ),
 
+        'GoldRush': RegionData(
+            locations    = GoldRush,
+            entrancerule = lambda state: True,#No Access restrictions
+            connected_regions        = [],
+        ),
+
         
     }
 
 
 
-# additional entry rules notes:
-# https://github.com/ArchipelagoMW/Archipelago/blob/main/BaseClasses.py#L869
+    # additional entry rules notes:
+    # https://github.com/ArchipelagoMW/Archipelago/blob/main/BaseClasses.py#L869
 
-# can also place "Victory" at "Final Boss" and set collection as win condition
-# self.multiworld.get_location("Final Boss", self.player).place_locked_item(self.create_event("Victory"))
-# self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player)
+    # can also place "Victory" at "Final Boss" and set collection as win condition
+    # self.multiworld.get_location("Final Boss", self.player).place_locked_item(self.create_event("Victory"))
+    # self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player)
     
     #This is what changes number of locations. Will need to adjust this function later, and/or change how remove_locations works
 
@@ -488,10 +498,13 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
     # remove_locations(ALL_LOCATIONS,100)
     baseRemoval = 3
     trapRemoval = 0
+    classRemoval = 0
     if not bool(options.traps_on.value):
         trapRemoval = 48
-    totalToRemove = baseRemoval + trapRemoval + options.locations_to_remove.value #81
-    ALL_LOCATIONS=remove_locations(ALL_LOCATIONS,totalToRemove,int(options.error_cube_checks.value),bool(options.minigames_on.value))
+    if options.avail_classes.value == 0:
+        classRemoval = 4
+    totalToRemove = baseRemoval + trapRemoval + classRemoval + options.locations_to_remove.value #81
+    ALL_LOCATIONS=remove_locations(ALL_LOCATIONS,totalToRemove,int(options.error_cube_checks.value),bool(options.minigames_on.value),int(options.goal_mode.value),int(options.gold_rush_val.value))
     # print(REGIONS)
     for region in REGIONS:
         #Added a check at the end of "if location in ALL_LOCATIONS"
@@ -506,7 +519,7 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
     # import time
     # time.sleep(1000)
     for source in REGIONS:
-        source_region = multiworld.get_region(source, player)        
+        source_region = multiworld.get_region(source, player)
         for target in REGIONS[source].connected_regions:
             target_region = multiworld.get_region(target, player)
             source_region.connect(
