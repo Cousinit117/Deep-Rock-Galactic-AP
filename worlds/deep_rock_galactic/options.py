@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from Options import Choice, Range, Toggle, ItemDict, PerGameCommonOptions, StartInventory, Visibility, DeathLink
+from Options import Choice, Range, Toggle, ItemDict, PerGameCommonOptions, StartInventory, Visibility, DeathLink, OptionGroup
 
 
 class Goal(Choice):
@@ -28,7 +28,7 @@ class GoldRushGoalValue(Range):
     default     = 15000
 
 class HunterTrophyAmount(Range):
-    #"""Set The Current Hunter Trophies Needed per enemy (if that's your goal) [NOT YET FINISHED]"""
+    """Set The Current Hunter Trophies Needed per enemy (if that's your goal) [NOT YET FINISHED]"""
     display_name = "Trophy Hunter Goal Amount"
     range_start = 1
     range_end   = 20
@@ -69,12 +69,12 @@ class ErrorCubeChecks(Range):
     default     = 10
 
 class EnableMinigames(Toggle): 
-    """Turns on/off Jetty Boot as a check"""
+    """Turns on/off Jetty Boot as a location"""
     display_name = "Enable Minigame Locations"
     default = True
 
 class EnableMachineEvents(Toggle): 
-    """Turns on/off Jetty Boot as a check"""
+    """Turns on/off Machine Events as a location"""
     display_name = "Enable Machine Event Locations"
     default = True
 

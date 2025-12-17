@@ -125,8 +125,8 @@ class DRGContext(CommonContext):
     async def shutdown(self):
         await super(DRGContext, self).shutdown()
 
-    def updateHints(self):
-        self.send_msgs([{'cmd': 'Get','keys': f'["_read_hints_{self.team}_{self.slot}"]'}])
+    async def updateHints(self):
+        await self.send_msgs([{'cmd': 'Get','keys': f'["hints_{self.team}_{self.slot}"]'}])
         self.UpdateHintsTxT()
 
     async def getShopItems(self):
@@ -215,7 +215,7 @@ class DRGContext(CommonContext):
             else:
                 new_items = args['items']
             self.collected_items += new_items
-            self.updateHints()
+            asyncio.create_task(self.updateHints())
             # put all the thingies into the output file
             asyncio.create_task(self.give_items(self.collected_items))
 
@@ -227,7 +227,7 @@ class DRGContext(CommonContext):
         if cmd in {"DataPackage"}:
             self.datagames = args["data"]["games"]
             #print(f"{self.datagames}")
-            self.updateHints()
+            asyncio.create_task(self.updateHints())
             if "Deep Rock Galactic" in args["data"]["games"]:
                 self.data_package_DRG_cache(args)
                 self.server_state_synchronized = True
@@ -249,13 +249,14 @@ class DRGContext(CommonContext):
             self.file_msgs = os.path.join(self.BaseDirectory,SlotName,self.APMsgs)   
             if "type" in args: #check that its a data packet
                 if args["type"] == "Hint": #check that it's a hint
-                    self.updateHints()
-                if args["type"] == "ItemSend": #item sending message
-                    thisMsg = args["data"]
-                    asyncio.create_task(sendInGameMsg())
+                    asyncio.create_task(self.updateHints())
+                #if args["type"] == "ItemSend": #item sending message
+                    #thisMsg = args["data"]
+                    #asyncio.create_task(self.sendInGameMsg(thisMsg,SlotName))
 
         #for recieving the raw hints info command
         if cmd in {"Retrieved"}:
+            #print(f"{args['keys']}")
             if "keys" in args:
                 rawMsg = args["keys"]
                 hintCmd = f"_read_hints_{self.team}_{self.slot}"
@@ -309,7 +310,7 @@ class DRGContext(CommonContext):
         except Exception as e:
             return f"{self.slot_info[playerSlot].game} Location"
 
-    async def sendInGameMsg(self):
+    async def sendInGameMsg(self, thisMsg, SlotName):
         finalMsg = ""
         if len(thisMsg) == 6: #self find
             slot = int(thisMsg[0]["text"])
@@ -325,8 +326,7 @@ class DRGContext(CommonContext):
             item = self.getItemNameFromGame(int(thisMsg[2]["text"]),slot_r) #self.id_to_item_name[int(thisMsg[2]["text"])]
             location = self.getLocNameFromGame(int(thisMsg[6]["text"]),slot_f) #self.id_to_loc_name[int(thisMsg[6]["text"])]
             finalMsg = f"{player_f} sent {item} to {player_r} ({location})"
-        else:
-            #do nothing
+
         if os.path.isdir(os.path.join(self.BaseDirectory,SlotName)) and not finalMsg:
             with open(self.file_msgs, 'w') as f:
                 f.write(f"{finalMsg}")

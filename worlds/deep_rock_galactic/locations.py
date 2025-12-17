@@ -176,7 +176,7 @@ def location_init():
     return ALL_LOCATIONS
 
 def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = True,\
-    Goal = 1, GoldRushVal = 15000, ShopItems = 25, Events = True, MaxHaz = 5):
+    Goal = 1, GoldRushVal = 15000, ShopItems = 25, EventsOn = True, MaxHaz = 5):
     CurrentID=0
     RemovableLocations=[]
     MustRemove=[]
@@ -215,7 +215,7 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
         MustRemove.extend(getLocationGroup("Minigames"))
     
     #Handle Events
-    if not Events:
+    if not EventsOn:
         MustRemove.extend(getLocationGroup("Events"))
     for event in Events:
         for Hazard in RemoveHaz:

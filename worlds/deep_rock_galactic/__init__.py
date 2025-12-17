@@ -14,6 +14,7 @@ from .subclasses import DRGItem, DRGLocation
 import json
 from worlds.AutoWorld import World
 from worlds.LauncherComponents import components, Component, launch_subprocess, Type, icon_paths
+from .web_world import DRGWebWorld
 
 class DRGSettings(settings.Group):
     class RootDirectory(settings.UserFolderPath):
