@@ -188,11 +188,15 @@ class DRGContext(CommonContext):
                 goalMode = self.slot_data.get("goal_mode",1)
                 startStats = self.slot_data.get("starting_stats",3)
                 goldRushVal = self.slot_data.get("gold_rush_val",15000)
+                shopNum = self.slot_data.get("shop_item_num",25)
+                eventsOn = self.slot_data.get("events_on",1)
+                maxHaz = self.slot_data.get("max_hazard",5)
                 f.write(f"Goal:{goalMode},CubesNeeded:{cubesNeeded},StartingClass:{classStart},"
                     f"TrapsEnabled:{trapsOn},DeathLink:{self.deathlinkOn},DeathAll:{deathlinkAll},"
                     f"MinigamesEnabled:{minigameOn},APCoinCost:{APCoinCost},GoldToCoin:{goldToCoin},"
                     f"BeerToCoin:{beerToCoin},ProgDiff:{progDiff},StartStats:{startStats},"
-                    f"GoldRushVal:{goldRushVal}")
+                    f"GoldRushVal:{goldRushVal},ShopItemNum:{shopNum},EventsOn:{eventsOn},"
+                    f"MaxHazard:{maxHaz}")
             #prints and saves the shop items for the mod to read
             with open(self.file_shop, 'w') as f:
                 shopItemDict = self.slot_data["shop_items"]
