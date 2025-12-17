@@ -1,5 +1,7 @@
 {
     "game": "Deep Rock Galactic",
-	"authors": [ "SipcoGamingGuild","Taz" ],
-    "minimum_ap_version": "0.6.4"
+    "minimum_ap_version": "0.6.4",
+    "world_version": "0.15.1",
+	"authors": [ "SipcoGamingGuild","Taz" ]
+    
 }

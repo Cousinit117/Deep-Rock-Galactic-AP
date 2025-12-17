@@ -105,7 +105,7 @@ def getLocationGroup(group = "MainObj"):
             for i in [5,10,15,20,25,30]:
                 thisList.append(f'JettyBoot:{i}')
         case "Shop":
-            for i in range(1,26):
+            for i in range(1,41):
                 thisList.append(f'Shop Item:{i}')
         case "GoldRush":
             thisList.append('Gold Rush:RICH')
@@ -175,24 +175,70 @@ def location_init():
     ALL_LOCATIONS = {k: v + 1 << (LOCATION_BITSHIFT_DEFAULT) for k, v in MissionPermute.items()}
     return ALL_LOCATIONS
 
-def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = True, Goal = 1, GoldRushVal = 15000):
+def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = True,\
+    Goal = 1, GoldRushVal = 15000, ShopItems = 25, EventsOn = True, MaxHaz = 5):
     CurrentID=0
     RemovableLocations=[]
     MustRemove=[]
+    ValidHaz=[2,3,4,5]
+    RemoveHaz=[]
+    #generate Haz Removal
+    match MaxHaz:
+        case 3:
+            ValidHaz=[2,3]
+            RemoveHaz=[4,5]
+        case 4:
+            ValidHaz=[2,3,4]
+            RemoveHaz=[5]
+        case _:
+            ValidHaz=[2,3,4,5]
+            RemoveHaz=[]
+
+    #Handle Goal Objectives Caretaker
     if Goal == 1: #Only Removable if Possible with Goal 1
         for Biome in Biomes:
             for Mission in MissionTypes:
-                for Hazard in [2,3,4,5]:
+                for Hazard in ValidHaz:
                     RemovableLocations.append(f'OBJ:{Biome}:{Mission}:{Hazard}')
+                for Hazard in RemoveHaz:
+                    MustRemove.append(f'OBJ:{Biome}:{Mission}:{Hazard}')
+    
+    #Handle Secondary objectives
     for Secondary in SecondaryObjectives:
-        for Hazard in [2,3,4,5]:
+        for Hazard in ValidHaz:
             RemovableLocations.append(f'Secondary:{Secondary}:{Hazard}')
+        for Hazard in RemoveHaz:
+            MustRemove.append(f'Secondary:{Secondary}:{Hazard}')
+    
+    #Handle Minigames
     if not MiniGames:
         MustRemove.extend(getLocationGroup("Minigames"))
+    
+    #Handle Events
+    if not EventsOn:
+        MustRemove.extend(getLocationGroup("Events"))
+    for event in Events:
+        for Hazard in RemoveHaz:
+            MustRemove.append(f'Event:{event}:{Hazard}')
+
+    #Handle Cubes
     for i in range(15,Cubes,-1):
         MustRemove.append(f'Error Cube:{i}')
+
+    #Handle Shop Items
+    for i in range(40,ShopItems,-1):
+        MustRemove.append(f'Shop Item:{i}')
+
+    #Handle GoldRush Gold value
     for i in range(20050,GoldRushVal,-50):
         MustRemove.append(f'Gold Rush:{i}')
+
+    #Handle Warnings
+    for warn in Warnings:
+        for Hazard in RemoveHaz:
+           MustRemove.append(f'Warning:{warn}:{Hazard}')
+
+    #Handle Goal Removals
     match Goal:
         case 1: #default ind sabo haz 5
             MustRemove.extend(getLocationGroup("GoldRush"))
@@ -203,7 +249,7 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
         case _:
             #Remove Goldrush Goals, locations -401
             MustRemove.extend(getLocationGroup("GoldRush"))
-            print(f'Goal is defaulted')
+            print(f"Goal is defaulted. This shouldn't happen! PANIC!")
 
     #This subtracts a number of locations from the pool semi-randomly.
     # LocationDifference=0    #self.options.locations_to_remove.value

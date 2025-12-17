@@ -1,7 +1,3 @@
-# import ModuleUpdate
-# ModuleUpdate.update()
-# not sure what this is for...
-
 import asyncio
 import json
 import os
@@ -129,8 +125,8 @@ class DRGContext(CommonContext):
     async def shutdown(self):
         await super(DRGContext, self).shutdown()
 
-    def updateHints(self):
-        self.send_msgs([{'cmd': 'Get','keys': f'["_read_hints_{self.team}_{self.slot}"]'}])
+    async def updateHints(self):
+        await self.send_msgs([{'cmd': 'Get','keys': f'["hints_{self.team}_{self.slot}"]'}])
         self.UpdateHintsTxT()
 
     async def getShopItems(self):
@@ -192,11 +188,15 @@ class DRGContext(CommonContext):
                 goalMode = self.slot_data.get("goal_mode",1)
                 startStats = self.slot_data.get("starting_stats",3)
                 goldRushVal = self.slot_data.get("gold_rush_val",15000)
+                shopNum = self.slot_data.get("shop_item_num",25)
+                eventsOn = self.slot_data.get("events_on",1)
+                maxHaz = self.slot_data.get("max_hazard",5)
                 f.write(f"Goal:{goalMode},CubesNeeded:{cubesNeeded},StartingClass:{classStart},"
                     f"TrapsEnabled:{trapsOn},DeathLink:{self.deathlinkOn},DeathAll:{deathlinkAll},"
                     f"MinigamesEnabled:{minigameOn},APCoinCost:{APCoinCost},GoldToCoin:{goldToCoin},"
                     f"BeerToCoin:{beerToCoin},ProgDiff:{progDiff},StartStats:{startStats},"
-                    f"GoldRushVal:{goldRushVal}")
+                    f"GoldRushVal:{goldRushVal},ShopItemNum:{shopNum},EventsOn:{eventsOn},"
+                    f"MaxHazard:{maxHaz}")
             #prints and saves the shop items for the mod to read
             with open(self.file_shop, 'w') as f:
                 shopItemDict = self.slot_data["shop_items"]
@@ -215,7 +215,7 @@ class DRGContext(CommonContext):
             else:
                 new_items = args['items']
             self.collected_items += new_items
-            self.updateHints()
+            asyncio.create_task(self.updateHints())
             # put all the thingies into the output file
             asyncio.create_task(self.give_items(self.collected_items))
 
@@ -227,7 +227,7 @@ class DRGContext(CommonContext):
         if cmd in {"DataPackage"}:
             self.datagames = args["data"]["games"]
             #print(f"{self.datagames}")
-            self.updateHints()
+            asyncio.create_task(self.updateHints())
             if "Deep Rock Galactic" in args["data"]["games"]:
                 self.data_package_DRG_cache(args)
                 self.server_state_synchronized = True
@@ -249,30 +249,14 @@ class DRGContext(CommonContext):
             self.file_msgs = os.path.join(self.BaseDirectory,SlotName,self.APMsgs)   
             if "type" in args: #check that its a data packet
                 if args["type"] == "Hint": #check that it's a hint
-                    self.updateHints()
+                    asyncio.create_task(self.updateHints())
                 #if args["type"] == "ItemSend": #item sending message
                     #thisMsg = args["data"]
-                    #finalMsg = ""
-                    #if len(thisMsg) == 6: #self find
-                        #slot = int(thisMsg[0]["text"])
-                        #player = self.slot_info[slot].name
-                        #item = self.getItemNameFromGame(int(thisMsg[2]["text"]),slot) #self.id_to_item_name[int(thisMsg[2]["text"])]
-                        #location = self.getLocNameFromGame(int(thisMsg[4]["text"]),slot) #self.id_to_loc_name[int(thisMsg[4]["text"])]
-                        #finalMsg = f"{player} found their {item} ({location})"
-                    #if len(thisMsg) == 8: #other find
-                        #slot_f = int(thisMsg[0]["text"])
-                        #slot_r = int(thisMsg[4]["text"])
-                        #player_f = self.slot_info[slot_f].name
-                        #player_r = self.slot_info[slot_r].name
-                        #item = self.getItemNameFromGame(int(thisMsg[2]["text"]),slot_r) #self.id_to_item_name[int(thisMsg[2]["text"])]
-                        #location = self.getLocNameFromGame(int(thisMsg[6]["text"]),slot_f) #self.id_to_loc_name[int(thisMsg[6]["text"])]
-                        #finalMsg = f"{player_f} sent {item} to {player_r} ({location})"
-                    #if os.path.isdir(os.path.join(self.BaseDirectory,SlotName)):
-                        #with open(self.file_msgs, 'w') as f:
-                            #f.write(f"{finalMsg}")
+                    #asyncio.create_task(self.sendInGameMsg(thisMsg,SlotName))
 
         #for recieving the raw hints info command
         if cmd in {"Retrieved"}:
+            #print(f"{args['keys']}")
             if "keys" in args:
                 rawMsg = args["keys"]
                 hintCmd = f"_read_hints_{self.team}_{self.slot}"
@@ -325,6 +309,28 @@ class DRGContext(CommonContext):
             return revArr[locid]
         except Exception as e:
             return f"{self.slot_info[playerSlot].game} Location"
+
+    async def sendInGameMsg(self, thisMsg, SlotName):
+        finalMsg = ""
+        if len(thisMsg) == 6: #self find
+            slot = int(thisMsg[0]["text"])
+            player = self.slot_info[slot].name
+            item = self.getItemNameFromGame(int(thisMsg[2]["text"]),slot) #self.id_to_item_name[int(thisMsg[2]["text"])]
+            location = self.getLocNameFromGame(int(thisMsg[4]["text"]),slot) #self.id_to_loc_name[int(thisMsg[4]["text"])]
+            finalMsg = f"{player} found their {item} ({location})"
+        elif len(thisMsg) == 8: #other find
+            slot_f = int(thisMsg[0]["text"])
+            slot_r = int(thisMsg[4]["text"])
+            player_f = self.slot_info[slot_f].name
+            player_r = self.slot_info[slot_r].name
+            item = self.getItemNameFromGame(int(thisMsg[2]["text"]),slot_r) #self.id_to_item_name[int(thisMsg[2]["text"])]
+            location = self.getLocNameFromGame(int(thisMsg[6]["text"]),slot_f) #self.id_to_loc_name[int(thisMsg[6]["text"])]
+            finalMsg = f"{player_f} sent {item} to {player_r} ({location})"
+
+        if os.path.isdir(os.path.join(self.BaseDirectory,SlotName)) and not finalMsg:
+            with open(self.file_msgs, 'w') as f:
+                f.write(f"{finalMsg}")
+        time.sleep(1) #wait between writes (no worries if you miss some messages ina  huge release)
 
     async def check_locations(self):
 
