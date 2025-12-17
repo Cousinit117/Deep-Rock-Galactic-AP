@@ -89,6 +89,13 @@ class AvgCoinShopPrices(Range):
     range_end   = 30
     default     = 5
 
+class CoinShopItems(Range):
+    """Set the amount of items to be in the APCoin Shop."""
+    display_name = "AP Coin Shop Item Count"
+    range_start = 0
+    range_end   = 40
+    default     = 25
+
 class GoldToCoinConversionRate(Range):
     """Set the value of Gold Gathered to APCoin Conversion Rate. For example setting this to 100 would mean 100x gathered gold gets you 1x APCoin."""
     display_name = "Gold to APCoin Conversion Rate"
@@ -118,5 +125,136 @@ class DRGOptions(PerGameCommonOptions):
     minigames_on:           EnableMinigames
     coin_shop_prices:       AvgCoinShopPrices  
     gold_to_coin_rate:      GoldToCoinConversionRate
-    beermat_to_coin_rate:   BeerMatToCoinConversionRate 
-    #hunter_trophies:        HunterTrophyAmount 
+    beermat_to_coin_rate:   BeerMatToCoinConversionRate
+    shop_item_num:          CoinShopItems
+    #hunter_trophies:        HunterTrophyAmount
+
+#set option groups for the web UI
+option_groups = [
+    OptionGroup(
+        "Goal Options",
+        [Goal,GoldRushGoalValue]
+    ),
+    OptionGroup(
+        "Difficulty Options",
+        [ProgressionDifficulty,StartingStats,StartingClasses,DeathLink,DeathLinkAll]
+    ),
+    OptionGroup(
+        "Optional Features",
+        [ErrorCubeChecks,EnableTraps,EnableMinigames]
+    ),
+    OptionGroup(
+        "AP Coin Shop Options",
+        [AvgCoinShopPrices,CoinShopItems,GoldToCoinConversionRate,BeerMatToCoinConversionRate]
+    ),
+    OptionGroup(
+        "Extra Options",
+        [LocationsToRemove]
+    ),
+]
+
+#Set presets
+option_presets = {
+    "goldrush standard": {
+        "progression_diff": 2,
+        "starting_stats": 2,
+        "goal_mode": 2,
+        "gold_rush_val": 15000,
+        "death_link": False,
+        "death_link_all": False,
+        "locations_to_remove": 0,
+        "avail_classes": 0,
+        "error_cube_checks": 10,
+        "traps_on": True,
+        "minigames_on": True,
+        "coin_shop_prices": 5,
+        "shop_item_num": 25,
+        "gold_to_coin_rate": 50,
+        "beermat_to_coin_rate": 2,
+    },
+    "goldrush short": {
+        "progression_diff": 1,
+        "starting_stats": 1,
+        "goal_mode": 2,
+        "gold_rush_val": 7500,
+        "death_link": False,
+        "death_link_all": False,
+        "locations_to_remove": 0,
+        "avail_classes": 0,
+        "error_cube_checks": 0,
+        "traps_on": False,
+        "minigames_on": False,
+        "coin_shop_prices": 2,
+        "shop_item_num": 25,
+        "gold_to_coin_rate": 25,
+        "beermat_to_coin_rate": 2,
+    },
+    "goldrush long": {
+        "progression_diff": 3,
+        "starting_stats": 3,
+        "goal_mode": 2,
+        "gold_rush_val": 20000,
+        "death_link": False,
+        "death_link_all": False,
+        "locations_to_remove": 0,
+        "avail_classes": 0,
+        "error_cube_checks": 15,
+        "traps_on": True,
+        "minigames_on": True,
+        "coin_shop_prices": 10,
+        "shop_item_num": 40,
+        "gold_to_coin_rate": 50,
+        "beermat_to_coin_rate": 3,
+    },
+    "haz5 kill caretaker standard": {
+        "progression_diff": 2,
+        "starting_stats": 2,
+        "goal_mode": 1,
+        "gold_rush_val": 15000,
+        "death_link": False,
+        "death_link_all": False,
+        "locations_to_remove": 0,
+        "avail_classes": 0,
+        "error_cube_checks": 10,
+        "traps_on": True,
+        "minigames_on": True,
+        "coin_shop_prices": 5,
+        "shop_item_num": 25,
+        "gold_to_coin_rate": 50,
+        "beermat_to_coin_rate": 2,
+    },
+    "haz5 kill caretaker easy": {
+        "progression_diff": 1,
+        "starting_stats": 1,
+        "goal_mode": 1,
+        "gold_rush_val": 15000,
+        "death_link": False,
+        "death_link_all": False,
+        "locations_to_remove": 0,
+        "avail_classes": 0,
+        "error_cube_checks": 0,
+        "traps_on": False,
+        "minigames_on": False,
+        "coin_shop_prices": 2,
+        "shop_item_num": 25,
+        "gold_to_coin_rate": 25,
+        "beermat_to_coin_rate": 2,
+    },
+    "haz5 kill caretaker hard": {
+        "progression_diff": 3,
+        "starting_stats": 3,
+        "goal_mode": 1,
+        "gold_rush_val": 15000,
+        "death_link": True,
+        "death_link_all": True,
+        "locations_to_remove": 0,
+        "avail_classes": 1,
+        "error_cube_checks": 15,
+        "traps_on": True,
+        "minigames_on": True,
+        "coin_shop_prices": 10,
+        "shop_item_num": 40,
+        "gold_to_coin_rate": 50,
+        "beermat_to_coin_rate": 3,
+    },
+}

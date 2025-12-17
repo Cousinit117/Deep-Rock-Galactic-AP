@@ -1,7 +1,3 @@
-# import ModuleUpdate
-# ModuleUpdate.update()
-# not sure what this is for...
-
 import asyncio
 import json
 import os
@@ -250,26 +246,9 @@ class DRGContext(CommonContext):
             if "type" in args: #check that its a data packet
                 if args["type"] == "Hint": #check that it's a hint
                     self.updateHints()
-                #if args["type"] == "ItemSend": #item sending message
-                    #thisMsg = args["data"]
-                    #finalMsg = ""
-                    #if len(thisMsg) == 6: #self find
-                        #slot = int(thisMsg[0]["text"])
-                        #player = self.slot_info[slot].name
-                        #item = self.getItemNameFromGame(int(thisMsg[2]["text"]),slot) #self.id_to_item_name[int(thisMsg[2]["text"])]
-                        #location = self.getLocNameFromGame(int(thisMsg[4]["text"]),slot) #self.id_to_loc_name[int(thisMsg[4]["text"])]
-                        #finalMsg = f"{player} found their {item} ({location})"
-                    #if len(thisMsg) == 8: #other find
-                        #slot_f = int(thisMsg[0]["text"])
-                        #slot_r = int(thisMsg[4]["text"])
-                        #player_f = self.slot_info[slot_f].name
-                        #player_r = self.slot_info[slot_r].name
-                        #item = self.getItemNameFromGame(int(thisMsg[2]["text"]),slot_r) #self.id_to_item_name[int(thisMsg[2]["text"])]
-                        #location = self.getLocNameFromGame(int(thisMsg[6]["text"]),slot_f) #self.id_to_loc_name[int(thisMsg[6]["text"])]
-                        #finalMsg = f"{player_f} sent {item} to {player_r} ({location})"
-                    #if os.path.isdir(os.path.join(self.BaseDirectory,SlotName)):
-                        #with open(self.file_msgs, 'w') as f:
-                            #f.write(f"{finalMsg}")
+                if args["type"] == "ItemSend": #item sending message
+                    thisMsg = args["data"]
+                    asyncio.create_task(sendInGameMsg())
 
         #for recieving the raw hints info command
         if cmd in {"Retrieved"}:
@@ -325,6 +304,29 @@ class DRGContext(CommonContext):
             return revArr[locid]
         except Exception as e:
             return f"{self.slot_info[playerSlot].game} Location"
+
+    async def sendInGameMsg(self):
+        finalMsg = ""
+        if len(thisMsg) == 6: #self find
+            slot = int(thisMsg[0]["text"])
+            player = self.slot_info[slot].name
+            item = self.getItemNameFromGame(int(thisMsg[2]["text"]),slot) #self.id_to_item_name[int(thisMsg[2]["text"])]
+            location = self.getLocNameFromGame(int(thisMsg[4]["text"]),slot) #self.id_to_loc_name[int(thisMsg[4]["text"])]
+            finalMsg = f"{player} found their {item} ({location})"
+        elif len(thisMsg) == 8: #other find
+            slot_f = int(thisMsg[0]["text"])
+            slot_r = int(thisMsg[4]["text"])
+            player_f = self.slot_info[slot_f].name
+            player_r = self.slot_info[slot_r].name
+            item = self.getItemNameFromGame(int(thisMsg[2]["text"]),slot_r) #self.id_to_item_name[int(thisMsg[2]["text"])]
+            location = self.getLocNameFromGame(int(thisMsg[6]["text"]),slot_f) #self.id_to_loc_name[int(thisMsg[6]["text"])]
+            finalMsg = f"{player_f} sent {item} to {player_r} ({location})"
+        else:
+            #do nothing
+        if os.path.isdir(os.path.join(self.BaseDirectory,SlotName)) and not finalMsg:
+            with open(self.file_msgs, 'w') as f:
+                f.write(f"{finalMsg}")
+        time.sleep(1) #wait between writes (no worries if you miss some messages ina  huge release)
 
     async def check_locations(self):
 

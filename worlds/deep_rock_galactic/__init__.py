@@ -12,10 +12,7 @@ from .regions import create_and_link_regions
 from .options import DRGOptions
 from .subclasses import DRGItem, DRGLocation
 import json
-## BaseDirectory=r"E:\SteamLibrary\steamapps\common\Deep Rock Galactic\FSD\Mods"
-
-#2 lines taken from J&D, not actually sure what's important here, but it works.
-from worlds.AutoWorld import World, WebWorld
+from worlds.AutoWorld import World
 from worlds.LauncherComponents import components, Component, launch_subprocess, Type, icon_paths
 
 class DRGSettings(settings.Group):
@@ -35,9 +32,6 @@ def launch_client():
 components.append(Component("DRG Client",
                             func=launch_client,
                             component_type=Type.CLIENT))
-
-class DRGWebWorld(WebWorld):
-    theme = 'stone'
 
 class DRGWorld(World):
     game = 'Deep Rock Galactic'
@@ -60,10 +54,10 @@ class DRGWorld(World):
         slot_data.update(self.options.as_dict('death_link','death_link_all','goal_mode',\
             'error_cube_checks','avail_classes','traps_on','minigames_on','coin_shop_prices',\
             'gold_to_coin_rate','beermat_to_coin_rate','progression_diff','starting_stats',\
-            'gold_rush_val'))
+            'gold_rush_val','shop_item_num'))
         
         ShopItemsDict = {}
-        for i in range(1,26):
+        for i in range(1,(int(self.options.shop_item_num.value) + 1)): 
             thisLoc = self.multiworld.get_location(f"Shop Item:{i}", self.player)
             ShopItemsDict[f"Shop Item:{i}"] = {"player" : int(thisLoc.item.player), "item" : str(thisLoc.item.name)}
 
