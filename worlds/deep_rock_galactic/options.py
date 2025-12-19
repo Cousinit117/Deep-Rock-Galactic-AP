@@ -3,12 +3,11 @@ from Options import Choice, Range, Toggle, ItemDict, PerGameCommonOptions, Start
 
 
 class Goal(Choice):
-    """Set The Current Run Goal [Working Options = haz5_caretaker (default), goldrush, hunter (in dev)]"""
+    """Set The Current Run Goal [Working Options = haz5_caretaker (default), goldrush, hunter]"""
     display_name = "Goal of the Run"
     option_kill_caretaker = 1
     option_goldrush = 2
     option_hunter = 3
-    #option_worldtour = 4
     default = 1
     #visibility = Visibility.none
 
@@ -28,11 +27,27 @@ class GoldRushGoalValue(Range):
     default     = 15000
 
 class HunterTrophyAmount(Range):
-    """Set The Current Hunter Trophies Needed per enemy (if that's your goal) [NOT YET FINISHED]"""
+    """Set The Current Hunter Trophies Needed per enemy (if that's your goal) [Bosses need 50%, so seting 10 will mean 5 boss kills]"""
     display_name = "Trophy Hunter Goal Amount"
     range_start = 1
-    range_end   = 20
-    default     = 10
+    range_end   = 10
+    default     = 5
+
+class HunterCompletionGoal(Choice):
+    """Determines the final completion for the Hunter Goal"""
+    display_name = "Final Objective for Hunter Goal"
+    option_all_trophies = 1
+    option_only_bosses_all = 2
+    option_only_bosses_1_each = 3
+    default = 2
+
+class HunterTargets(Choice):
+    """Determines what counts for the Hunter Goal"""
+    display_name = "Valid Hunter Targets for Hunter Goal"
+    option_everything = 1
+    option_bosses_only = 2
+    option_no_passive_creatures = 3
+    default = 1
 
 class ProgressionDifficulty(Choice):
     """Determines how high the progressive check locks are for each sphere. (Completion by Diff LeafLover=10%, Normal=25%, Hard=33%, Lethal=50%, Karl=75%)"""
@@ -72,6 +87,12 @@ class EnableMinigames(Toggle):
     """Turns on/off Jetty Boot as a location"""
     display_name = "Enable Minigame Locations"
     default = True
+
+class MinigameMax(Range): 
+    """Sets the high score needed for all the Minigame Locations (in increments of 5)"""
+    range_start = 20
+    range_end   = 100
+    default     = 30
 
 class EnableMachineEvents(Toggle): 
     """Turns on/off Machine Events as a location"""
@@ -136,19 +157,22 @@ class DRGOptions(PerGameCommonOptions):
     error_cube_checks:      ErrorCubeChecks
     traps_on:               EnableTraps
     minigames_on:           EnableMinigames
+    minigame_num:           MinigameMax
     events_on:              EnableMachineEvents
     coin_shop_prices:       AvgCoinShopPrices
     gold_to_coin_rate:      GoldToCoinConversionRate
     beermat_to_coin_rate:   BeerMatToCoinConversionRate
     shop_item_num:          CoinShopItems
-    hunter_trophies:        HunterTrophyAmount
     max_hazard:             HazMax
+    hunter_trophies:        HunterTrophyAmount
+    hunter_complete:        HunterCompletionGoal
+    hunter_targets:         HunterTargets
 
 #set option groups for the web UI
 option_groups = [
     OptionGroup(
         "Goal Options",
-        [Goal,HazMax,GoldRushGoalValue,HunterTrophyAmount]
+        [Goal,HazMax,GoldRushGoalValue,HunterTrophyAmount,HunterCompletionGoal]
     ),
     OptionGroup(
         "Difficulty Options",
@@ -156,7 +180,7 @@ option_groups = [
     ),
     OptionGroup(
         "Optional Features",
-        [ErrorCubeChecks,EnableTraps,EnableMinigames,EnableMachineEvents]
+        [ErrorCubeChecks,EnableTraps,EnableMinigames,MinigameMax,EnableMachineEvents]
     ),
     OptionGroup(
         "AP Coin Shop Options",
@@ -183,49 +207,15 @@ option_presets = {
         "error_cube_checks": 10,
         "traps_on": True,
         "minigames_on": True,
+        "minigame_num": 30,
         "events_on": True,
         "coin_shop_prices": 5,
         "shop_item_num": 25,
         "gold_to_coin_rate": 50,
         "beermat_to_coin_rate": 2,
-    },
-    "goldrush short": {
-        "progression_diff": 1,
-        "starting_stats": 1,
-        "goal_mode": 2,
-        "max_hazard": 5,
-        "gold_rush_val": 7500,
-        "death_link": False,
-        "death_link_all": False,
-        "locations_to_remove": 0,
-        "avail_classes": 0,
-        "error_cube_checks": 0,
-        "traps_on": False,
-        "minigames_on": False,
-        "events_on": False,
-        "coin_shop_prices": 2,
-        "shop_item_num": 25,
-        "gold_to_coin_rate": 25,
-        "beermat_to_coin_rate": 2,
-    },
-    "goldrush long": {
-        "progression_diff": 3,
-        "starting_stats": 3,
-        "goal_mode": 2,
-        "max_hazard": 5,
-        "gold_rush_val": 20000,
-        "death_link": False,
-        "death_link_all": False,
-        "locations_to_remove": 0,
-        "avail_classes": 0,
-        "error_cube_checks": 15,
-        "traps_on": True,
-        "minigames_on": True,
-        "events_on": True,
-        "coin_shop_prices": 10,
-        "shop_item_num": 40,
-        "gold_to_coin_rate": 50,
-        "beermat_to_coin_rate": 3,
+        "hunter_trophies": 5,
+        "hunter_complete": 2,
+        "hunter_targets": 1,
     },
     "haz5 kill caretaker standard": {
         "progression_diff": 2,
@@ -240,48 +230,37 @@ option_presets = {
         "error_cube_checks": 10,
         "traps_on": True,
         "minigames_on": True,
+        "minigame_num": 30,
         "events_on": True,
         "coin_shop_prices": 5,
         "shop_item_num": 25,
         "gold_to_coin_rate": 50,
         "beermat_to_coin_rate": 2,
+        "hunter_trophies": 5,
+        "hunter_complete": 2,
+        "hunter_targets": 1,
     },
-    "haz5 kill caretaker easy": {
-        "progression_diff": 1,
-        "starting_stats": 1,
-        "goal_mode": 1,
-        "max_hazard": 3,
+    "hunter mode standard": {
+        "progression_diff": 2,
+        "starting_stats": 2,
+        "goal_mode": 3,
+        "max_hazard": 5,
         "gold_rush_val": 15000,
         "death_link": False,
         "death_link_all": False,
         "locations_to_remove": 0,
         "avail_classes": 0,
-        "error_cube_checks": 0,
-        "traps_on": False,
-        "minigames_on": False,
-        "events_on": False,
-        "coin_shop_prices": 2,
-        "shop_item_num": 25,
-        "gold_to_coin_rate": 25,
-        "beermat_to_coin_rate": 2,
-    },
-    "haz5 kill caretaker hard": {
-        "progression_diff": 3,
-        "starting_stats": 3,
-        "goal_mode": 1,
-        "max_hazard": 5,
-        "gold_rush_val": 15000,
-        "death_link": True,
-        "death_link_all": True,
-        "locations_to_remove": 0,
-        "avail_classes": 1,
-        "error_cube_checks": 15,
+        "error_cube_checks": 10,
         "traps_on": True,
         "minigames_on": True,
+        "minigame_num": 30,
         "events_on": True,
-        "coin_shop_prices": 10,
-        "shop_item_num": 40,
+        "coin_shop_prices": 5,
+        "shop_item_num": 25,
         "gold_to_coin_rate": 50,
-        "beermat_to_coin_rate": 3,
+        "beermat_to_coin_rate": 2,
+        "hunter_trophies": 5,
+        "hunter_complete": 2,
+        "hunter_targets": 1,
     },
 }

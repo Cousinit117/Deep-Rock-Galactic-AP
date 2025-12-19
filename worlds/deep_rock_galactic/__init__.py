@@ -53,9 +53,10 @@ class DRGWorld(World):
         slot_data = {}
         
         slot_data.update(self.options.as_dict('death_link','death_link_all','goal_mode',\
-            'error_cube_checks','avail_classes','traps_on','minigames_on','coin_shop_prices',\
+            'error_cube_checks','avail_classes','traps_on','minigames_on','minigame_num','coin_shop_prices',\
             'gold_to_coin_rate','beermat_to_coin_rate','progression_diff','starting_stats',\
-            'gold_rush_val','shop_item_num','events_on','max_hazard'))
+            'gold_rush_val','shop_item_num','events_on','max_hazard','hunter_trophies',\
+            'hunter_complete','hunter_targets'))
         
         ShopItemsDict = {}
         for i in range(1,(int(self.options.shop_item_num.value) + 1)): 
@@ -158,8 +159,8 @@ class DRGWorld(World):
         #print(f'Goal Mode Val:{self.options.goal_mode.value}')
         if self.options.goal_mode.value == 2: #goldrush win condition
             self.multiworld.get_location("Gold Rush:RICH", self.player).place_locked_item(victory_item)
-        #elif self.options.goal_mode.value == 3: #trophy hunter win condition
-            #self.multiworld.get_location("Trophy Hunter:MASTERED", self.player).place_locked_item(victory_item)
+        elif self.options.goal_mode.value == 3: #trophy hunter win condition
+            self.multiworld.get_location("Trophy Hunter:MASTERED", self.player).place_locked_item(victory_item)
         else: #default win condition = Haz 5 Caretaker
             self.multiworld.get_location("OBJ:Magma Core:Industrial Sabotage:5", self.player).place_locked_item(victory_item)
         

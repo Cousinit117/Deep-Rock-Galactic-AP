@@ -134,7 +134,7 @@ class DRGContext(CommonContext):
 
     def on_package(self, cmd: str, args: dict):
         if cmd in {"RoomInfo"}:
-            print('roominfo received by client. Not really sure what this does yet for drg')
+            #print('roominfo received by client. Not really sure what this does yet for drg')
             pass
         # print('on_package triggered')
         if cmd in {"Connected"}:
@@ -181,6 +181,7 @@ class DRGContext(CommonContext):
                 self.deathlinkOn = self.slot_data.get("death_link",0)
                 deathlinkAll = self.slot_data.get("death_link_all",1)
                 minigameOn = self.slot_data.get("minigames_on",1)
+                minigameNum = self.slot_data.get("minigame_num",30)
                 APCoinCost = self.slot_data.get("coin_shop_prices",5)
                 goldToCoin = self.slot_data.get("gold_to_coin_rate",50)
                 beerToCoin = self.slot_data.get("beermat_to_coin_rate",2)
@@ -191,12 +192,16 @@ class DRGContext(CommonContext):
                 shopNum = self.slot_data.get("shop_item_num",25)
                 eventsOn = self.slot_data.get("events_on",1)
                 maxHaz = self.slot_data.get("max_hazard",5)
+                huntTrophy = self.slot_data.get("hunter_trophies",5)
+                huntComplete = self.slot_data.get("hunter_complete",2)
+                huntTargets = self.slot_data.get("hunter_targets",1)
                 f.write(f"Goal:{goalMode},CubesNeeded:{cubesNeeded},StartingClass:{classStart},"
                     f"TrapsEnabled:{trapsOn},DeathLink:{self.deathlinkOn},DeathAll:{deathlinkAll},"
                     f"MinigamesEnabled:{minigameOn},APCoinCost:{APCoinCost},GoldToCoin:{goldToCoin},"
                     f"BeerToCoin:{beerToCoin},ProgDiff:{progDiff},StartStats:{startStats},"
                     f"GoldRushVal:{goldRushVal},ShopItemNum:{shopNum},EventsOn:{eventsOn},"
-                    f"MaxHazard:{maxHaz}")
+                    f"MaxHazard:{maxHaz},HuntTrophy:{huntTrophy},HuntComplete:{huntComplete},"
+                    f"HuntTargets:{huntTargets},MinigameNum:{minigameNum}")
             #prints and saves the shop items for the mod to read
             with open(self.file_shop, 'w') as f:
                 shopItemDict = self.slot_data["shop_items"]

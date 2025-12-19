@@ -40,6 +40,10 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
         'Gold Rush' in Mission
         ]
 
+    Hunting=[Mission for Mission in ALL_LOCATIONS if
+        'Hunting' in Mission
+        ]
+
     MissionsDefaultHaz3=[Mission for Mission in ALL_LOCATIONS if (
         'Egg Hunt' in Mission or 'On-site Refining' in Mission or 'Deep Scan' in Mission) \
         and ('3' in Mission)
@@ -220,7 +224,7 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
     SecondariesAmmo5=[Secondary for Secondary in ALL_LOCATIONS if (('Dreadnought Eggs' in Secondary) and ('5' in Secondary))]
     
     REGIONS = {
-        'Menu': RegionData(connected_regions=['AlwaysAccessLocations', 'GoldRush', 'GenericHaz4', 'GenericHaz5', \
+        'Menu': RegionData(connected_regions=['AlwaysAccessLocations', 'GoldRush', 'GenericHaz4', 'GenericHaz5', 'Hunting', \
         'Ammo12', 'Ammo3', 'Ammo4', 'Ammo5', \
         'Carrying12', 'Carrying3', 'Carrying4', 'Carrying5', \
         'Mining12', 'Mining3', 'Mining4', 'Mining5', \
@@ -480,6 +484,12 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
             connected_regions        = [],
         ),
 
+        'Hunting': RegionData(
+            locations    = Hunting,
+            entrancerule = lambda state: True,#No Access restrictions
+            connected_regions        = [],
+        ),
+
         
     }
 
@@ -505,8 +515,9 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
         classRemoval = 4
     totalToRemove = baseRemoval + trapRemoval + classRemoval + options.locations_to_remove.value #81
     ALL_LOCATIONS=remove_locations(ALL_LOCATIONS,totalToRemove,int(options.error_cube_checks.value),\
-        bool(options.minigames_on.value),int(options.goal_mode.value),int(options.gold_rush_val.value),\
-        int(options.shop_item_num.value),bool(options.events_on.value),int(options.max_hazard.value))
+        bool(options.minigames_on.value),int(options.minigame_num.value),int(options.goal_mode.value),int(options.gold_rush_val.value),\
+        int(options.shop_item_num.value),bool(options.events_on.value),int(options.max_hazard.value),\
+        int(optios.hunter_trophies.value),int(options.hunter_targets.value))
     # print(REGIONS)
     for region in REGIONS:
         #Added a check at the end of "if location in ALL_LOCATIONS"
