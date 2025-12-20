@@ -343,15 +343,11 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
 
     #Handle Trophy Hunter
     match HunterTargets:
-        case 1: #everything valid
-            continue
         case 2: #only bosses
             MustRemove.extend(getLocationGroup("HunterNormal"))
             MustRemove.extend(getLocationGroup("HunterPassive"))
         case 3: #no passives
             MustRemove.extend(getLocationGroup("HunterPassive"))
-        case _:
-            continue
     for hunt in EnemiesNormal:
         for i in range(10,HunterNum,-1):
             thisList.append(f'Hunting Trophy:{hunt}:{i}')

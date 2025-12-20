@@ -6,13 +6,14 @@ import time
 import re
 from NetUtils import ClientStatus
 from .deathlink import handle_check_deathlink
-import settings
-from CommonClient import gui_enabled, logger, get_base_parser, CommonContext, server_loop
+#import settings
+from CommonClient import gui_enabled, logger, get_base_parser, CommonContext, server_loop, ClientCommandProcessor
 from .locations import location_init
 from .items import ALL_ITEMS
 import Utils
 from typing import TypedDict, Optional, NamedTuple
 import enum
+from . import DRGWorld, DRGSettings
 
 class HintStatus(enum.IntEnum):
     HINT_UNSPECIFIED = 0  # The receiving player has not specified any status
@@ -45,12 +46,34 @@ class JSONMessagePart(TypedDict):
     player: Optional[int] # only available if type is either item or location
     hint_status: Optional[HintStatus] # only available if type is hint_status
 
+class DRGCommands(ClientCommandProcessor):
+    def __init__(self, ctx: CommonContext):
+        super().__init__(ctx)
+
+    def _cmd_gamepath(self):
+        """Change the Game Directory for this session (Will reset to host.yaml on reload.)"""
+        if isinstance(self.ctx, DRGContext):
+            dir = Utils.open_directory("Select the <DRG Install>/FSD/Mods Folder", self.ctx.BaseDirectory)
+            if dir and dir != self.ctx.BaseDirectory:
+                self.ctx.game_options.update({"root_directory": dir})
+                self.ctx.BaseDirectory = dir
+                self.output("Changed the directory to the following = " + self.ctx.BaseDirectory)
+            else:
+                self.output("No change was made. Directory already matched or was invalid.")
+
+    def _cmd_checkpath(self):
+        """Check your currently set Game Directory (Should be <DRG Install>/FSD/Mods/)"""
+        if isinstance(self.ctx, DRGContext):
+            self.output("Current directory = " + self.ctx.BaseDirectory)
+
 class DRGContext(CommonContext):
     game = "Deep Rock Galactic"
     items_handling = 0b111  # Indicates you get items sent from other world
     #slot_data = True
     tags = ["DeathLink"]
-    options = Utils.get_options()
+    #options = Utils.get_options()
+    command_processor = DRGCommands
+    game_options: DRGSettings = DRGWorld.settings
     APChecklist="APChecklist.txt"
     APLocationlist="APLocationlist.txt"
     APLocationsChecked="APLocationsChecked.txt"
@@ -63,10 +86,6 @@ class DRGContext(CommonContext):
     APDeathSend="APDeathSend.txt"
     #This will not run in source currently if your host.yaml does not contain a working directory
     #It will try to open a file browsers to let you select, and that part will fail if ran from source, at least for me
-    try:
-        BaseDirectory=settings.get_settings()["deep_rock_galactic_options"]["root_directory"]
-    except:
-        print("Make sure that your host.yaml has the correct directory.\nCurrently it seems to be invalid.")
 
     #loc_name_to_id = location_init()
     #id_to_loc_name = {v: k for k, v in loc_name_to_id.items()}
@@ -94,6 +113,11 @@ class DRGContext(CommonContext):
         self.deathlinkOn               = False
         self.death_link_message        = ""
         self.received_death_link       = False
+        #self.command_processor         = DRGCommands(self)
+        try:
+            self.BaseDirectory=self.game_options.root_directory
+        except:
+            print("Make sure that your host.yaml has the correct directory.\nCurrently it seems to be invalid.")
 
     def set_location_data(self):
         self.loc_name_to_id = location_init()#int(self.slot_data["error_cube_checks"]),bool(self.slot_data["minigames_on"]))
@@ -262,13 +286,9 @@ class DRGContext(CommonContext):
         #for recieving the raw hints info command
         if cmd in {"Retrieved"}:
             #print(f"{args['keys']}")
-            if "keys" in args:
-                rawMsg = args["keys"]
-                hintCmd = f"_read_hints_{self.team}_{self.slot}"
-                #print(f"{rawMsg}") #for debugging
-                if hintCmd in rawMsg:
-                    self.hintsList = rawMsg[hintCmd]
-                    self.UpdateHintsTxT()
+            if f"_read_hints_{self.team}_{self.slot}" in args["keys"]:
+                self.hintsList = args["keys"][f"_read_hints_{self.team}_{self.slot}"]
+                self.UpdateHintsTxT()
               
     def UpdateHintsTxT(self):
         SlotName=(self.slot_info[self.slot].name)#self.slot_info[self.slot].name returns the name of the slot you connected to

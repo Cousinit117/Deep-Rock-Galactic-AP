@@ -3,7 +3,7 @@ from Options import Choice, Range, Toggle, ItemDict, PerGameCommonOptions, Start
 
 
 class Goal(Choice):
-    """Set The Current Run Goal [Working Options = haz5_caretaker (default), goldrush, hunter]"""
+    """Set The Current Run Goal [Working Options = haz5_caretaker (default), goldrush, hunter (Not yet working)]"""
     display_name = "Goal of the Run"
     option_kill_caretaker = 1
     option_goldrush = 2
@@ -27,14 +27,14 @@ class GoldRushGoalValue(Range):
     default     = 15000
 
 class HunterTrophyAmount(Range):
-    """Set The Current Hunter Trophies Needed per enemy (if that's your goal) [Bosses need 50%, so seting 10 will mean 5 boss kills]"""
+    """Set The Current Hunter Trophies Needed per enemy (if that's your goal) [Bosses need 50%, so seting 10 will mean 5 boss kills] (Not yet working)"""
     display_name = "Trophy Hunter Goal Amount"
     range_start = 1
     range_end   = 10
     default     = 5
 
 class HunterCompletionGoal(Choice):
-    """Determines the final completion for the Hunter Goal"""
+    """Determines the final completion for the Hunter Goal (Not yet working)"""
     display_name = "Final Objective for Hunter Goal"
     option_all_trophies = 1
     option_only_bosses_all = 2
@@ -42,7 +42,7 @@ class HunterCompletionGoal(Choice):
     default = 2
 
 class HunterTargets(Choice):
-    """Determines what counts for the Hunter Goal"""
+    """Determines what counts for the Hunter Goal (Not yet working)"""
     display_name = "Valid Hunter Targets for Hunter Goal"
     option_everything = 1
     option_bosses_only = 2

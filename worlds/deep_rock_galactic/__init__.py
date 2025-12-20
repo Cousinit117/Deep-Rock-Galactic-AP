@@ -12,7 +12,6 @@ from .regions import create_and_link_regions
 from .options import DRGOptions
 from .subclasses import DRGItem, DRGLocation
 import json
-from worlds.AutoWorld import World
 from worlds.LauncherComponents import components, Component, launch_subprocess, Type, icon_paths
 from .web_world import DRGWebWorld
 
@@ -23,8 +22,8 @@ class DRGSettings(settings.Group):
         Should look like :...\\Deep Rock Galactic\\FSD\\Mods
         By Default this assumes you have DRG installed on C drive in standard location.
         """
-        description = r"DRG needs /FSD/Mods folder Directory"
-    root_directory: RootDirectory = RootDirectory(r"C:/Program Files (x86)/Steam/steamapps/common/Deep Rock Galactic/FSD/Mods")
+        description = r"Please Select the <DRG Install Directory>/FSD/Mods Folder"
+    root_directory: RootDirectory = RootDirectory(None)
 
 def launch_client():
     from .client import launch
@@ -39,11 +38,9 @@ class DRGWorld(World):
     web = DRGWebWorld()
     options_dataclass = DRGOptions
     options: DRGOptions
-    settings: ClassVar[DRGSettings]
-
+    settings: DRGSettings
     item_name_to_id = ALL_ITEMS
     location_name_to_id = location_init()
-    #location_name_to_id = location_init(int(self.options.error_cube_count.value),bool(self.options.minigames_on.value))
     event_items={}
 
     def __init__(self, multiworld, player):
