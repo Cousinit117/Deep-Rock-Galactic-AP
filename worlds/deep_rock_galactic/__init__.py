@@ -12,7 +12,6 @@ from .regions import create_and_link_regions
 from .options import DRGOptions
 from .subclasses import DRGItem, DRGLocation
 import json
-from worlds.AutoWorld import World
 from worlds.LauncherComponents import components, Component, launch_subprocess, Type, icon_paths
 from .web_world import DRGWebWorld
 
@@ -23,8 +22,8 @@ class DRGSettings(settings.Group):
         Should look like :...\\Deep Rock Galactic\\FSD\\Mods
         By Default this assumes you have DRG installed on C drive in standard location.
         """
-        description = r"DRG needs /FSD/Mods folder Directory"
-    root_directory: RootDirectory = RootDirectory(r"C:/Program Files (x86)/Steam/steamapps/common/Deep Rock Galactic/FSD/Mods")
+        description = r"Please Select the <DRG Install Directory>/FSD/Mods Folder"
+    root_directory: RootDirectory = RootDirectory(None)
 
 def launch_client():
     from .client import launch
@@ -39,11 +38,9 @@ class DRGWorld(World):
     web = DRGWebWorld()
     options_dataclass = DRGOptions
     options: DRGOptions
-    settings: ClassVar[DRGSettings]
-
+    settings: DRGSettings
     item_name_to_id = ALL_ITEMS
     location_name_to_id = location_init()
-    #location_name_to_id = location_init(int(self.options.error_cube_count.value),bool(self.options.minigames_on.value))
     event_items={}
 
     def __init__(self, multiworld, player):
@@ -53,9 +50,10 @@ class DRGWorld(World):
         slot_data = {}
         
         slot_data.update(self.options.as_dict('death_link','death_link_all','goal_mode',\
-            'error_cube_checks','avail_classes','traps_on','minigames_on','coin_shop_prices',\
+            'error_cube_checks','avail_classes','traps_on','minigames_on','minigame_num','coin_shop_prices',\
             'gold_to_coin_rate','beermat_to_coin_rate','progression_diff','starting_stats',\
-            'gold_rush_val','shop_item_num','events_on','max_hazard'))
+            'gold_rush_val','shop_item_num','events_on','max_hazard','hunter_trophies',\
+            'hunter_targets'))
         
         ShopItemsDict = {}
         for i in range(1,(int(self.options.shop_item_num.value) + 1)): 
@@ -158,8 +156,8 @@ class DRGWorld(World):
         #print(f'Goal Mode Val:{self.options.goal_mode.value}')
         if self.options.goal_mode.value == 2: #goldrush win condition
             self.multiworld.get_location("Gold Rush:RICH", self.player).place_locked_item(victory_item)
-        #elif self.options.goal_mode.value == 3: #trophy hunter win condition
-            #self.multiworld.get_location("Trophy Hunter:MASTERED", self.player).place_locked_item(victory_item)
+        elif self.options.goal_mode.value == 3: #trophy hunter win condition
+            self.multiworld.get_location("Trophy Hunter:MASTERED", self.player).place_locked_item(victory_item)
         else: #default win condition = Haz 5 Caretaker
             self.multiworld.get_location("OBJ:Magma Core:Industrial Sabotage:5", self.player).place_locked_item(victory_item)
         

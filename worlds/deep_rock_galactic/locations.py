@@ -81,6 +81,76 @@ Warnings=[
     'Ebonite Outbreak',
 ]
 
+PassiveCreatures=[
+    'LootBug',
+    'Huuli Hoarder',
+    'Naedocyte Cave Cruiser',
+    'Fester Flea',
+    'Hexwing Gniffer',
+    'Cave Vine',
+    'Mobula Cave Angel',
+    'Silicate Harvester',
+]
+
+EnemiesNormal=[
+    #'Glyphid Swarmer',
+    'Glyphid Exploder',
+    'Glyphid Webspitter',
+    'Glyphid Grunt',
+    'Glyphid Acid Spitter',
+    #'Glyphid Slasher',
+    'Glyphid Septic Spreader',
+    #'Glyphid Guard',
+    'Glyphid Stalker',
+    'Glyphid Stingtail',
+    'Glyphid Menace',
+    'Glyphid Praetorian',
+    'Glyphid Warden',
+    'Glyphid Opressor',
+    'Brood Nexus',
+    #'Shellback Youngling',
+    'Shellback Adult',
+    'Nayaka Trawler',
+    'Rockpox Exploder',
+    'Rockpox Grunt',
+    'Rockpox Spitter',
+    'Rockpox Praetorian',
+    'Rockpox Goo Bomber',
+    #'Rockpox Naedocyte Breeder',
+    'Cave Leech',
+    'Vartok Scalebramble',
+    'Core Spawn Crawler',
+    'Stabber Vine',
+    'Spitball Infector',
+    'Barrage Infector',
+    'Mactera Shooter',
+    'Mactera TriJaw',
+    'Mactera Grabber',
+    'Mactera Brundle',
+    'Mactera Goo Bomber',
+    'Maedocyte Breeder',
+    #'Rival Shredder',
+    #'Rival Sniper Turret',
+    #'Rival Repulsion Turret',
+    #'Rival Burst Turret',
+    'Rival Patrol Bot',
+]
+
+EnemiesBosses=[
+    'Glyphid Bulk Detonator',
+    #'Glyphid Crassus Bulk Detonator',
+    #'Dreadnaught Arbalest',
+    #'Dreadnaught Lacerator',
+    'Dreadnaught Twins'
+    'Dreadnaught Hiveguard',
+    'Glyphid Dreadnaught',
+    'Korlok Tyrant Weed',
+    'BET-C',
+    'Rival Prospector Drone',
+    'Rival Nemesis',
+    'Rival Caretaker',
+]
+
 def getLocationGroup(group = "MainObj"):
     thisList=[]
     match group:
@@ -102,7 +172,7 @@ def getLocationGroup(group = "MainObj"):
                 for Hazard in [1,2,3,4,5]:
                     thisList.append(f'Event:{event}:{Hazard}')
         case "Minigames":
-            for i in [5,10,15,20,25,30]:
+            for i in range(5,105,5):
                 thisList.append(f'JettyBoot:{i}')
         case "Shop":
             for i in range(1,41):
@@ -115,6 +185,19 @@ def getLocationGroup(group = "MainObj"):
             for warn in Warnings:
                 for Hazard in [1,2,3,4,5]:
                     thisList.append(f'Warning:{warn}:{Hazard}')
+        case "HunterNormal":
+            for hunt in EnemiesNormal:
+                for i in range(10,110,10):
+                    thisList.append(f'Hunting Trophy:{hunt}:{i}')
+        case "HunterBoss":
+            thisList.append('Trophy Hunter:MASTERED')
+            for hunt in EnemiesBosses:
+                for i in range(1,11,1):
+                    thisList.append(f'Hunting Boss Trophy:{hunt}:{i}')
+        case "HunterPassive":
+            for hunt in PassiveCreatures:
+                for i in range(10,110,10):
+                    thisList.append(f'Hunting Trophy:{hunt}:{i}')
 
     return thisList
 
@@ -172,11 +255,28 @@ def location_init():
         MissionPermute[x]=CurrentID
         CurrentID+=1
 
+    #Hunting Goal
+    HuntList1 = getLocationGroup("HunterNormal")
+    for x in HuntList1:
+        MissionPermute[x]=CurrentID
+        CurrentID+=1
+
+    HuntList2 = getLocationGroup("HunterBoss")
+    for x in HuntList2:
+        MissionPermute[x]=CurrentID
+        CurrentID+=1
+
+    HuntList3 = getLocationGroup("HunterPassive")
+    for x in HuntList3:
+        MissionPermute[x]=CurrentID
+        CurrentID+=1
+
     ALL_LOCATIONS = {k: v + 1 << (LOCATION_BITSHIFT_DEFAULT) for k, v in MissionPermute.items()}
     return ALL_LOCATIONS
 
 def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = True,\
-    Goal = 1, GoldRushVal = 15000, ShopItems = 25, EventsOn = True, MaxHaz = 5):
+    MGMax = 30, Goal = 1, GoldRushVal = 15000, ShopItems = 25, EventsOn = True, MaxHaz = 5,\
+    HunterNum = 5, HunterTargets = 1):
     CurrentID=0
     RemovableLocations=[]
     MustRemove=[]
@@ -229,8 +329,12 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
     for i in range(40,ShopItems,-1):
         MustRemove.append(f'Shop Item:{i}')
 
+    #Minigames
+    for i in range(100,MGMax,-5):
+        MustRemove.append(f'JettyBoot:{i}')
+
     #Handle GoldRush Gold value
-    for i in range(20050,GoldRushVal,-50):
+    for i in range(20000,GoldRushVal,-50):
         MustRemove.append(f'Gold Rush:{i}')
 
     #Handle Warnings
@@ -238,17 +342,45 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
         for Hazard in RemoveHaz:
            MustRemove.append(f'Warning:{warn}:{Hazard}')
 
+    #Handle Trophy Hunter
+    match HunterTargets:
+        case 2: #only bosses
+            MustRemove.extend(getLocationGroup("HunterNormal"))
+            MustRemove.extend(getLocationGroup("HunterPassive"))
+        case 3: #no passives
+            MustRemove.extend(getLocationGroup("HunterPassive"))
+    for hunt in EnemiesNormal:
+        for i in range(100,HunterNum,-10):
+            MustRemove.append(f'Hunting Trophy:{hunt}:{i}')
+    for hunt in PassiveCreatures:
+        for i in range(100,HunterNum,-10):
+            MustRemove.append(f'Hunting Trophy:{hunt}:{i}')
+    for hunt in EnemiesBosses:
+        for i in range(10,round(HunterNum/10),-1):
+            MustRemove.append(f'Hunting Boss Trophy:{hunt}:{i}')
+
     #Handle Goal Removals
     match Goal:
         case 1: #default ind sabo haz 5
             MustRemove.extend(getLocationGroup("GoldRush"))
+            MustRemove.extend(getLocationGroup("HunterNormal"))
+            MustRemove.extend(getLocationGroup("HunterBoss"))
+            MustRemove.extend(getLocationGroup("HunterPassive"))
         case 2: #goldrush
             MustRemove.extend(getLocationGroup("MainObj"))
-        #case 3: #hunter
+            MustRemove.extend(getLocationGroup("HunterNormal"))
+            MustRemove.extend(getLocationGroup("HunterBoss"))
+            MustRemove.extend(getLocationGroup("HunterPassive"))
+        case 3: #hunter
+            MustRemove.extend(getLocationGroup("MainObj"))
+            MustRemove.extend(getLocationGroup("GoldRush"))
         #case 4: #world tour
         case _:
             #Remove Goldrush Goals, locations -401
             MustRemove.extend(getLocationGroup("GoldRush"))
+            MustRemove.extend(getLocationGroup("HunterNormal"))
+            MustRemove.extend(getLocationGroup("HunterBoss"))
+            MustRemove.extend(getLocationGroup("HunterPassive"))
             print(f"Goal is defaulted. This shouldn't happen! PANIC!")
 
     #This subtracts a number of locations from the pool semi-randomly.
