@@ -56,6 +56,7 @@ class DRGCommands(ClientCommandProcessor):
             dir = Utils.open_directory("Select the <DRG Install>/FSD/Mods Folder", self.ctx.BaseDirectory)
             if dir and dir != self.ctx.BaseDirectory:
                 self.ctx.game_options.update({"root_directory": dir})
+                self.ctx.game_options._changed = True
                 self.ctx.BaseDirectory = dir
                 self.output("Changed the directory to the following = " + self.ctx.BaseDirectory)
             else:
