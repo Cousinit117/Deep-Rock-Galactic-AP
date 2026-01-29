@@ -2,12 +2,13 @@ import logging
 import os
 from typing import List, ClassVar
 import settings
+import re
 from BaseClasses import Tutorial, ItemClassification
 # from Fill import fast_fill
 from worlds.LauncherComponents import launch_subprocess
 from worlds.AutoWorld import World, WebWorld
-from .items import ALL_ITEMS, ITEMS_COUNT, EVENT_ITEMS, CLASS_ITEM_CHECK, EXTRA_FILLER_ITEMS
-from .locations import location_init, remove_locations
+from .items import ALL_ITEMS, ITEMS_COUNT, EVENT_ITEMS, CLASS_ITEM_CHECK, EXTRA_FILLER_ITEMS, SPRINT_ITEM_CHECK
+from .locations import location_init, remove_locations, REMOVED_LOCATIONS
 from .regions import create_and_link_regions
 from .options import DRGOptions
 from .subclasses import DRGItem, DRGLocation
@@ -53,7 +54,7 @@ class DRGWorld(World):
             'error_cube_checks','avail_classes','traps_on','minigames_on','minigame_num','coin_shop_prices',\
             'gold_to_coin_rate','beermat_to_coin_rate','progression_diff','starting_stats',\
             'gold_rush_val','shop_item_num','events_on','max_hazard','hunter_trophies',\
-            'hunter_targets'))
+            'hunter_targets','sprint_start'))
         
         ShopItemsDict = {}
         for i in range(1,(int(self.options.shop_item_num.value) + 1)): 
@@ -61,6 +62,8 @@ class DRGWorld(World):
             ShopItemsDict[f"Shop Item:{i}"] = {"player" : int(thisLoc.item.player), "item" : str(thisLoc.item.name)}
 
         slot_data.update({"shop_items" : ShopItemsDict})
+
+        slot_data.update({"removed_locations" : REMOVED_LOCATIONS})
 
         return slot_data
 
@@ -90,13 +93,21 @@ class DRGWorld(World):
         '''
         
         item_pool = []
+        movement_remove = 0
         for item_name in ALL_ITEMS:
             #skip event items because they have set locations
             if item_name in EVENT_ITEMS:
                 continue
+            #skip junk items because they're junk
+            if item_name in EXTRA_FILLER_ITEMS:
+                continue
             counts = ITEMS_COUNT[item_name]
             #skip adding classes to item pool because they start unlocked
             if (item_name in CLASS_ITEM_CHECK) and (self.options.avail_classes.value == 0):
+                continue
+            #skip adding movespeed to pool if starting with sprint allowed
+            if (item_name in SPRINT_ITEM_CHECK) and (self.options.sprint_start.value == 1) and (movement_remove <= 3):
+                movement_remove += 1
                 continue
             #generate Rest of Items
             item_pool += [self.create_item(item_name, ItemClassification.progression) for _ in range(counts.progression)]
@@ -104,6 +115,11 @@ class DRGWorld(World):
             item_pool += [self.create_item(item_name, ItemClassification.filler     ) for _ in range(counts.filler     )]
             if bool(self.options.traps_on):
                 item_pool += [self.create_item(item_name, ItemClassification.trap       ) for _ in range(counts.trap       )]
+
+        #fill as needed
+        Unfilled_Locations = len(self.multiworld.get_unfilled_locations())
+        Needed_Filler = Unfilled_Locations - len(item_pool)
+        item_pool += [self.create_item(self.random.choice(EXTRA_FILLER_ITEMS), ItemClassification.filler) for _ in range(Needed_Filler)]
         
         #add to multiworld pool
         self.multiworld.itempool += item_pool
@@ -116,10 +132,16 @@ class DRGWorld(World):
         return self.event_items
         
     def checkSlotName(self):
-        if ' ' in self.player_name:
-            raise ValueError("DRG Slot names cannot contain spaces. Please use underscores if needed.")
-        else:
+        # The pattern explanation:
+        # ^ : Matches the start of the string.
+        # [a-zA-Z0-9_] : Matches any lowercase letter, uppercase letter, digit, or underscore.
+        # * : Matches zero or more repetitions of the preceding character class.
+        # $ : Matches the end of the string.
+        pattern = '^[a-zA-Z0-9_]*$'
+        if re.match(pattern, self.player_name): #Check if all characters are valid
             print("Slot Name is valid for DRG.")
+        else:
+            raise ValueError("DRG Slot names cannot contain anything but letters, numbers, and underscores. Please rename your slot.")
 
     def generate_early(self) -> None:
         '''

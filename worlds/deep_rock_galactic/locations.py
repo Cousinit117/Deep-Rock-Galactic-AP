@@ -13,6 +13,8 @@ LOCATION_BITSHIFT_DEFAULT       = 24
 
 #host.yaml (or something) caches file locations, get file locations from this?
 
+REMOVED_LOCATIONS=[]
+
 Biomes=[
     'Azure Weald',
     'Crystalline Caverns',
@@ -24,6 +26,7 @@ Biomes=[
     'Radioactive Exclusion Zone',
     'Salt Pits',
     'Sandblasted Corridors',
+    'Ossuary Depths',
 ]
 
 MissionTypes=[
@@ -35,6 +38,7 @@ MissionTypes=[
     'On-site Refining',
     'Salvage Operation', #Requires carrying
     'Deep Scan',
+    'Heavy Excavation',
 ]
 
 SecondaryObjectives=[
@@ -54,6 +58,7 @@ SecondaryObjectives=[
     'Dreadnought Eggs',
     'Mini Mules',
     'Alien Eggs',
+    'Secondary Excavation',
 ]
 
 Events=[
@@ -79,17 +84,18 @@ Warnings=[
     'Swarmageddon',
     'Duck And Cover',
     'Ebonite Outbreak',
+    'Ossiran Colony',
 ]
 
 PassiveCreatures=[
     'LootBug',
-    'Huuli Hoarder',
-    'Naedocyte Cave Cruiser',
+    #'Huuli Hoarder',
+    #'Naedocyte Cave Cruiser',
     'Fester Flea',
-    'Hexwing Gniffer',
-    'Cave Vine',
-    'Mobula Cave Angel',
-    'Silicate Harvester',
+    #'Hexwing Gniffer',
+    #'Cave Vine',
+    #'Mobula Cave Angel',
+    #'Silicate Harvester',
 ]
 
 EnemiesNormal=[
@@ -98,9 +104,7 @@ EnemiesNormal=[
     'Glyphid Webspitter',
     'Glyphid Grunt',
     'Glyphid Acid Spitter',
-    #'Glyphid Slasher',
     'Glyphid Septic Spreader',
-    #'Glyphid Guard',
     'Glyphid Stalker',
     'Glyphid Stingtail',
     'Glyphid Menace',
@@ -108,32 +112,31 @@ EnemiesNormal=[
     'Glyphid Warden',
     'Glyphid Opressor',
     'Brood Nexus',
-    #'Shellback Youngling',
-    'Shellback Adult',
+    'Qronar Shellback',
     'Nayaka Trawler',
     'Rockpox Exploder',
     'Rockpox Grunt',
     'Rockpox Spitter',
     'Rockpox Praetorian',
     'Rockpox Goo Bomber',
-    #'Rockpox Naedocyte Breeder',
+    'Rockpox Naedocyte Breeder',
     'Cave Leech',
-    'Vartok Scalebramble',
-    'Core Spawn Crawler',
+    #'Vartok Scalebramble',
+    #'Core Spawn Crawler',
     'Stabber Vine',
     'Spitball Infector',
-    'Barrage Infector',
+    #'Barrage Infector',
     'Mactera Shooter',
     'Mactera TriJaw',
     'Mactera Grabber',
     'Mactera Brundle',
     'Mactera Goo Bomber',
-    'Maedocyte Breeder',
+    'Naedocyte Breeder',
     #'Rival Shredder',
-    #'Rival Sniper Turret',
-    #'Rival Repulsion Turret',
-    #'Rival Burst Turret',
+    'Rival Turrets',
     'Rival Patrol Bot',
+    #'Ossiran Scrab',
+    #'Ossiran Pit Jaw',
 ]
 
 EnemiesBosses=[
@@ -393,6 +396,7 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
         for key in keys_must:
             if key in DictStart:
                 del DictStart[key]
+                #REMOVED_LOCATIONS.append(key)
                 #NumToRemove -= 1
 
         # Remove the selected items from the dictionary
@@ -400,6 +404,8 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
             keys_to_remove = random.sample(DictRemoveRand, NumToRemove)
             for key in keys_to_remove:
                 del DictStart[key]
+                REMOVED_LOCATIONS.append(key)
+
         return DictStart
     
     TRUNC_ALL_LOCATIONS = remove_random_dict_items(ALL_LOCATIONS, RemovableLocations, MustRemove, LocationDifference)    

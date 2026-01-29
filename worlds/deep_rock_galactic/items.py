@@ -12,10 +12,8 @@ class ItemData(NamedTuple):
     filler:      int = 0
     trap:        int = 0
 
-
-
 ITEMS = {
-#Progression, highest number among items is now 82
+#Progression, highest number among items is now 91
     'Progressive-Flare-Count': 47,
     'Progressive-Flare-Recharge':1,
     'Progressive-Carriable-Throwing':2,
@@ -107,6 +105,15 @@ ITEMS = {
 #spacerig stuff
     'Open-Bar':81,
     'Free-Drink':82,
+#missing perks
+    'Progressive-Dash':85,
+    'Progressive-Heightened-Senses':86,
+    'Progressive-Born-Ready':87,
+#junk / nothing items
+    'Beard-Waxing':88,
+    'Hydrate-Water':89,
+    'Gnome-Spray':90,
+    'Takeout-Food-Order':91,
 }
 ITEMS = {k: v + 1 << ITEM_BITSHIFT_DEFAULT for k, v in ITEMS.items()}
 
@@ -138,7 +145,7 @@ ITEMS_COUNT = {
 ),
     'Progressive-Movement-Speed':ItemData(
         progression=6,
-        useful=5,
+        useful=6,
         filler=0,#should be 0
 ),
     'Progressive-RedSugar-Healing':ItemData(
@@ -476,27 +483,27 @@ ITEMS_COUNT = {
 ),
     'Progressive-Engineer-Turrets':ItemData(
         progression=1,
-        useful=2,
-        filler=0,
+        useful=3,
+        filler=1,
 ),
     'Progressive-Scout-Grapple':ItemData(
         progression=2,
-        useful=3,
+        useful=4,
         filler=0,
 ),
     'Progressive-Scout-FlareGun':ItemData(
         progression=2,
-        useful=3,
+        useful=4,
         filler=0,
 ),
     'Progressive-Driller-Drills':ItemData(
         progression=3,
-        useful=3,
+        useful=4,
         filler=0,
 ),
     'Progressive-Driller-C4':ItemData(
         progression=2,
-        useful=3,
+        useful=4,
         filler=0,
 ),
     'Class-Gunner':ItemData(
@@ -527,16 +534,31 @@ ITEMS_COUNT = {
     'Free-Drink':ItemData(
         progression=0,
         useful=0,
-        filler=10,
-),
-    'Progressive-Gear-Upgrades':ItemData(
-        progression=5,
-        useful=2,
-        filler=0,
+        filler=25,
 ),
     'Overclocks-Unlocked':ItemData(
         progression=1,
         useful=0,
+        filler=0,
+),
+    'Progressive-Gear-Upgrades':ItemData(
+        progression=5,
+        useful=3,
+        filler=0,
+),
+    'Progressive-Dash':ItemData(
+        progression=0,
+        useful=6,
+        filler=0,
+),
+    'Progressive-Heightened-Senses':ItemData(
+        progression=0,
+        useful=6,
+        filler=0,
+),
+    'Progressive-Born-Ready':ItemData(
+        progression=0,
+        useful=1,
         filler=0,
 ),
 }
@@ -551,10 +573,14 @@ ALL_ITEMS = {
     **EVENT_ITEMS,
 }
 
-EXTRA_FILLER_ITEMS = {
+EXTRA_FILLER_ITEMS = [
     #Contains only extra items used for filler generation
-    'Free-Drink':83,
-}
+    'Free-Drink',
+    'Beard-Waxing',
+    'Hydrate-Water',
+    'Gnome-Spray',
+    'Takeout-Food-Order',
+]
 
 #Item group hardcode
 Generic_Progressives = [ #Includes most but not all of progression checks. 
@@ -599,6 +625,11 @@ CLASS_ITEM_CHECK = [
     'Class-Driller',
     'Class-Scout',
     'Class-Engineer',
+]
+
+#Checks for Sprint Enabled
+SPRINT_ITEM_CHECK = [
+    'Progressive-Movement-Speed',
 ]
 #state.has_from_list(Generic_Progressives,player,5)
 #has_from_list(self, items: Iterable[str], player: int, count: int) 

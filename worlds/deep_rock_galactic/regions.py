@@ -32,7 +32,7 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
         return state.has('Progressive-Gun-Ammo',player,diffArr[5]) #Requires at least 2 ammo buffs
 
     MissionsDefault=[Mission for Mission in ALL_LOCATIONS if (
-        'Egg Hunt' in Mission or 'On-site Refining' in Mission or 'Deep Scan' in Mission) \
+        'Egg Hunt' in Mission or 'On-site Refining' in Mission or 'Deep Scan' in Mission or 'Heavy Excavation' in Mission) \
         and ('1' in Mission or '2' in Mission)
         ]
 
@@ -45,17 +45,17 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
         ]
 
     MissionsDefaultHaz3=[Mission for Mission in ALL_LOCATIONS if (
-        'Egg Hunt' in Mission or 'On-site Refining' in Mission or 'Deep Scan' in Mission) \
+        'Egg Hunt' in Mission or 'On-site Refining' in Mission or 'Deep Scan' in Mission or 'Heavy Excavation' in Mission) \
         and ('3' in Mission)
         ]
         
     MissionsDefaultHaz4=[Mission for Mission in ALL_LOCATIONS if (
-        'Egg Hunt' in Mission or 'On-site Refining' in Mission or 'Deep Scan' in Mission) \
+        'Egg Hunt' in Mission or 'On-site Refining' in Mission or 'Deep Scan' in Mission or 'Heavy Excavation' in Mission) \
         and ('4' in Mission)
         ]
 
     MissionsDefaultHaz5=[Mission for Mission in ALL_LOCATIONS if (
-        'Egg Hunt' in Mission or 'On-site Refining' in Mission or 'Deep Scan' in Mission) \
+        'Egg Hunt' in Mission or 'On-site Refining' in Mission or 'Deep Scan' in Mission or 'Heavy Excavation' in Mission) \
         and ('5' in Mission)
         ]
     
@@ -174,28 +174,28 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
     Secondaries12=[Secondary for Secondary in ALL_LOCATIONS if (
         ('Glyphid Eggs' in Secondary or 'Bha Barnacles' in Secondary or 'Apoca Blooms' in Secondary or 'Boolo Caps' in Secondary \
         or 'Ebonuts' in Secondary or 'Alien Fossils' in Secondary or 'Fester Fleas' in Secondary or 'Dystrum' in Secondary or \
-        'Hollomite' in Secondary or 'Black Box' in Secondary or 'Oil Pumping' in Secondary or 'Secondary Scan' in Secondary) \
+        'Hollomite' in Secondary or 'Black Box' in Secondary or 'Oil Pumping' in Secondary or 'Secondary Scan' in Secondary or 'Secondary Excavation' in Secondary) \
         and ('1' in Secondary or '2' in Secondary))
         ]
 
     Secondaries3=[Secondary for Secondary in ALL_LOCATIONS if (
         ('Glyphid Eggs' in Secondary or 'Bha Barnacles' in Secondary or 'Apoca Blooms' in Secondary or 'Boolo Caps' in Secondary \
         or 'Ebonuts' in Secondary or 'Alien Fossils' in Secondary or 'Fester Fleas' in Secondary or 'Dystrum' in Secondary or \
-        'Hollomite' in Secondary or 'Black Box' in Secondary or 'Oil Pumping' in Secondary or 'Secondary Scan' in Secondary) \
+        'Hollomite' in Secondary or 'Black Box' in Secondary or 'Oil Pumping' in Secondary or 'Secondary Scan' in Secondary or 'Secondary Excavation' in Secondary) \
         and ('3' in Secondary))
         ]
 
     Secondaries4=[Secondary for Secondary in ALL_LOCATIONS if (
         ('Glyphid Eggs' in Secondary or 'Bha Barnacles' in Secondary or 'Apoca Blooms' in Secondary or 'Boolo Caps' in Secondary \
         or 'Ebonuts' in Secondary or 'Alien Fossils' in Secondary or 'Fester Fleas' in Secondary or 'Dystrum' in Secondary or \
-        'Hollomite' in Secondary or 'Black Box' in Secondary or 'Oil Pumping' in Secondary or 'Secondary Scan' in Secondary) \
+        'Hollomite' in Secondary or 'Black Box' in Secondary or 'Oil Pumping' in Secondary or 'Secondary Scan' in Secondary or 'Secondary Excavation' in Secondary) \
         and ('4' in Secondary))
         ]
 
     Secondaries5=[Secondary for Secondary in ALL_LOCATIONS if (
         ('Glyphid Eggs' in Secondary or 'Bha Barnacles' in Secondary or 'Apoca Blooms' in Secondary or 'Boolo Caps' in Secondary \
         or 'Ebonuts' in Secondary or 'Alien Fossils' in Secondary or 'Fester Fleas' in Secondary or 'Dystrum' in Secondary or \
-        'Hollomite' in Secondary or 'Black Box' in Secondary or 'Oil Pumping' in Secondary or 'Secondary Scan' in Secondary) \
+        'Hollomite' in Secondary or 'Black Box' in Secondary or 'Oil Pumping' in Secondary or 'Secondary Scan' in Secondary or 'Secondary Excavation' in Secondary) \
         and ('5' in Secondary))
         ]
 
@@ -506,19 +506,23 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
 
     # remove_locations(ALL_LOCATIONS, options.locations_to_remove.value)
     # remove_locations(ALL_LOCATIONS,100)
-    baseRemoval = 3
+    baseRemoval = 23
     trapRemoval = 0
     classRemoval = 0
+    sprintRemoval = 0
     if not bool(options.traps_on.value):
         trapRemoval = 48
     if options.avail_classes.value == 0:
         classRemoval = 4
-    totalToRemove = baseRemoval + trapRemoval + classRemoval + options.locations_to_remove.value #81
+    if options.sprint_start.value == 1:
+        sprintRemoval = 4
+    totalToRemove = baseRemoval + trapRemoval + classRemoval + sprintRemoval + options.locations_to_remove.value #81
     ALL_LOCATIONS=remove_locations(ALL_LOCATIONS,totalToRemove,int(options.error_cube_checks.value),\
         bool(options.minigames_on.value),int(options.minigame_num.value),int(options.goal_mode.value),int(options.gold_rush_val.value),\
         int(options.shop_item_num.value),bool(options.events_on.value),int(options.max_hazard.value),\
         int(options.hunter_trophies.value),int(options.hunter_targets.value))
     # print(REGIONS)
+
     for region in REGIONS:
         #Added a check at the end of "if location in ALL_LOCATIONS"
         region_locations = {location: ALL_LOCATIONS[location] for location in REGIONS[region].locations if location in ALL_LOCATIONS}

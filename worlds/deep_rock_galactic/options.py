@@ -20,14 +20,14 @@ class HazMax(Choice):
     default = 5
 
 class GoldRushGoalValue(Range):
-    """Set The Current Gold Rush Gold needed (if that's your goal)"""
+    """Set The Current Gold Rush Gold needed (if that's your goal) [Must be Multiple of 50]"""
     display_name = "Goal Gold for Gold Rush"
     range_start = 7500
     range_end   = 20000
     default     = 15000
 
 class HunterTrophyAmount(Range):
-    """Set The Current Hunter Trophies Needed per enemy (if that's your goal) [Bosses need 1/10]"""
+    """Set The Current Hunter Trophies Needed per enemy (if that's your goal) [Bosses need 1/10] [Must be a Multiple of 10]"""
     display_name = "Trophy Hunter Goal Amount"
     range_start = 10
     range_end   = 100
@@ -136,6 +136,11 @@ class BeerMatToCoinConversionRate(Range):
     range_end   = 50
     default     = 2
 
+class SprintStart(Toggle):
+    """Sets whether sprinting should be possible from the start (removes some base movespeed checks)"""
+    display_name = "Should Start with Sprinting Unlocked?"
+    default = False
+
 @dataclass
 class DRGOptions(PerGameCommonOptions):
     progression_diff:       ProgressionDifficulty
@@ -158,6 +163,7 @@ class DRGOptions(PerGameCommonOptions):
     max_hazard:             HazMax
     hunter_trophies:        HunterTrophyAmount
     hunter_targets:         HunterTargets
+    sprint_start:           SprintStart
 
 #set option groups for the web UI
 option_groups = [
@@ -167,7 +173,7 @@ option_groups = [
     ),
     OptionGroup(
         "Difficulty Options",
-        [ProgressionDifficulty,StartingStats,StartingClasses,DeathLink,DeathLinkAll]
+        [ProgressionDifficulty,StartingStats,SprintStart,StartingClasses,DeathLink,DeathLinkAll]
     ),
     OptionGroup(
         "Optional Features",
@@ -207,6 +213,7 @@ option_presets = {
         "hunter_trophies": 50,
         "hunter_complete": 2,
         "hunter_targets": 1,
+        "sprint_start": False,
     },
     "haz5 kill caretaker standard": {
         "progression_diff": 2,
@@ -230,6 +237,7 @@ option_presets = {
         "hunter_trophies": 50,
         "hunter_complete": 2,
         "hunter_targets": 1,
+        "sprint_start": False,
     },
     "hunter mode standard": {
         "progression_diff": 2,
@@ -253,5 +261,6 @@ option_presets = {
         "hunter_trophies": 50,
         "hunter_complete": 2,
         "hunter_targets": 1,
+        "sprint_start": False,
     },
 }

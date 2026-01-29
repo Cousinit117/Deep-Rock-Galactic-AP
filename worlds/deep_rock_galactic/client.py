@@ -97,6 +97,7 @@ class DRGContext(CommonContext):
     APMsgs="APMsgs.txt"
     APDeathGet="APDeathGet.txt"
     APDeathSend="APDeathSend.txt"
+    APRemovedLocations="APRemovedLocations.txt"
     #This will not run in source currently if your host.yaml does not contain a working directory
     #It will try to open a file browsers to let you select, and that part will fail if ran from source, at least for me
 
@@ -113,6 +114,7 @@ class DRGContext(CommonContext):
 
         self.server_state_synchronized = False
         self.new_locations             = set()
+        self.file_setslot              = ""
         self.file_items                = ""# os.path.join(self.BaseDirectory,self.APChecklist)
         self.file_locations            = ""# os.path.join(self.BaseDirectory,self.APLocationlist)
         self.file_aplocations          = ""# os.path.join(self.BaseDirectory,self.APLocationsChecked)
@@ -120,6 +122,7 @@ class DRGContext(CommonContext):
         self.file_settings             = ""
         self.file_deathget             = ""
         self.file_deathsend            = ""
+        self.file_removedlocations     = ""
         self.collected_items           = []
         self.finished_game             = False
         self.want_slot_data            = True
@@ -163,8 +166,8 @@ class DRGContext(CommonContext):
         await super(DRGContext, self).shutdown()
 
     async def updateHints(self):
-        await self.send_msgs([{'cmd': 'Get','keys': f'["hints_{self.team}_{self.slot}"]'}])
-        self.UpdateHintsTxT()
+        await self.send_msgs([{"cmd": "Get","keys": f'["_read_hints_{self.team}_{self.slot}"]'}])
+        #self.UpdateHintsTxT()
 
     #async def getShopItems(self):
         #await self.send_msgs([{'cmd': 'LocationScouts','keys': f'[]'}])
@@ -184,17 +187,24 @@ class DRGContext(CommonContext):
             self.set_location_data()
             SlotName=(self.slot_info[self.slot].name)#self.slot_info[self.slot].name returns the name of the slot you connected to
             SlotName=SlotName.replace(" ","_")#DRG Needs to have underscores and no spaces
-            self.file_items                = os.path.join(self.BaseDirectory,SlotName,self.APChecklist)#Defines names, but they may not exist yet
-            self.file_locations            = os.path.join(self.BaseDirectory,SlotName,self.APLocationlist)
-            self.file_aplocations          = os.path.join(self.BaseDirectory,SlotName,self.APLocationsChecked)
-            self.file_locationhelper       = os.path.join(self.BaseDirectory,SlotName,self.APLocationHelper)
-            self.file_settings             = os.path.join(self.BaseDirectory,SlotName,self.APSettings)
-            self.file_shop                 = os.path.join(self.BaseDirectory,SlotName,self.APShop)
-            self.file_deathget             = os.path.join(self.BaseDirectory,SlotName,self.APDeathGet)
-            self.file_deathsend            = os.path.join(self.BaseDirectory,SlotName,self.APDeathSend)
+            self.file_setslot              = os.path.join(self.BaseDirectory,"Archipelago","ActiveSlot.txt") #sets the current slot
+            self.file_items                = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APChecklist)#Defines names, but they may not exist yet
+            self.file_locations            = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APLocationlist)
+            self.file_aplocations          = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APLocationsChecked)
+            self.file_locationhelper       = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APLocationHelper)
+            self.file_settings             = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APSettings)
+            self.file_shop                 = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APShop)
+            self.file_deathget             = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APDeathGet)
+            self.file_deathsend            = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APDeathSend)
+            self.file_removedlocations     = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APRemovedLocations)
             #only print these files first time the save is loaded
-            if not os.path.isdir(os.path.join(self.BaseDirectory,SlotName)):#Does slot directory/save exist? if no, make it and the files
-                os.mkdir(os.path.join(self.BaseDirectory,SlotName))
+            if not os.path.isdir(os.path.join(self.BaseDirectory,"Archipelago",SlotName)):#Does slot directory/save exist? if no, make it and the files
+                os.mkdir(os.path.join(self.BaseDirectory,"Archipelago"))
+                os.mkdir(os.path.join(self.BaseDirectory,"Archipelago",SlotName))
+                #Set the active slot for DRG
+                with open(self.file_setslot, 'w') as f:
+                    f.write(f'{SlotName}')
+                #init other files
                 open(self.file_items, 'w')
                 open(self.file_locations, 'w')
                 open(self.file_aplocations, 'w')
@@ -231,13 +241,14 @@ class DRGContext(CommonContext):
                 maxHaz = self.slot_data.get("max_hazard",5)
                 huntTrophy = self.slot_data.get("hunter_trophies",5)
                 huntTargets = self.slot_data.get("hunter_targets",1)
+                sprintOn = self.slot_data.get("sprint_start",0)
                 f.write(f"Goal:{goalMode},CubesNeeded:{cubesNeeded},StartingClass:{classStart},"
                     f"TrapsEnabled:{trapsOn},DeathLink:{self.deathlinkOn},DeathAll:{deathlinkAll},"
                     f"MinigamesEnabled:{minigameOn},APCoinCost:{APCoinCost},GoldToCoin:{goldToCoin},"
                     f"BeerToCoin:{beerToCoin},ProgDiff:{progDiff},StartStats:{startStats},"
                     f"GoldRushVal:{goldRushVal},ShopItemNum:{shopNum},EventsOn:{eventsOn},"
                     f"MaxHazard:{maxHaz},HuntTrophy:{huntTrophy},HuntTargets:{huntTargets},"
-                    f"MinigameNum:{minigameNum}")
+                    f"MinigameNum:{minigameNum},SprintStart:{sprintOn}")
             #prints and saves the shop items for the mod to read
             with open(self.file_shop, 'w') as f:
                 shopItemDict = self.slot_data["shop_items"]
@@ -247,6 +258,11 @@ class DRGContext(CommonContext):
                     itemDict = shopItemDict[shopKey]
                     playerN = self.slot_info[itemDict["player"]].name
                     f.write(f"{shopKey}|{playerN}={itemDict["item"]}\n")
+            #prints and saves the removed locations
+            with open(self.file_removedlocations, 'w') as f:
+                removedLocs = self.slot_data["removed_locations"]
+                for locKey in removedLocs:
+                    f.write(f"{locKey}\n")
 
         #handle getting new items
         if cmd in {"ReceivedItems"}:
@@ -256,7 +272,7 @@ class DRGContext(CommonContext):
             else:
                 new_items = args['items']
             self.collected_items += new_items
-            asyncio.create_task(self.updateHints())
+            #asyncio.create_task(self.updateHints())
             # put all the thingies into the output file
             asyncio.create_task(self.give_items(self.collected_items))
 
@@ -284,13 +300,13 @@ class DRGContext(CommonContext):
                     file.write(self.location_names.lookup_in_game(location)+'\n') #Prints all checked locations by name, after getting them by ID
 
         #used for hints and item messages
-        if cmd in {"PrintJSON"}:
-            SlotName=(self.slot_info[self.slot].name)#self.slot_info[self.slot].name returns the name of the slot you connected to
-            SlotName=SlotName.replace(" ","_")#DRG Needs to have underscores and no spaces
-            self.file_msgs = os.path.join(self.BaseDirectory,SlotName,self.APMsgs)   
-            if "type" in args: #check that its a data packet
-                if args["type"] == "Hint": #check that it's a hint
-                    asyncio.create_task(self.updateHints())
+        #if cmd in {"PrintJSON"}:
+            #SlotName=(self.slot_info[self.slot].name)#self.slot_info[self.slot].name returns the name of the slot you connected to
+            #SlotName=SlotName.replace(" ","_")#DRG Needs to have underscores and no spaces
+            #self.file_msgs = os.path.join(self.BaseDirectory,SlotName,self.APMsgs)   
+            #if "type" in args: #check that its a data packet
+                #if args["type"] == "Hint": #check that it's a hint
+                    #asyncio.create_task(self.updateHints())
                 #if args["type"] == "ItemSend": #item sending message
                     #thisMsg = args["data"]
                     #asyncio.create_task(self.sendInGameMsg(thisMsg,SlotName))
@@ -305,7 +321,7 @@ class DRGContext(CommonContext):
     def UpdateHintsTxT(self):
         SlotName=(self.slot_info[self.slot].name)#self.slot_info[self.slot].name returns the name of the slot you connected to
         SlotName=SlotName.replace(" ","_")#DRG Needs to have underscores and no spaces
-        self.file_hints                = os.path.join(self.BaseDirectory,SlotName,self.APHints)
+        self.file_hints                = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APHints)
         finalStr = ""
         for h in self.hintsList:
             slot_f = int(h["finding_player"])
@@ -318,7 +334,7 @@ class DRGContext(CommonContext):
             status = h["status"]
             finalStr += f"{player_f},{player_r},{location},{item},{found},{status}\n"
             #print(f"{finalStr}")
-            if os.path.isdir(os.path.join(self.BaseDirectory,SlotName)):
+            if os.path.isdir(os.path.join(self.BaseDirectory,"Archipelago",SlotName)):
                 with open(self.file_hints, 'w') as f:
                     f.write(f"{finalStr}")
 
@@ -364,7 +380,7 @@ class DRGContext(CommonContext):
             location = self.getLocNameFromGame(int(thisMsg[6]["text"]),slot_f) #self.id_to_loc_name[int(thisMsg[6]["text"])]
             finalMsg = f"{player_f} sent {item} to {player_r} ({location})"
 
-        if os.path.isdir(os.path.join(self.BaseDirectory,SlotName)) and not finalMsg:
+        if os.path.isdir(os.path.join(self.BaseDirectory,"Archipelago",SlotName)) and not finalMsg:
             with open(self.file_msgs, 'w') as f:
                 f.write(f"{finalMsg}")
         time.sleep(1) #wait between writes (no worries if you miss some messages ina  huge release)
