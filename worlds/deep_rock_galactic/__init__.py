@@ -117,9 +117,11 @@ class DRGWorld(World):
                 item_pool += [self.create_item(item_name, ItemClassification.trap       ) for _ in range(counts.trap       )]
 
         #fill as needed
-        Unfilled_Locations = len(self.multiworld.get_unfilled_locations())
-        Needed_Filler = Unfilled_Locations - len(item_pool)
-        item_pool += [self.create_item(self.random.choice(EXTRA_FILLER_ITEMS), ItemClassification.filler) for _ in range(Needed_Filler)]
+        Unfilled_Locations = len(self.multiworld.get_unfilled_locations(self.player))
+        Needed_Filler = Unfilled_Locations - len(item_pool) - 1 #for range fix
+        if Needed_Filler > 0:
+            print(f"Extra Items Needed:{Needed_Filler} = {Unfilled_Locations} - {len(item_pool)}")
+            item_pool += [self.create_item(self.random.choice(EXTRA_FILLER_ITEMS), ItemClassification.filler) for _ in range(Needed_Filler)]
         
         #add to multiworld pool
         self.multiworld.itempool += item_pool

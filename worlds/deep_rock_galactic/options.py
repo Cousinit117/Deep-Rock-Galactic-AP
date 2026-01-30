@@ -3,7 +3,7 @@ from Options import Choice, Range, Toggle, ItemDict, PerGameCommonOptions, Start
 
 
 class Goal(Choice):
-    """Set The Current Run Goal [Working Options = haz5_caretaker (default), goldrush, hunter (Not Yet Functional!)]"""
+    """Set The Current Run Goal [Working Options = kill_caretaker (default), goldrush, hunter (In BETA, Expect Bugs [Pun Intended])]"""
     display_name = "Goal of the Run"
     option_kill_caretaker = 1
     option_goldrush = 2
