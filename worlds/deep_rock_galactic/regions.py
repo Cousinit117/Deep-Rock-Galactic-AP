@@ -30,6 +30,12 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
         return state.has('Progressive-Morkite-Mining',player,diffArr[4]) #This number is safe at 3. As far as a tracker goes, MAY be completable at 2. sometimes     
     def rule_ammo(state):
         return state.has('Progressive-Gun-Ammo',player,diffArr[5]) #Requires at least 2 ammo buffs
+    #define biome restrictions
+    def rule_biome_azure(state):
+        if (option.biomes_restricted.value == 0) or ('Unlock-Azure-Weald' in option.biomes_start.value):
+            return True
+        else:
+            return state.has('Unlock-Azure-Weald',player)
 
     MissionsDefault=[Mission for Mission in ALL_LOCATIONS if (
         'Egg Hunt' in Mission or 'On-site Refining' in Mission or 'Deep Scan' in Mission or 'Heavy Excavation' in Mission) \

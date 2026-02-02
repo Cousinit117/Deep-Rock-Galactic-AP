@@ -7,8 +7,9 @@ from BaseClasses import Tutorial, ItemClassification
 # from Fill import fast_fill
 from worlds.LauncherComponents import launch_subprocess
 from worlds.AutoWorld import World, WebWorld
-from .items import ALL_ITEMS, ITEMS_COUNT, EVENT_ITEMS, CLASS_ITEM_CHECK, EXTRA_FILLER_ITEMS, SPRINT_ITEM_CHECK
-from .locations import location_init, remove_locations, REMOVED_LOCATIONS
+from .items import ALL_ITEMS, ITEMS_COUNT, EVENT_ITEMS, CLASS_ITEM_CHECK,\
+EXTRA_FILLER_ITEMS, SPRINT_ITEM_CHECK, BIOME_CHECK_ITEMS
+from .locations import location_init, remove_locations, REMOVED_LOCATIONS,Biomes
 from .regions import create_and_link_regions
 from .options import DRGOptions
 from .subclasses import DRGItem, DRGLocation
@@ -103,18 +104,43 @@ class DRGWorld(World):
                 continue
             counts = ITEMS_COUNT[item_name]
             #skip adding classes to item pool because they start unlocked
-            if (item_name in CLASS_ITEM_CHECK) and (self.options.avail_classes.value == 0):
+            match self.options.avail_classes.value:
+                case 0: #continue if any class item
+                    if (item_name in CLASS_ITEM_CHECK):
+                        continue
+                case 1: #continue if current class
+                    if (item_name == "Class-Gunner"):
+                        continue
+                case 2: #continue if current class
+                    if (item_name == "Class-Driller"):
+                        continue
+                case 3: #continue if current class
+                    if (item_name == "Class-Scout"):
+                        continue
+                case 4: #continue if current class
+                    if (item_name == "Class-Engineer"):
+                        continue
+                case _:
+                    continue
+
+            #skip adding biome items if no biome restrict
+            if (item_name in BIOME_CHECK_ITEMS and self.options.biomes_restricted.value == 0):
                 continue
+
+            #if biome restrictions are on, then ignore starting biome items
+            if (item_name in BIOME_CHECK_ITEMS and self.options.biomes_restricted.value == 1 and item_name in self.options.biomes_start.value):
+                continue
+
             #skip adding movespeed to pool if starting with sprint allowed
             if (item_name in SPRINT_ITEM_CHECK) and (self.options.sprint_start.value == 1) and (movement_remove <= 3):
                 movement_remove += 1
                 continue
             #generate Rest of Items
             item_pool += [self.create_item(item_name, ItemClassification.progression) for _ in range(counts.progression)]
-            item_pool += [self.create_item(item_name, ItemClassification.useful     ) for _ in range(counts.useful     )]
-            item_pool += [self.create_item(item_name, ItemClassification.filler     ) for _ in range(counts.filler     )]
+            item_pool += [self.create_item(item_name, ItemClassification.useful) for _ in range(counts.useful     )]
+            item_pool += [self.create_item(item_name, ItemClassification.filler) for _ in range(counts.filler     )]
             if bool(self.options.traps_on):
-                item_pool += [self.create_item(item_name, ItemClassification.trap       ) for _ in range(counts.trap       )]
+                item_pool += [self.create_item(item_name, ItemClassification.trap) for _ in range(counts.trap       )]
 
         #fill as needed
         Unfilled_Locations = len(self.multiworld.get_unfilled_locations(self.player))
@@ -141,9 +167,19 @@ class DRGWorld(World):
         # $ : Matches the end of the string.
         pattern = '^[a-zA-Z0-9_]*$'
         if re.match(pattern, self.player_name): #Check if all characters are valid
-            print("Slot Name is valid for DRG.")
+            #print("Slot Name is valid for DRG.")
         else:
             raise ValueError("DRG Slot names cannot contain anything but letters, numbers, and underscores. Please rename your slot.")
+
+    def checkValidBiomeRestrictions(self):
+        # check if biomes are restricted that the player actually chose biomes
+        if self.options.biomes_restricted.value == 1: #Check if all characters are valid
+            if (len(self.options.biomes_start.value) <= 0):
+                raise ValueError("DRG Biome Starting Option needs a value or you'll have nowhere to start.")
+            elif (len(Biomes) != len(self.options.biome_order.val)): #not enough biomes in list
+                raise ValueError("DRG Biome Order Option does not contain every biome. You need to list them all in the order you want.")
+        else:
+            #valid
 
     def generate_early(self) -> None:
         '''
@@ -154,6 +190,16 @@ class DRGWorld(World):
 
         try:
             self.checkSlotName()
+        except ValueError as e:
+            print(f"Option Error: {e}")
+            # Pause the program, waiting for the user to press the Enter key
+            input("Press the <Enter> key to exit the program.")
+            # Exit the program with an error status code
+            import sys
+            sys.exit(1) #
+
+        try:
+            self.checkValidBiomeRestrictions()
         except ValueError as e:
             print(f"Error: {e}")
             # Pause the program, waiting for the user to press the Enter key
@@ -183,8 +229,15 @@ class DRGWorld(World):
         elif self.options.goal_mode.value == 3: #trophy hunter win condition
             self.multiworld.get_location("Trophy Hunter:MASTERED", self.player).place_locked_item(victory_item)
         else: #default win condition = Haz 5 Caretaker
-            self.multiworld.get_location("OBJ:Magma Core:Industrial Sabotage:5", self.player).place_locked_item(victory_item)
-        
+            if self.options.biomes_restricted.value == 0: #all biomes usable
+                self.multiworld.get_location("OBJ:Magma Core:Industrial Sabotage:5", self.player).place_locked_item(victory_item)
+            else: #use last chosen biome
+                finalBiome = self.options.biome_order.value[-1]
+                if (finalBiome in Biomes): #check if valid
+                    self.multiworld.get_location(f"OBJ:{finalBiome}:Industrial Sabotage:5", self.player).place_locked_item(victory_item)
+                else:
+                    self.multiworld.get_location("OBJ:Magma Core:Industrial Sabotage:5", self.player).place_locked_item(victory_item)
+
         self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player)
         
 

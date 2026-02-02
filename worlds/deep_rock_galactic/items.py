@@ -13,7 +13,7 @@ class ItemData(NamedTuple):
     trap:        int = 0
 
 ITEMS = {
-#Progression, highest number among items is now 91
+#Progression, highest number among items is now 102
     'Progressive-Flare-Count': 47,
     'Progressive-Flare-Recharge':1,
     'Progressive-Carriable-Throwing':2,
@@ -110,10 +110,22 @@ ITEMS = {
     'Progressive-Heightened-Senses':86,
     'Progressive-Born-Ready':87,
 #junk / nothing items
-    'Beard-Waxing':88,
-    'Hydrate-Water':89,
-    'Gnome-Spray':90,
-    'Takeout-Food-Order':91,
+    'Beard-Waxing (Junk)':88,
+    'Hydrate-Water (Junk)':89,
+    'Gnome-Spray (Junk)':90,
+    'Takeout-Food-Order (Junk)':91,
+#contains items used to unlock biomes
+    'Unlock-Azure-Weald':92,
+    'Unlock-Crystalline-Caverns':93,
+    'Unlock-Fungus-Bogs':94,
+    'Unlock-Hollow-Bough':95,
+    'Unlock-Glacial-Strata':96,
+    'Unlock-Dense-Biozone':97,
+    'Unlock-Magma-Core':98,
+    'Unlock-Radioactive-Exclusion-Zone':99,
+    'Unlock-Salt-Pits':100,
+    'Unlock-Sandblasted-Corridors':101,
+    'Unlock-Ossuary-Depths':102,
 }
 ITEMS = {k: v + 1 << ITEM_BITSHIFT_DEFAULT for k, v in ITEMS.items()}
 
@@ -576,10 +588,25 @@ ALL_ITEMS = {
 EXTRA_FILLER_ITEMS = [
     #Contains only extra items used for filler generation
     'Free-Drink',
-    'Beard-Waxing',
-    'Hydrate-Water',
-    'Gnome-Spray',
-    'Takeout-Food-Order',
+    'Beard-Waxing (Junk)',
+    'Hydrate-Water (Junk)',
+    'Gnome-Spray (Junk)',
+    'Takeout-Food-Order (Junk)',
+]
+
+BIOME_CHECK_ITEMS = [
+    #contains items used to unlock biomes
+    'Unlock-Azure-Weald',
+    'Unlock-Crystalline-Caverns',
+    'Unlock-Fungus-Bogs',
+    'Unlock-Hollow-Bough',
+    'Unlock-Glacial-Strata',
+    'Unlock-Dense-Biozone',
+    'Unlock-Magma-Core',
+    'Unlock-Radioactive-Exclusion-Zone',
+    'Unlock-Salt-Pits',
+    'Unlock-Sandblasted-Corridors',
+    'Unlock-Ossuary-Depths',
 ]
 
 #Item group hardcode

@@ -22,11 +22,11 @@ Biomes=[
     'Hollow Bough',
     'Glacial Strata',
     'Dense Biozone',
-    #'Magma Core',
     'Radioactive Exclusion Zone',
     'Salt Pits',
     'Sandblasted Corridors',
     'Ossuary Depths',
+    'Magma Core',
 ]
 
 MissionTypes=[

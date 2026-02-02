@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from Options import Choice, Range, Toggle, ItemDict, PerGameCommonOptions, StartInventory, Visibility, DeathLink, OptionGroup
-
+from .locations import Biomes
 
 class Goal(Choice):
     """Set The Current Run Goal [Working Options = kill_caretaker (default), goldrush, hunter (In BETA, Expect Bugs [Pun Intended])]"""
@@ -141,6 +141,23 @@ class SprintStart(Toggle):
     display_name = "Should Start with Sprinting Unlocked?"
     default = False
 
+class RestrictBiomes(Toggle):
+    """Sets whether Biomes should also be progressive checks (adds biomes to the item pool)"""
+    display_name = "Should Biomes be Locked and Randomized?"
+    default = False
+
+class SetStartingBiomes(OptionSet):
+    """Set which biomes are accessible from the start. (Others will be locked as progressive checks.)"""
+    display_name = "Set Starting Biomes"
+    valid_keys = Biomes
+    default = [biome for biome in Biomes if biome != "Magma Core"]
+
+class SetBiomeOrder(OptionSet):
+    """Set what order to unlock biomes in (final biome listed will be your caretaker boss biome in kill_caretaker goal)"""
+    display_name = "Set Order of Biome Unlocking"
+    valid_keys = Biomes
+    default = Biomes
+
 @dataclass
 class DRGOptions(PerGameCommonOptions):
     progression_diff:       ProgressionDifficulty
@@ -164,6 +181,9 @@ class DRGOptions(PerGameCommonOptions):
     hunter_trophies:        HunterTrophyAmount
     hunter_targets:         HunterTargets
     sprint_start:           SprintStart
+    biomes_restricted:      RestrictBiomes
+    biomes_start:           SetStartingBiomes
+    biome_order:            SetBiomeOrder
 
 #set option groups for the web UI
 option_groups = [
@@ -173,7 +193,7 @@ option_groups = [
     ),
     OptionGroup(
         "Difficulty Options",
-        [ProgressionDifficulty,StartingStats,SprintStart,StartingClasses,DeathLink,DeathLinkAll]
+        [ProgressionDifficulty,StartingStats,SprintStart,StartingClasses]
     ),
     OptionGroup(
         "Optional Features",
@@ -185,7 +205,11 @@ option_groups = [
     ),
     OptionGroup(
         "Extra Options",
-        [LocationsToRemove]
+        [LocationsToRemove,RestrictBiomes,SetStartingBiomes,SetBiomeOrder]
+    ),
+    OptionGroup(
+        "Deathlink Options",
+        [DeathLink,DeathLinkAll]
     ),
 ]
 
@@ -214,6 +238,9 @@ option_presets = {
         "hunter_complete": 2,
         "hunter_targets": 1,
         "sprint_start": False,
+        "biomes_restricted": False,
+        "biomes_start": [],
+        "biome_order": [],
     },
     "haz5 kill caretaker standard": {
         "progression_diff": 2,
@@ -238,6 +265,9 @@ option_presets = {
         "hunter_complete": 2,
         "hunter_targets": 1,
         "sprint_start": False,
+        "biomes_restricted": False,
+        "biomes_start": [],
+        "biome_order": [],
     },
     "hunter mode standard": {
         "progression_diff": 2,
@@ -262,5 +292,8 @@ option_presets = {
         "hunter_complete": 2,
         "hunter_targets": 1,
         "sprint_start": False,
+        "biomes_restricted": False,
+        "biomes_start": [],
+        "biome_end": [],
     },
 }
