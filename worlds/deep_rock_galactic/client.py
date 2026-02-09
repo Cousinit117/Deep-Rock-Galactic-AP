@@ -78,6 +78,13 @@ class DRGCommands(ClientCommandProcessor):
         if isinstance(self.ctx, DRGContext):
             webbrowser.open("https://mod.io/g/drg/m/test-archipelago-integration#description")
 
+    def _cmd_resetmod(self):
+        """Resets all the Client Mod folders to make sure you dont run into bugs starting a new run"""
+        if os.path.isdir(os.path.join(self.BaseDirectory,"Archipelago")) \
+        and os.path.exists(os.path.join(self.BaseDirectory,"Archipelago")):#Does slot directory/save exist?
+            shutil.rmtree(os.path.join(self.BaseDirectory,"Archipelago"))
+            print(f"Directory '{self.BaseDirectory + "/Archipelago"}' and all its contents deleted. \
+                Please disconnect and reconnect to the Server to try and set up folders again.")
 
 class DRGContext(CommonContext):
     game = "Deep Rock Galactic"
@@ -179,6 +186,7 @@ class DRGContext(CommonContext):
         # print('on_package triggered')
         if cmd in {"Connected"}:
             #asyncio.create_task(self.send_msgs([{"cmd": "GetDataPackage", "games": ["Deep Rock Galactic"]}]))
+            #self.multiworld.get_game_worlds()
             asyncio.create_task(self.send_msgs([{"cmd": "GetDataPackage"}]))
             #print(f"{datapackage}")
             #self.updateHints()
@@ -198,25 +206,26 @@ class DRGContext(CommonContext):
             self.file_deathsend            = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APDeathSend)
             self.file_removedlocations     = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APRemovedLocations)
             #only print these files first time the save is loaded
-            if not os.path.isdir(os.path.join(self.BaseDirectory,"Archipelago",SlotName)):#Does slot directory/save exist? if no, make it and the files
+            if not os.path.isdir(os.path.join(self.BaseDirectory,"Archipelago")):
                 os.mkdir(os.path.join(self.BaseDirectory,"Archipelago"))
+            if not os.path.isdir(os.path.join(self.BaseDirectory,"Archipelago",SlotName)):#Does slot directory/save exist? if no, make it and the files
                 os.mkdir(os.path.join(self.BaseDirectory,"Archipelago",SlotName))
-                #Set the active slot for DRG
-                with open(self.file_setslot, 'w') as f:
-                    f.write(f'{SlotName}')
-                #init other files
-                open(self.file_items, 'w')
-                open(self.file_locations, 'w')
-                open(self.file_aplocations, 'w')
-                with open(self.file_locationhelper, 'w') as f:
-                    #Make location helper here
-                    all_checked=set(args["checked_locations"])
-                    all_missing=set(args["missing_locations"])
-                    all_locations=all_checked.union(all_missing)
-                    locationhelper=set()
-                    for i in all_locations:
-                        locationhelper.add(self.id_to_loc_name[i])
-                    f.write("\n".join(list(locationhelper)))
+            #Set the active slot for DRG
+            with open(self.file_setslot, 'w') as f:
+                f.write(f'{SlotName}')
+            #init other files
+            open(self.file_items, 'w')
+            open(self.file_locations, 'w')
+            open(self.file_aplocations, 'w')
+            with open(self.file_locationhelper, 'w') as f:
+                #Make location helper here
+                all_checked=set(args["checked_locations"])
+                all_missing=set(args["missing_locations"])
+                all_locations=all_checked.union(all_missing)
+                locationhelper=set()
+                for i in all_locations:
+                    locationhelper.add(self.id_to_loc_name[i])
+                f.write("\n".join(list(locationhelper)))
             #Sets Deathlink files to blank on connect
             open(self.file_deathget, 'w')
             open(self.file_deathsend, 'w')
@@ -314,7 +323,7 @@ class DRGContext(CommonContext):
         #for recieving the raw hints info command
         if cmd in {"Retrieved"}:
             #print(f"{args['keys']}")
-            if f"_read_hints_{self.team}_{self.slot}" in args["keys"]:
+            if (f"_read_hints_{self.team}_{self.slot}") in args["keys"]:
                 self.hintsList = args["keys"][f"_read_hints_{self.team}_{self.slot}"]
                 self.UpdateHintsTxT()
               

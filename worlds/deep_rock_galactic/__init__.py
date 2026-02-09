@@ -119,6 +119,8 @@ class DRGWorld(World):
         #fill as needed
         Unfilled_Locations = len(self.multiworld.get_unfilled_locations(self.player))
         Needed_Filler = Unfilled_Locations - len(item_pool) - 1 #for range fix
+        if Needed_Filler < 0:
+            print(f"You've generated a negative number of unfilled locations. Generally this means some math went wrong with too many items.")
         if Needed_Filler > 0:
             print(f"Extra Items Needed:{Needed_Filler} = {Unfilled_Locations} - {len(item_pool)}")
             item_pool += [self.create_item(self.random.choice(EXTRA_FILLER_ITEMS), ItemClassification.filler) for _ in range(Needed_Filler)]
