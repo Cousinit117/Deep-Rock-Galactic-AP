@@ -215,6 +215,7 @@ class DRGWorld(World):
         '''
         Sets the Logic for the Regions and Location unlocks.
         '''
+        #countProg = state.count_from_list(Generic_Progressives,self.player)
         # universal_logic = Rules.KH2WorldRules(self)
         # form_logic = Rules.KH2FormRules(self)
         # fight_rules = Rules.KH2FightRules(self)

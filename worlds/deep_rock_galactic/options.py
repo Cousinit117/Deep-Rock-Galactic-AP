@@ -179,7 +179,7 @@ option_groups = [
     ),
     OptionGroup(
         "Difficulty Options",
-        [ProgressionDifficulty,StartingStats,SprintStart,StartingClasses,DeathLink,DeathLinkAll,DeathLinkFailure]
+        [ProgressionDifficulty,StartingStats,SprintStart,StartingClasses]
     ),
     OptionGroup(
         "Optional Features",
@@ -188,6 +188,10 @@ option_groups = [
     OptionGroup(
         "AP Coin Shop Options",
         [AvgCoinShopPrices,CoinShopItems,GoldToCoinConversionRate,BeerMatToCoinConversionRate]
+    ),
+    OptionGroup(
+        "Deathlink Options",
+        [DeathLink,DeathLinkAll,DeathLinkFailure]
     ),
     OptionGroup(
         "Extra Options",
