@@ -72,7 +72,7 @@ class StartingClasses(Choice):
 class ErrorCubeChecks(Range):
     """Sets the number of checks to be Error cubes (Defaults to 10)"""
     range_start = 0
-    range_end   = 15
+    range_end   = 25
     default     = 10
 
 class EnableMinigames(Toggle): 
@@ -101,6 +101,11 @@ class DeathLinkAll(Toggle):
     display_name = "Should Deathlink Kill All Players?"
     default = True
 
+class DeathLinkFailure(Toggle):
+    """Sets whether deathlink will send only on Mission Failure (instead of dwarf death)"""
+    display_name = "Should Deathlink Only Send On Mission Failure?"
+    default = False
+
 class LocationsToRemove(Range):
     """Removes locations from the placer. Will make upper power cap lower, can make victory much more difficult."""
     display_name = "Locations to Remove"
@@ -119,7 +124,7 @@ class CoinShopItems(Range):
     """Set the amount of items to be in the APCoin Shop."""
     display_name = "AP Coin Shop Item Count"
     range_start = 0
-    range_end   = 40
+    range_end   = 50
     default     = 25
 
 class GoldToCoinConversionRate(Range):
@@ -166,6 +171,7 @@ class DRGOptions(PerGameCommonOptions):
     gold_rush_val:          GoldRushGoalValue
     death_link:             DeathLink
     death_link_all:         DeathLinkAll
+    death_link_failure:     DeathLinkFailure
     locations_to_remove:    LocationsToRemove
     avail_classes:          StartingClasses
     error_cube_checks:      ErrorCubeChecks
@@ -209,7 +215,7 @@ option_groups = [
     ),
     OptionGroup(
         "Deathlink Options",
-        [DeathLink,DeathLinkAll]
+        [DeathLink,DeathLinkAll,DeathLinkFailure]
     ),
 ]
 
@@ -223,6 +229,7 @@ option_presets = {
         "gold_rush_val": 15000,
         "death_link": False,
         "death_link_all": False,
+        "death_link_failure":False,
         "locations_to_remove": 0,
         "avail_classes": 0,
         "error_cube_checks": 10,
@@ -250,6 +257,7 @@ option_presets = {
         "gold_rush_val": 15000,
         "death_link": False,
         "death_link_all": False,
+        "death_link_failure":False,
         "locations_to_remove": 0,
         "avail_classes": 0,
         "error_cube_checks": 10,
@@ -277,6 +285,7 @@ option_presets = {
         "gold_rush_val": 15000,
         "death_link": False,
         "death_link_all": False,
+        "death_link_failure":False,
         "locations_to_remove": 0,
         "avail_classes": 0,
         "error_cube_checks": 10,

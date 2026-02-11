@@ -4,6 +4,7 @@ import os
 import requests
 import time
 import re
+import shutil
 from NetUtils import ClientStatus
 from .deathlink import handle_check_deathlink
 #import settings
@@ -78,6 +79,13 @@ class DRGCommands(ClientCommandProcessor):
         if isinstance(self.ctx, DRGContext):
             webbrowser.open("https://mod.io/g/drg/m/test-archipelago-integration#description")
 
+    def _cmd_resetmod(self):
+        """Resets all the Client Mod folders to make sure you dont run into bugs starting a new run"""
+        if isinstance(self.ctx, DRGContext):
+            if os.path.isdir(os.path.join(self.ctx.BaseDirectory,"Archipelago")) \
+            and os.path.exists(os.path.join(self.ctx.BaseDirectory,"Archipelago")):#Does slot directory/save exist?
+                shutil.rmtree(os.path.join(self.ctx.BaseDirectory,"Archipelago"))
+                self.output(f"Directory '{self.ctx.BaseDirectory + "/Archipelago"}' and all its contents deleted and reset. Please close your DRG Archipelago Client and Launch/Connect Again.")
 
 class DRGContext(CommonContext):
     game = "Deep Rock Galactic"
@@ -167,10 +175,7 @@ class DRGContext(CommonContext):
 
     async def updateHints(self):
         await self.send_msgs([{"cmd": "Get","keys": f'["_read_hints_{self.team}_{self.slot}"]'}])
-        #self.UpdateHintsTxT()
-
-    #async def getShopItems(self):
-        #await self.send_msgs([{'cmd': 'LocationScouts','keys': f'[]'}])
+        #self.UpdateHintsTxT()     
 
     def on_package(self, cmd: str, args: dict):
         if cmd in {"RoomInfo"}:
@@ -179,6 +184,7 @@ class DRGContext(CommonContext):
         # print('on_package triggered')
         if cmd in {"Connected"}:
             #asyncio.create_task(self.send_msgs([{"cmd": "GetDataPackage", "games": ["Deep Rock Galactic"]}]))
+            #self.multiworld.get_game_worlds()
             asyncio.create_task(self.send_msgs([{"cmd": "GetDataPackage"}]))
             #print(f"{datapackage}")
             #self.updateHints()
@@ -198,25 +204,26 @@ class DRGContext(CommonContext):
             self.file_deathsend            = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APDeathSend)
             self.file_removedlocations     = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APRemovedLocations)
             #only print these files first time the save is loaded
-            if not os.path.isdir(os.path.join(self.BaseDirectory,"Archipelago",SlotName)):#Does slot directory/save exist? if no, make it and the files
+            if not os.path.isdir(os.path.join(self.BaseDirectory,"Archipelago")) or not os.path.exists(os.path.join(self.BaseDirectory,"Archipelago")):
                 os.mkdir(os.path.join(self.BaseDirectory,"Archipelago"))
+            if not os.path.isdir(os.path.join(self.BaseDirectory,"Archipelago",SlotName)) or not os.path.exists(os.path.join(self.BaseDirectory,"Archipelago",SlotName)):#Does slot directory/save exist? if no, make it and the files
                 os.mkdir(os.path.join(self.BaseDirectory,"Archipelago",SlotName))
-                #Set the active slot for DRG
-                with open(self.file_setslot, 'w') as f:
-                    f.write(f'{SlotName}')
-                #init other files
-                open(self.file_items, 'w')
-                open(self.file_locations, 'w')
-                open(self.file_aplocations, 'w')
-                with open(self.file_locationhelper, 'w') as f:
-                    #Make location helper here
-                    all_checked=set(args["checked_locations"])
-                    all_missing=set(args["missing_locations"])
-                    all_locations=all_checked.union(all_missing)
-                    locationhelper=set()
-                    for i in all_locations:
-                        locationhelper.add(self.id_to_loc_name[i])
-                    f.write("\n".join(list(locationhelper)))
+            #Set the active slot for DRG
+            with open(self.file_setslot, 'w') as f:
+                f.write(f'{SlotName}')
+            #init other files
+            open(self.file_items, 'w')
+            open(self.file_locations, 'w')
+            open(self.file_aplocations, 'w')
+            with open(self.file_locationhelper, 'w') as f:
+                #Make location helper here
+                all_checked=set(args["checked_locations"])
+                all_missing=set(args["missing_locations"])
+                all_locations=all_checked.union(all_missing)
+                locationhelper=set()
+                for i in all_locations:
+                    locationhelper.add(self.id_to_loc_name[i])
+                f.write("\n".join(list(locationhelper)))
             #Sets Deathlink files to blank on connect
             open(self.file_deathget, 'w')
             open(self.file_deathsend, 'w')
@@ -227,6 +234,7 @@ class DRGContext(CommonContext):
                 trapsOn = self.slot_data.get("traps_on",0)
                 self.deathlinkOn = self.slot_data.get("death_link",0)
                 deathlinkAll = self.slot_data.get("death_link_all",1)
+                deathlinkFailure = self.slot_data.get("death_link_failure",0)
                 minigameOn = self.slot_data.get("minigames_on",1)
                 minigameNum = self.slot_data.get("minigame_num",30)
                 APCoinCost = self.slot_data.get("coin_shop_prices",5)
@@ -243,7 +251,7 @@ class DRGContext(CommonContext):
                 huntTargets = self.slot_data.get("hunter_targets",1)
                 sprintOn = self.slot_data.get("sprint_start",0)
                 f.write(f"Goal:{goalMode},CubesNeeded:{cubesNeeded},StartingClass:{classStart},"
-                    f"TrapsEnabled:{trapsOn},DeathLink:{self.deathlinkOn},DeathAll:{deathlinkAll},"
+                    f"TrapsEnabled:{trapsOn},DeathLink:{self.deathlinkOn},DeathAll:{deathlinkAll},DeathFailure:{deathlinkFailure},"
                     f"MinigamesEnabled:{minigameOn},APCoinCost:{APCoinCost},GoldToCoin:{goldToCoin},"
                     f"BeerToCoin:{beerToCoin},ProgDiff:{progDiff},StartStats:{startStats},"
                     f"GoldRushVal:{goldRushVal},ShopItemNum:{shopNum},EventsOn:{eventsOn},"
@@ -314,7 +322,7 @@ class DRGContext(CommonContext):
         #for recieving the raw hints info command
         if cmd in {"Retrieved"}:
             #print(f"{args['keys']}")
-            if f"_read_hints_{self.team}_{self.slot}" in args["keys"]:
+            if (f"_read_hints_{self.team}_{self.slot}") in args["keys"]:
                 self.hintsList = args["keys"][f"_read_hints_{self.team}_{self.slot}"]
                 self.UpdateHintsTxT()
               
