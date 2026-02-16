@@ -224,7 +224,7 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
     SecondariesAmmo5=[Secondary for Secondary in ALL_LOCATIONS if (('Dreadnought Eggs' in Secondary) and ('5' in Secondary))]
     
     REGIONS = {
-        'Menu': RegionData(connected_regions=['AlwaysAccessLocations', 'GoldRush', 'GenericHaz4', 'GenericHaz5', 'Hunting', \
+        'Menu': RegionData(connected_regions=['AlwaysAccessLocations', 'GoldRush', 'GenericHaz3', 'GenericHaz4', 'GenericHaz5', 'Hunting', \
         'Ammo12', 'Ammo3', 'Ammo4', 'Ammo5', \
         'Carrying12', 'Carrying3', 'Carrying4', 'Carrying5', \
         'Mining12', 'Mining3', 'Mining4', 'Mining5', \

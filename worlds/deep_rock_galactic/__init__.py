@@ -209,6 +209,14 @@ class DRGWorld(World):
             case _: #default
                 difficulty = [5,10,25,3,2,2] #20%
 
+        match int(self.options.max_hazard.value):
+            case 3: #haz 3 max
+                if int(self.options.progression_diff.value) >= 3: #progression too steep
+                    difficulty = [10,10,10,4,3,2] #33%
+            case 4:
+                if int(self.options.progression_diff.value) >= 4: #progression too steep
+                    difficulty = [20,30,30,4,3,2] #50%
+
         create_and_link_regions(self.multiworld, self.player, self.options, self.location_name_to_id, difficulty)
 
     def set_rules(self):
