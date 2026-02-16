@@ -168,7 +168,7 @@ def getLocationGroup(group = "MainObj"):
                 for Hazard in [1,2,3,4,5]:
                     thisList.append(f'Secondary:{Secondary}:{Hazard}')
         case "ErrCube":
-            for i in range(1,16):
+            for i in range(1,26):
                 thisList.append(f'Error Cube:{i}')
         case "Events":
             for event in Events:
@@ -178,7 +178,7 @@ def getLocationGroup(group = "MainObj"):
             for i in range(5,105,5):
                 thisList.append(f'JettyBoot:{i}')
         case "Shop":
-            for i in range(1,41):
+            for i in range(1,51):
                 thisList.append(f'Shop Item:{i}')
         case "GoldRush":
             thisList.append('Gold Rush:RICH')
@@ -401,6 +401,8 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
 
         # Remove the selected items from the dictionary
         if NumToRemove > 0:
+            if NumToRemove > len(DictRemoveRand): #Make sure no negative population
+                NumToRemove = len(DictRemoveRand)
             keys_to_remove = random.sample(DictRemoveRand, NumToRemove)
             for key in keys_to_remove:
                 del DictStart[key]
