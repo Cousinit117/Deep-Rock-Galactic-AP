@@ -154,15 +154,15 @@ class DRGWorld(World):
         '''
         self.location_name_to_id = location_init()#int(self.options.error_cube_checks.value),bool(self.options.minigames_on.value))
 
-        try:
-            self.checkSlotName()
-        except ValueError as e:
-            print(f"Error: {e}")
+        #try:
+            #self.checkSlotName()
+        #except ValueError as e:
+            #print(f"Error: {e}")
             # Pause the program, waiting for the user to press the Enter key
-            input("Press the <Enter> key to exit the program.")
+            #input("Press the <Enter> key to exit the program.")
             # Exit the program with an error status code
-            import sys
-            sys.exit(1) #
+            #import sys
+            #sys.exit(1) #
 
         #print(f"{self.location_name_to_id}")
         # currently running remove locations in _regions.py

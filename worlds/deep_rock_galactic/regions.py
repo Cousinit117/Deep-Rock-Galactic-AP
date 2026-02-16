@@ -242,7 +242,7 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
             entrancerule = lambda state: True,#No Access restrictions
             connected_regions        = [],
         ),
-        'GenericHaz4': RegionData(
+        'GenericHaz3': RegionData(
             locations    = MissionsDefaultHaz3,
             entrancerule = lambda state:    rule_generic_progressive3(state),
             connected_regions        = [],

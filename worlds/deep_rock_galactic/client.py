@@ -192,7 +192,7 @@ class DRGContext(CommonContext):
             self.slot_data = args["slot_data"]
             self.set_location_data()
             SlotName=(self.slot_info[self.slot].name)#self.slot_info[self.slot].name returns the name of the slot you connected to
-            SlotName=SlotName.replace(" ","_")#DRG Needs to have underscores and no spaces
+            #SlotName=SlotName.replace(" ","_")#DRG Needs to have underscores and no spaces (old)
             self.file_setslot              = os.path.join(self.BaseDirectory,"Archipelago","ActiveSlot.txt") #sets the current slot
             self.file_items                = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APChecklist)#Defines names, but they may not exist yet
             self.file_locations            = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APLocationlist)
