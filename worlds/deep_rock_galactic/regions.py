@@ -506,7 +506,7 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
 
     # remove_locations(ALL_LOCATIONS, options.locations_to_remove.value)
     # remove_locations(ALL_LOCATIONS,100)
-    baseRemoval = 23
+    baseRemoval = 0
     trapRemoval = 0
     classRemoval = 0
     sprintRemoval = 0
@@ -516,7 +516,7 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
         classRemoval = 4
     if options.sprint_start.value == 1:
         sprintRemoval = 4
-    totalToRemove = baseRemoval + trapRemoval + classRemoval + sprintRemoval + options.locations_to_remove.value #81
+    totalToRemove = baseRemoval + trapRemoval + classRemoval + sprintRemoval # + options.locations_to_remove.value #81
     ALL_LOCATIONS=remove_locations(ALL_LOCATIONS,totalToRemove,int(options.error_cube_checks.value),\
         bool(options.minigames_on.value),int(options.minigame_num.value),int(options.goal_mode.value),int(options.gold_rush_val.value),\
         int(options.shop_item_num.value),bool(options.events_on.value),int(options.max_hazard.value),\

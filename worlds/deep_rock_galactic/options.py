@@ -107,8 +107,8 @@ class DeathLinkFailure(Toggle):
     default = False
 
 class LocationsToRemove(Range):
-    """Removes locations from the placer. Will make upper power cap lower, can make victory much more difficult."""
-    display_name = "Locations to Remove"
+    """[No Longer Functions as of 0.16.3]"""
+    display_name = "Locations to Remove [Invalid after v0.16.3]"
     range_start = 0
     range_end   = 150
     default     = 0
