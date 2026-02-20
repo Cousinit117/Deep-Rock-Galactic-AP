@@ -249,6 +249,7 @@ class DRGContext(CommonContext):
                 maxHaz = self.slot_data.get("max_hazard",5)
                 huntTrophy = self.slot_data.get("hunter_trophies",5)
                 huntTargets = self.slot_data.get("hunter_targets",1)
+                huntBosses = self.slot_data.get("hunter_bosses",3)
                 sprintOn = self.slot_data.get("sprint_start",0)
                 f.write(f"Goal:{goalMode},CubesNeeded:{cubesNeeded},StartingClass:{classStart},"
                     f"TrapsEnabled:{trapsOn},DeathLink:{self.deathlinkOn},DeathAll:{deathlinkAll},DeathFailure:{deathlinkFailure},"
@@ -256,7 +257,7 @@ class DRGContext(CommonContext):
                     f"BeerToCoin:{beerToCoin},ProgDiff:{progDiff},StartStats:{startStats},"
                     f"GoldRushVal:{goldRushVal},ShopItemNum:{shopNum},EventsOn:{eventsOn},"
                     f"MaxHazard:{maxHaz},HuntTrophy:{huntTrophy},HuntTargets:{huntTargets},"
-                    f"MinigameNum:{minigameNum},SprintStart:{sprintOn}")
+                    f"MinigameNum:{minigameNum},SprintStart:{sprintOn},HuntBosses:{huntBosses}")
             #prints and saves the shop items for the mod to read
             with open(self.file_shop, 'w') as f:
                 shopItemDict = self.slot_data["shop_items"]

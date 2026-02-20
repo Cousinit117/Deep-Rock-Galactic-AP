@@ -13,7 +13,7 @@ class ItemData(NamedTuple):
     trap:        int = 0
 
 ITEMS = {
-#Progression, highest number among items is now 91
+#Progression, highest number among items is now 93
     'Progressive-Flare-Count': 47,
     'Progressive-Flare-Recharge':1,
     'Progressive-Carriable-Throwing':2,
@@ -114,6 +114,8 @@ ITEMS = {
     'Hydrate-Water':89,
     'Gnome-Spray':90,
     'Takeout-Food-Order':91,
+    'Mushroom':92,
+    'Gold-Chunk':93,
 }
 ITEMS = {k: v + 1 << ITEM_BITSHIFT_DEFAULT for k, v in ITEMS.items()}
 
@@ -580,6 +582,8 @@ EXTRA_FILLER_ITEMS = [
     'Hydrate-Water',
     'Gnome-Spray',
     'Takeout-Food-Order',
+    'Mushroom',
+    'Gold-Chunk',
 ]
 
 #Item group hardcode

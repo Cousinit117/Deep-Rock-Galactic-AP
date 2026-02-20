@@ -41,6 +41,13 @@ class HunterTargets(Choice):
     option_no_passive_creatures = 3
     default = 1
 
+class HunterBossesNeeded(Range):
+    """Determines how many Boss Hunter Goals you must meet to win (if that's your goal)"""
+    display_name = "How Many Boss Trophies Finished To Win?"
+    range_start = 3
+    range_end   = 9
+    default     = 6
+
 class ProgressionDifficulty(Choice):
     """Determines how high the progressive check locks are for each sphere. (Completion by Diff LeafLover=10%, Normal=25%, Hard=33%, Lethal=50%, Karl=75%)"""
     display_name = "Progression Lock Difficulty"
@@ -106,13 +113,6 @@ class DeathLinkFailure(Toggle):
     display_name = "Should Deathlink Only Send On Mission Failure?"
     default = False
 
-class LocationsToRemove(Range):
-    """[No Longer Functions as of 0.16.3]"""
-    display_name = "Locations to Remove [Invalid after v0.16.3]"
-    range_start = 0
-    range_end   = 150
-    default     = 0
-
 class AvgCoinShopPrices(Range):
     """Set the avg coin shop price. This will determine the cost of APCoin Shop Items in game."""
     display_name = "Average Coin Shop Prices"
@@ -155,7 +155,6 @@ class DRGOptions(PerGameCommonOptions):
     death_link:             DeathLink
     death_link_all:         DeathLinkAll
     death_link_failure:     DeathLinkFailure
-    locations_to_remove:    LocationsToRemove
     avail_classes:          StartingClasses
     error_cube_checks:      ErrorCubeChecks
     traps_on:               EnableTraps
@@ -169,17 +168,18 @@ class DRGOptions(PerGameCommonOptions):
     max_hazard:             HazMax
     hunter_trophies:        HunterTrophyAmount
     hunter_targets:         HunterTargets
+    hunter_bosses:          HunterBossesNeeded
     sprint_start:           SprintStart
 
 #set option groups for the web UI
 option_groups = [
     OptionGroup(
         "Goal Options",
-        [Goal,HazMax,GoldRushGoalValue,HunterTrophyAmount,HunterTargets]
+        [Goal,HazMax,GoldRushGoalValue,HunterTrophyAmount,HunterTargets,HunterBossesNeeded]
     ),
     OptionGroup(
         "Difficulty Options",
-        [ProgressionDifficulty,StartingStats,SprintStart,StartingClasses,DeathLink,DeathLinkAll,DeathLinkFailure]
+        [ProgressionDifficulty,StartingStats,SprintStart,StartingClasses]
     ),
     OptionGroup(
         "Optional Features",
@@ -190,8 +190,8 @@ option_groups = [
         [AvgCoinShopPrices,CoinShopItems,GoldToCoinConversionRate,BeerMatToCoinConversionRate]
     ),
     OptionGroup(
-        "Extra Options",
-        [LocationsToRemove]
+        "Deathlink Options",
+        [DeathLink,DeathLinkAll,DeathLinkFailure]
     ),
 ]
 
@@ -220,6 +220,7 @@ option_presets = {
         "hunter_trophies": 50,
         "hunter_complete": 2,
         "hunter_targets": 1,
+        "hunter_bosses": 3,
         "sprint_start": False,
     },
     "haz5 kill caretaker standard": {
@@ -245,6 +246,7 @@ option_presets = {
         "hunter_trophies": 50,
         "hunter_complete": 2,
         "hunter_targets": 1,
+        "hunter_bosses": 3,
         "sprint_start": False,
     },
     "hunter mode standard": {
@@ -270,6 +272,7 @@ option_presets = {
         "hunter_trophies": 50,
         "hunter_complete": 2,
         "hunter_targets": 1,
+        "hunter_bosses": 3,
         "sprint_start": False,
     },
 }

@@ -54,7 +54,7 @@ class DRGWorld(World):
             'error_cube_checks','avail_classes','traps_on','minigames_on','minigame_num','coin_shop_prices',\
             'gold_to_coin_rate','beermat_to_coin_rate','progression_diff','starting_stats',\
             'gold_rush_val','shop_item_num','events_on','max_hazard','hunter_trophies',\
-            'hunter_targets','sprint_start'))
+            'hunter_targets','hunter_bosses','sprint_start'))
         
         ShopItemsDict = {}
         for i in range(1,(int(self.options.shop_item_num.value) + 1)): 

@@ -88,7 +88,7 @@ Warnings=[
 ]
 
 PassiveCreatures=[
-    'LootBug',
+    'LootBug', #Covers Gold Too
     #'Huuli Hoarder',
     #'Naedocyte Cave Cruiser',
     'Fester Flea',
@@ -99,7 +99,7 @@ PassiveCreatures=[
 ]
 
 EnemiesNormal=[
-    #'Glyphid Swarmer',
+    #'Glyphid Swarmer', #Too Small
     'Glyphid Exploder',
     'Glyphid Webspitter',
     'Glyphid Grunt',
@@ -121,30 +121,27 @@ EnemiesNormal=[
     'Rockpox Goo Bomber',
     'Rockpox Naedocyte Breeder',
     'Cave Leech',
-    #'Vartok Scalebramble',
-    #'Core Spawn Crawler',
+    'Vartok Scalebramble',
+    'Core Spawn Crawler',
     'Stabber Vine',
     'Spitball Infector',
-    #'Barrage Infector',
+    'Barrage Infector',
     'Mactera Shooter',
     'Mactera TriJaw',
     'Mactera Grabber',
     'Mactera Brundle',
     'Mactera Goo Bomber',
     'Naedocyte Breeder',
-    #'Rival Shredder',
-    'Rival Turrets',
+    #'Rival Shredder', #Too Small
+    'Rival Turrets', #Covers all 3 turrets
     'Rival Patrol Bot',
-    #'Ossiran Scrab',
-    #'Ossiran Pit Jaw',
+    'Ossiran Scrab',
+    'Ossiran Pit Jaw',
 ]
 
 EnemiesBosses=[
-    'Glyphid Bulk Detonator',
-    #'Glyphid Crassus Bulk Detonator',
-    #'Dreadnaught Arbalest',
-    #'Dreadnaught Lacerator',
-    'Dreadnaught Twins'
+    'Glyphid Bulk Detonator', #Covers gold bulk
+    'Dreadnaught Twins' #Covers Dreadnaught Twins A and B
     'Dreadnaught Hiveguard',
     'Glyphid Dreadnaught',
     'Korlok Tyrant Weed',
@@ -325,11 +322,11 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
             MustRemove.append(f'Event:{event}:{Hazard}')
 
     #Handle Cubes
-    for i in range(15,Cubes,-1):
+    for i in range(25,Cubes,-1):
         MustRemove.append(f'Error Cube:{i}')
 
     #Handle Shop Items
-    for i in range(40,ShopItems,-1):
+    for i in range(50,ShopItems,-1):
         MustRemove.append(f'Shop Item:{i}')
 
     #Minigames
@@ -347,11 +344,15 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
 
     #Handle Trophy Hunter
     match HunterTargets:
+        case 1: #anything
+            RemovableLocations.extend(getLocationGroup("HunterNormal"))
+            RemovableLocations.extend(getLocationGroup("HunterPassive"))
         case 2: #only bosses
             MustRemove.extend(getLocationGroup("HunterNormal"))
             MustRemove.extend(getLocationGroup("HunterPassive"))
         case 3: #no passives
             MustRemove.extend(getLocationGroup("HunterPassive"))
+            RemovableLocations.extend(getLocationGroup("HunterNormal"))
     for hunt in EnemiesNormal:
         for i in range(100,HunterNum,-10):
             MustRemove.append(f'Hunting Trophy:{hunt}:{i}')
@@ -405,8 +406,9 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
                 NumToRemove = len(DictRemoveRand)
             keys_to_remove = random.sample(DictRemoveRand, NumToRemove)
             for key in keys_to_remove:
-                del DictStart[key]
-                REMOVED_LOCATIONS.append(key)
+                if key in DictStart: #Double check key is valid
+                    del DictStart[key]
+                    REMOVED_LOCATIONS.append(key)
 
         return DictStart
     
