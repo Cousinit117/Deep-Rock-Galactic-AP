@@ -121,11 +121,9 @@ EnemiesNormal=[
     'Rockpox Goo Bomber',
     'Rockpox Naedocyte Breeder',
     'Cave Leech',
-    'Vartok Scalebramble',
     'Core Spawn Crawler',
     'Stabber Vine',
-    'Spitball Infector',
-    'Barrage Infector',
+    'Shooting Plants', #Spitballer, Barrage Infector, Vartok
     'Mactera Shooter',
     'Mactera TriJaw',
     'Mactera Grabber',
