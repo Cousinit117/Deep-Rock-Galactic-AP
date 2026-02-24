@@ -27,11 +27,18 @@ class GoldRushGoalValue(Range):
     default     = 15000
 
 class HunterTrophyAmount(Range):
-    """Set The Current Hunter Trophies Needed per enemy (if that's your goal) [Bosses need 1/10] [Must be a Multiple of 10]"""
-    display_name = "Trophy Hunter Goal Amount"
+    """Set The Current Hunter Trophies Needed per enemy (if that's your goal)"""
+    display_name = "Trophy Hunter Normal Amount"
     range_start = 10
     range_end   = 100
     default     = 50
+
+class HunterTrophyAmountBoss(Range):
+    """Set The Current Hunter Trophies Needed per Boss enemy (if that's your goal)"""
+    display_name = "Trophy Hunter Boss Amount"
+    range_start = 1
+    range_end   = 10
+    default     = 5
 
 class HunterTargets(Choice):
     """Determines what counts for the Hunter Goal (if that's your goal)"""
@@ -169,13 +176,14 @@ class DRGOptions(PerGameCommonOptions):
     hunter_trophies:        HunterTrophyAmount
     hunter_targets:         HunterTargets
     hunter_bosses:          HunterBossesNeeded
+    hunter_trophies_b:      HunterTrophyAmountBoss
     sprint_start:           SprintStart
 
 #set option groups for the web UI
 option_groups = [
     OptionGroup(
         "Goal Options",
-        [Goal,HazMax,GoldRushGoalValue,HunterTrophyAmount,HunterTargets,HunterBossesNeeded]
+        [Goal,HazMax,GoldRushGoalValue,HunterTrophyAmount,HunterTargets,HunterBossesNeeded,HunterTrophyAmountBoss]
     ),
     OptionGroup(
         "Difficulty Options",
@@ -221,6 +229,7 @@ option_presets = {
         "hunter_complete": 2,
         "hunter_targets": 1,
         "hunter_bosses": 3,
+        "hunter_trophies_b": 5,
         "sprint_start": False,
     },
     "haz5 kill caretaker standard": {
@@ -247,6 +256,7 @@ option_presets = {
         "hunter_complete": 2,
         "hunter_targets": 1,
         "hunter_bosses": 3,
+        "hunter_trophies_b": 5,
         "sprint_start": False,
     },
     "hunter mode standard": {
@@ -273,6 +283,7 @@ option_presets = {
         "hunter_complete": 2,
         "hunter_targets": 1,
         "hunter_bosses": 3,
+        "hunter_trophies_b": 5,
         "sprint_start": False,
     },
 }

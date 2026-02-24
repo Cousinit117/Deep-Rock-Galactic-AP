@@ -274,7 +274,7 @@ def location_init():
 
 def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = True,\
     MGMax = 30, Goal = 1, GoldRushVal = 15000, ShopItems = 25, EventsOn = True, MaxHaz = 5,\
-    HunterNum = 5, HunterTargets = 1):
+    HunterNum = 50, HunterTargets = 1, HunterNumBoss = 5):
     CurrentID=0
     RemovableLocations=[]
     MustRemove=[]
@@ -358,7 +358,7 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
         for i in range(100,HunterNum,-10):
             MustRemove.append(f'Hunting Trophy:{hunt}:{i}')
     for hunt in EnemiesBosses:
-        for i in range(10,round(HunterNum/10),-1):
+        for i in range(10,HunterNumBoss,-1):
             MustRemove.append(f'Hunting Boss Trophy:{hunt}:{i}')
 
     #Handle Goal Removals
