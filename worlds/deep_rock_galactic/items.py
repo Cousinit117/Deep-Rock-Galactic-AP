@@ -116,6 +116,18 @@ ITEMS = {
     'Takeout-Food-Order':91,
     'Mushroom':92,
     'Gold-Chunk':93,
+#biome Items
+    'Biome-Azure-Weald':94,
+    'Biome-Crystalline-Caverns':95,
+    'Biome-Fungus-Bogs':96,
+    'Biome-Hollow-Bough':97,
+    'Biome-Glacial-Strata':98,
+    'Biome-Dense-Biozone':99,
+    'Biome-Magma-Core':100,
+    'Biome-Radioactive-Exclusion-Zone':101,
+    'Biome-Salt-Pits':102,
+    'Biome-Sandblasted-Corridors':103,
+    'Biome-Ossuary-Depths':104,
 }
 ITEMS = {k: v + 1 << ITEM_BITSHIFT_DEFAULT for k, v in ITEMS.items()}
 
@@ -563,6 +575,61 @@ ITEMS_COUNT = {
         useful=1,
         filler=0,
 ),
+    'Biome-Azure-Weald':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Biome-Crystalline-Caverns':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Biome-Fungus-Bogs':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Biome-Hollow-Bough':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Biome-Glacial-Strata':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Biome-Dense-Biozone':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Biome-Magma-Core':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Biome-Radioactive-Exclusion-Zone':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Biome-Salt-Pits':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Biome-Sandblasted-Corridors':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Biome-Ossuary-Depths':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
 }
 
 EVENT_ITEMS= {
@@ -629,6 +696,20 @@ CLASS_ITEM_CHECK = [
     'Class-Driller',
     'Class-Scout',
     'Class-Engineer',
+]
+
+BIOME_ITEM_CHECK = [
+    'Biome-Azure-Weald',
+    'Biome-Crystalline-Caverns',
+    'Biome-Fungus-Bogs',
+    'Biome-Hollow-Bough',
+    'Biome-Glacial-Strata',
+    'Biome-Dense-Biozone',
+    'Biome-Magma-Core',
+    'Biome-Radioactive-Exclusion-Zone',
+    'Biome-Salt-Pits',
+    'Biome-Sandblasted-Corridors',
+    'Biome-Ossuary-Depths',
 ]
 
 #Checks for Sprint Enabled

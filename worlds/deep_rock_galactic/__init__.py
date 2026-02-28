@@ -7,7 +7,7 @@ from BaseClasses import Tutorial, ItemClassification
 # from Fill import fast_fill
 from worlds.LauncherComponents import launch_subprocess
 from worlds.AutoWorld import World, WebWorld
-from .items import ALL_ITEMS, ITEMS_COUNT, EVENT_ITEMS, CLASS_ITEM_CHECK, EXTRA_FILLER_ITEMS, SPRINT_ITEM_CHECK
+from .items import ALL_ITEMS, ITEMS_COUNT, EVENT_ITEMS, CLASS_ITEM_CHECK, EXTRA_FILLER_ITEMS, SPRINT_ITEM_CHECK, BIOME_ITEM_CHECK
 from .locations import location_init, remove_locations, REMOVED_LOCATIONS
 from .regions import create_and_link_regions
 from .options import DRGOptions
@@ -54,7 +54,7 @@ class DRGWorld(World):
             'error_cube_checks','avail_classes','traps_on','minigames_on','minigame_num','coin_shop_prices',\
             'gold_to_coin_rate','beermat_to_coin_rate','progression_diff','starting_stats',\
             'gold_rush_val','shop_item_num','events_on','max_hazard','hunter_trophies',\
-            'hunter_targets','hunter_bosses','hunter_trophies_b','sprint_start'))
+            'hunter_targets','hunter_bosses','hunter_trophies_b','sprint_start','biome_start','biome_end'))
         
         ShopItemsDict = {}
         for i in range(1,(int(self.options.shop_item_num.value) + 1)): 
@@ -105,6 +105,9 @@ class DRGWorld(World):
             #skip adding classes to item pool because they start unlocked
             if (item_name in CLASS_ITEM_CHECK) and (self.options.avail_classes.value == 0):
                 continue
+            #skip adding biomes to item pool because they start unlocked
+            if (item_name in BIOME_ITEM_CHECK) and ((self.options.biome_start.value == 0) or (self.options.goal_mode.value != 1)):
+                continue
             #skip adding movespeed to pool if starting with sprint allowed
             if (item_name in SPRINT_ITEM_CHECK) and (self.options.sprint_start.value == 1) and (movement_remove <= 3):
                 movement_remove += 1
@@ -118,7 +121,7 @@ class DRGWorld(World):
 
         #fill as needed
         Unfilled_Locations = len(self.multiworld.get_unfilled_locations(self.player))
-        Needed_Filler = Unfilled_Locations - len(item_pool) #- 1 #for range fix
+        Needed_Filler = Unfilled_Locations - len(item_pool) - 1 #for range fix
         if Needed_Filler < 0:
             print(f"You've generated a negative number of unfilled locations. Generally this means some math went wrong with too many items.")
         if Needed_Filler > 0:
@@ -179,13 +182,16 @@ class DRGWorld(World):
         self.get_pre_fill_items_dictionary()
         victory_item=self.event_items['Victory']
 
+        biomeOptionNames = ['Magma Core','Azure Weald','Crystalline Caverns','Fungus Bogs','Hollow Bough','Glacial Strata',\
+        'Dense Biozone','Magma Core','Radioactive Exclusion Zone','Salt Pits','Sandblasted Corridors','Ossuary Depths']
+
         #print(f'Goal Mode Val:{self.options.goal_mode.value}')
         if self.options.goal_mode.value == 2: #goldrush win condition
             self.multiworld.get_location("Gold Rush:RICH", self.player).place_locked_item(victory_item)
         elif self.options.goal_mode.value == 3: #trophy hunter win condition
             self.multiworld.get_location("Trophy Hunter:MASTERED", self.player).place_locked_item(victory_item)
         else: #default win condition = Haz 5 Caretaker
-            self.multiworld.get_location("OBJ:Magma Core:Industrial Sabotage:5", self.player).place_locked_item(victory_item)
+            self.multiworld.get_location(f"OBJ:{biomeOptionNames[self.options.biome_end.value]}:Industrial Sabotage:5", self.player).place_locked_item(victory_item)
         
         self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player)
         

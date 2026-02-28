@@ -19,29 +19,62 @@ class HazMax(Choice):
     option_haz5 = 5
     default = 5
 
+class BiomeStart(Choice):
+    """Determines what Biome you start with unlocked (Kill Caretaker Goal) [Unlocks all but End Biome]"""
+    display_name = "Starting Biome for Kill Caretaker"
+    option_all_unlocked = 0
+    option_azure_weald = 1
+    option_crystalline_caverns = 2
+    option_fungus_bogs = 3
+    option_hollow_bough = 4
+    option_glacial_strata = 5
+    option_dense_biozone = 6
+    option_magma_core = 7
+    option_radioactive_exclusion_zone = 8
+    option_salt_pits = 9
+    option_sandblasted_corridors = 10
+    option_ossuary_depths = 11
+    default = 1
+
+class BiomeEnd(Choice):
+    """Determines what Biome you end with (Kill Caretaker Goal)"""
+    display_name = "Biome for Final Boss in Kill Caretaker"
+    option_azure_weald = 1
+    option_crystalline_caverns = 2
+    option_fungus_bogs = 3
+    option_hollow_bough = 4
+    option_glacial_strata = 5
+    option_dense_biozone = 6
+    option_magma_core = 7
+    option_radioactive_exclusion_zone = 8
+    option_salt_pits = 9
+    option_sandblasted_corridors = 10
+    option_ossuary_depths = 11
+    default = 7
+
 class GoldRushGoalValue(Range):
-    """Set The Current Gold Rush Gold needed (if that's your goal) [Must be Multiple of 50]"""
+    """Set The Current Gold Rush Gold needed (GoldRush Goal) [Must be Multiple of 50]"""
     display_name = "Goal Gold for Gold Rush"
     range_start = 7500
     range_end   = 20000
     default     = 15000
 
 class HunterTrophyAmount(Range):
-    """Set The Current Hunter Trophies Needed per enemy (if that's your goal)"""
+    """Set The Current Hunter Trophies Needed per enemy (Hunter Goal)"""
     display_name = "Trophy Hunter Normal Amount"
     range_start = 10
     range_end   = 100
     default     = 50
 
 class HunterTrophyAmountBoss(Range):
-    """Set The Current Hunter Trophies Needed per Boss enemy (if that's your goal)"""
+    """Set The Current Hunter Trophies Needed per Boss enemy (Hunter Goal)"""
     display_name = "Trophy Hunter Boss Amount"
     range_start = 1
     range_end   = 10
     default     = 5
 
 class HunterTargets(Choice):
-    """Determines what counts for the Hunter Goal (if that's your goal)"""
+    """Determines what counts for the Hunter Goal (Hunter Goal)"""
     display_name = "Valid Hunter Targets for Hunter Goal"
     option_everything = 1
     option_bosses_only = 2
@@ -49,7 +82,7 @@ class HunterTargets(Choice):
     default = 1
 
 class HunterBossesNeeded(Range):
-    """Determines how many Boss Hunter Goals you must meet to win (if that's your goal)"""
+    """Determines how many Boss Hunter Goals you must meet to win (Hunter Goal)"""
     display_name = "How Many Boss Trophies Finished To Win?"
     range_start = 3
     range_end   = 9
@@ -178,12 +211,26 @@ class DRGOptions(PerGameCommonOptions):
     hunter_bosses:          HunterBossesNeeded
     hunter_trophies_b:      HunterTrophyAmountBoss
     sprint_start:           SprintStart
+    biome_start:            BiomeStart
+    biome_end:              BiomeEnd
 
 #set option groups for the web UI
 option_groups = [
     OptionGroup(
-        "Goal Options",
-        [Goal,HazMax,GoldRushGoalValue,HunterTrophyAmount,HunterTargets,HunterBossesNeeded,HunterTrophyAmountBoss]
+        "Goal Options (All)",
+        [Goal,HazMax]
+    ),
+    OptionGroup(
+        "Goal Options (Kill Caretaker)",
+        [BiomeStart,BiomeEnd]
+    ),
+    OptionGroup(
+        "Goal Options (Gold Rush)",
+        [GoldRushGoalValue]
+    ),
+    OptionGroup(
+        "Goal Options (Hunter)",
+        [HunterTrophyAmount,HunterTargets,HunterBossesNeeded,HunterTrophyAmountBoss]
     ),
     OptionGroup(
         "Difficulty Options",
@@ -231,6 +278,8 @@ option_presets = {
         "hunter_bosses": 3,
         "hunter_trophies_b": 5,
         "sprint_start": False,
+        "biome_start": 1,
+        "biome_end": 7,
     },
     "haz5 kill caretaker standard": {
         "progression_diff": 2,
@@ -258,6 +307,8 @@ option_presets = {
         "hunter_bosses": 3,
         "hunter_trophies_b": 5,
         "sprint_start": False,
+        "biome_start": 1,
+        "biome_end": 7,
     },
     "hunter mode standard": {
         "progression_diff": 2,
@@ -285,5 +336,7 @@ option_presets = {
         "hunter_bosses": 3,
         "hunter_trophies_b": 5,
         "sprint_start": False,
+        "biome_start": 1,
+        "biome_end": 7,
     },
 }

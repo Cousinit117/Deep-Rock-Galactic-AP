@@ -22,7 +22,7 @@ Biomes=[
     'Hollow Bough',
     'Glacial Strata',
     'Dense Biozone',
-    #'Magma Core',
+    'Magma Core',
     'Radioactive Exclusion Zone',
     'Salt Pits',
     'Sandblasted Corridors',
@@ -153,8 +153,9 @@ def getLocationGroup(group = "MainObj"):
     thisList=[]
     match group:
         case "MainObj": #Get Main Objs
-            thisList.append('OBJ:Magma Core:Industrial Sabotage:5')
+            #thisList.append(f'OBJ:{finalBiome}:Industrial Sabotage:5')
             for Biome in Biomes:
+                thisList.append(f'OBJ:{Biome}:Industrial Sabotage:5')
                 for Mission in MissionTypes:
                     for Hazard in [1,2,3,4,5]:
                         thisList.append(f'OBJ:{Biome}:{Mission}:{Hazard}')
@@ -274,7 +275,7 @@ def location_init():
 
 def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = True,\
     MGMax = 30, Goal = 1, GoldRushVal = 15000, ShopItems = 25, EventsOn = True, MaxHaz = 5,\
-    HunterNum = 50, HunterTargets = 1, HunterNumBoss = 5):
+    HunterNum = 50, HunterTargets = 1, HunterNumBoss = 5, FinalBiome = 'Magma Core'):
     CurrentID=0
     RemovableLocations=[]
     MustRemove=[]
@@ -296,6 +297,11 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
     if Goal == 1: #Only Removable if Possible with Goal 1
         for Biome in Biomes:
             for Mission in MissionTypes:
+                for Hazard in [1,2,3,4,5]: #check for bad biome every hazard
+                    if Biome == FinalBiome: #remove non victory from end biome
+                        MustRemove.append(f'OBJ:{Biome}:{Mission}:{Hazard}')
+                    else: #remove victory from non end biome
+                        MustRemove.append(f'OBJ:{Biome}:Industrial Sabotage:5')
                 for Hazard in ValidHaz:
                     RemovableLocations.append(f'OBJ:{Biome}:{Mission}:{Hazard}')
                 for Hazard in RemoveHaz:

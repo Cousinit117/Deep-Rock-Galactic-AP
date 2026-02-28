@@ -192,7 +192,7 @@ class DRGContext(CommonContext):
             self.slot_data = args["slot_data"]
             self.set_location_data()
             SlotName=(self.slot_info[self.slot].name)#self.slot_info[self.slot].name returns the name of the slot you connected to
-            #SlotName=SlotName.replace(" ","_")#DRG Needs to have underscores and no spaces (old)
+            SlotName=SlotName.replace(" ","_") #DRG Needs to have no spaces
             self.file_setslot              = os.path.join(self.BaseDirectory,"Archipelago","ActiveSlot.txt") #sets the current slot
             self.file_items                = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APChecklist)#Defines names, but they may not exist yet
             self.file_locations            = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APLocationlist)
@@ -252,13 +252,16 @@ class DRGContext(CommonContext):
                 huntBosses = self.slot_data.get("hunter_bosses",3)
                 huntTrophyB = self.slot_data.get("hunter_trophies_b",5)
                 sprintOn = self.slot_data.get("sprint_start",0)
+                biomeS = self.slot_data.get("biome_start",1)
+                biomeE = self.slot_data.get("biome_end",7)
                 f.write(f"Goal:{goalMode},CubesNeeded:{cubesNeeded},StartingClass:{classStart},"
                     f"TrapsEnabled:{trapsOn},DeathLink:{self.deathlinkOn},DeathAll:{deathlinkAll},DeathFailure:{deathlinkFailure},"
                     f"MinigamesEnabled:{minigameOn},APCoinCost:{APCoinCost},GoldToCoin:{goldToCoin},"
                     f"BeerToCoin:{beerToCoin},ProgDiff:{progDiff},StartStats:{startStats},"
                     f"GoldRushVal:{goldRushVal},ShopItemNum:{shopNum},EventsOn:{eventsOn},"
                     f"MaxHazard:{maxHaz},HuntTrophy:{huntTrophy},HuntTargets:{huntTargets},"
-                    f"MinigameNum:{minigameNum},SprintStart:{sprintOn},HuntBosses:{huntBosses},HuntBossCount:{huntTrophyB}")
+                    f"MinigameNum:{minigameNum},SprintStart:{sprintOn},HuntBosses:{huntBosses},HuntBossCount:{huntTrophyB},"
+                    f"BiomeStart:{biomeS},BiomeEnd:{biomeE}")
             #prints and saves the shop items for the mod to read
             with open(self.file_shop, 'w') as f:
                 shopItemDict = self.slot_data["shop_items"]
@@ -294,7 +297,7 @@ class DRGContext(CommonContext):
         if cmd in {"DataPackage"}:
             self.datagames = args["data"]["games"]
             #print(f"{self.datagames}")
-            asyncio.create_task(self.updateHints())
+            #asyncio.create_task(self.updateHints())
             if "Deep Rock Galactic" in args["data"]["games"]:
                 self.data_package_DRG_cache(args)
                 self.server_state_synchronized = True
@@ -322,11 +325,11 @@ class DRGContext(CommonContext):
                     #asyncio.create_task(self.sendInGameMsg(thisMsg,SlotName))
 
         #for recieving the raw hints info command
-        if cmd in {"Retrieved"}:
+        #if cmd in {"Retrieved"}:
             #print(f"{args['keys']}")
-            if (f"_read_hints_{self.team}_{self.slot}") in args["keys"]:
-                self.hintsList = args["keys"][f"_read_hints_{self.team}_{self.slot}"]
-                self.UpdateHintsTxT()
+            #if (f"_read_hints_{self.team}_{self.slot}") in args["keys"]:
+                #self.hintsList = args["keys"][f"_read_hints_{self.team}_{self.slot}"]
+                #self.UpdateHintsTxT()
               
     def UpdateHintsTxT(self):
         SlotName=(self.slot_info[self.slot].name)#self.slot_info[self.slot].name returns the name of the slot you connected to
