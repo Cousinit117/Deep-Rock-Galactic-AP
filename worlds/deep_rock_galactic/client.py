@@ -137,6 +137,8 @@ class DRGContext(CommonContext):
         self.deathlinkOn               = False
         self.death_link_message        = ""
         self.received_death_link       = False
+        self.multiWorldGames           = []
+        self.hintKey                   = ""
         #self.command_processor         = DRGCommands(self)
         try:
             self.BaseDirectory=self.game_options.root_directory
@@ -171,23 +173,23 @@ class DRGContext(CommonContext):
             return []
 
     async def shutdown(self):
-        await super(DRGContext, self).shutdown()
-
-    async def updateHints(self):
-        await self.send_msgs([{"cmd": "Get","keys": f'["_read_hints_{self.team}_{self.slot}"]'}])
-        #self.UpdateHintsTxT()     
+        await super(DRGContext, self).shutdown()    
 
     def on_package(self, cmd: str, args: dict):
         if cmd in {"RoomInfo"}:
-            #print('roominfo received by client. Not really sure what this does yet for drg')
+            self.multiWorldGames = args["games"]
+            print(f'This multiworld has the following games: {self.multiWorldGames}')
             pass
         # print('on_package triggered')
         if cmd in {"Connected"}:
             #asyncio.create_task(self.send_msgs([{"cmd": "GetDataPackage", "games": ["Deep Rock Galactic"]}]))
             #self.multiworld.get_game_worlds()
-            asyncio.create_task(self.send_msgs([{"cmd": "GetDataPackage"}]))
+            asyncio.create_task(self.send_msgs([{"cmd": "GetDataPackage", "games": f'{self.multiWorldGames}'}]))
             #print(f"{datapackage}")
-            #self.updateHints()
+            #HintStuff
+            self.hintKey = f'hints_{self.team}_{self.slot}'
+            asyncio.create_task(self.send_msgs([{"cmd": "SetNotify","keys": f'[{self.hintKey}]'}]))
+            #EndHintStuff
             self.locations_checked = set(args["checked_locations"])
             self.slot_data = args["slot_data"]
             self.set_location_data()
@@ -313,28 +315,28 @@ class DRGContext(CommonContext):
                     file.write(self.location_names.lookup_in_game(location)+'\n') #Prints all checked locations by name, after getting them by ID
 
         #used for hints and item messages
-        #if cmd in {"PrintJSON"}:
-            #SlotName=(self.slot_info[self.slot].name)#self.slot_info[self.slot].name returns the name of the slot you connected to
-            #SlotName=SlotName.replace(" ","_")#DRG Needs to have underscores and no spaces
-            #self.file_msgs = os.path.join(self.BaseDirectory,SlotName,self.APMsgs)   
-            #if "type" in args: #check that its a data packet
-                #if args["type"] == "Hint": #check that it's a hint
-                    #asyncio.create_task(self.updateHints())
-                #if args["type"] == "ItemSend": #item sending message
-                    #thisMsg = args["data"]
-                    #asyncio.create_task(self.sendInGameMsg(thisMsg,SlotName))
+        if cmd in {"PrintJSON"}:
+            SlotName=(self.slot_info[self.slot].name)#self.slot_info[self.slot].name returns the name of the slot you connected to
+            SlotName=SlotName.replace(" ","_")#DRG Needs to have underscores and no spaces
+            self.file_msgs = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APMsgs)   
+            if "type" in args: #check that its a data packet
+                if args["type"] == "Hint": #check that it's a hint
+                    asyncio.create_task(self.updateHints())
+                if args["type"] == "ItemSend": #item sending message
+                    thisMsg = args["data"]
+                    asyncio.create_task(self.sendInGameMsg(thisMsg,SlotName))
 
         #for recieving the raw hints info command
-        #if cmd in {"Retrieved"}:
-            #print(f"{args['keys']}")
-            #if (f"_read_hints_{self.team}_{self.slot}") in args["keys"]:
-                #self.hintsList = args["keys"][f"_read_hints_{self.team}_{self.slot}"]
-                #self.UpdateHintsTxT()
+        if cmd in {"SetReply"}:
+            print(f"{args['key']}")
+            if (f"{self.hintKey}") in args["key"]:
+                self.hintsList = args["value"]
+                self.UpdateHintsTxT()
               
     def UpdateHintsTxT(self):
         SlotName=(self.slot_info[self.slot].name)#self.slot_info[self.slot].name returns the name of the slot you connected to
         SlotName=SlotName.replace(" ","_")#DRG Needs to have underscores and no spaces
-        self.file_hints                = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APHints)
+        self.file_hints = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APHints)
         finalStr = ""
         for h in self.hintsList:
             slot_f = int(h["finding_player"])
@@ -376,7 +378,7 @@ class DRGContext(CommonContext):
         except Exception as e:
             return f"{self.slot_info[playerSlot].game} Location"
 
-    async def sendInGameMsg(self, thisMsg, SlotName):
+    async def sendInGameMsg(self, thisMsg, SlotName, delay=0.1):
         finalMsg = ""
         if len(thisMsg) == 6: #self find
             slot = int(thisMsg[0]["text"])
@@ -394,9 +396,13 @@ class DRGContext(CommonContext):
             finalMsg = f"{player_f} sent {item} to {player_r} ({location})"
 
         if os.path.isdir(os.path.join(self.BaseDirectory,"Archipelago",SlotName)) and not finalMsg:
-            with open(self.file_msgs, 'w') as f:
-                f.write(f"{finalMsg}")
-        time.sleep(1) #wait between writes (no worries if you miss some messages ina  huge release)
+            try:
+                with open(self.file_msgs, 'w') as f:
+                    f.write(f"{finalMsg}")
+                    #f.flush()
+                    time.sleep(delay) #wait between writes (no worries if you miss some messages in a huge release)
+            except:
+                print(f"Error: DRG cannot write messages to game. Check permissions.")
 
     async def check_locations(self):
 

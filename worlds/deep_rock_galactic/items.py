@@ -13,7 +13,7 @@ class ItemData(NamedTuple):
     trap:        int = 0
 
 ITEMS = {
-#Progression, highest number among items is now 93
+#Progression, highest number among items is now 104
     'Progressive-Flare-Count': 47,
     'Progressive-Flare-Recharge':1,
     'Progressive-Carriable-Throwing':2,
