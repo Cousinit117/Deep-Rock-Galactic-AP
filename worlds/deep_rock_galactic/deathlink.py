@@ -4,7 +4,7 @@ import random
 
 from typing import TYPE_CHECKING, List
 if TYPE_CHECKING:
-		from .client import DRGContext
+	from .client import DRGContext
 
 async def handle_receive_deathlink(ctx: 'DRGContext', message: str = "Deathlink Received"):
 	"""Resolves the effects of a deathlink received from the multiworld based on the options selected by the player"""

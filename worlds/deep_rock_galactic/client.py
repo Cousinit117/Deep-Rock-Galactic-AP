@@ -184,7 +184,7 @@ class DRGContext(CommonContext):
         if cmd in {"Connected"}:
             #asyncio.create_task(self.send_msgs([{"cmd": "GetDataPackage", "games": ["Deep Rock Galactic"]}]))
             #self.multiworld.get_game_worlds()
-            asyncio.create_task(self.send_msgs([{"cmd": "GetDataPackage", "games": f'{self.multiWorldGames}'}]))
+            asyncio.create_task(self.send_msgs([{"cmd": "GetDataPackage", "games": self.multiWorldGames}]))
             #print(f"{datapackage}")
             #HintStuff
             self.hintKey = f'hints_{self.team}_{self.slot}'
