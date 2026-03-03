@@ -131,6 +131,7 @@ class DRGContext(CommonContext):
         self.file_deathget             = ""
         self.file_deathsend            = ""
         self.file_removedlocations     = ""
+        self.file_msgs                 = ""
         self.collected_items           = []
         self.finished_game             = False
         self.want_slot_data            = True
@@ -173,7 +174,27 @@ class DRGContext(CommonContext):
             return []
 
     async def shutdown(self):
-        await super(DRGContext, self).shutdown()    
+        await super(DRGContext, self).shutdown()
+
+    def UpdateHintsTxT(self):
+        SlotName=(self.slot_info[self.slot].name)#self.slot_info[self.slot].name returns the name of the slot you connected to
+        SlotName=SlotName.replace(" ","_")#DRG Needs to have underscores and no spaces
+        self.file_hints = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APHints)
+        finalStr = ""
+        for h in self.hintsList:
+            slot_f = int(h["finding_player"])
+            slot_r = int(h["receiving_player"])
+            player_f = self.slot_info[slot_f].name
+            player_r = self.slot_info[slot_r].name
+            location = self.getLocNameFromGame(int(h["location"]),slot_f)
+            item = self.getItemNameFromGame(int(h["item"]),slot_r)
+            found = h["found"]
+            status = h["status"]
+            finalStr += f"{player_f},{player_r},{location},{item},{found},{status}\n"
+            #print(f"{finalStr}")
+            if os.path.isdir(os.path.join(self.BaseDirectory,"Archipelago",SlotName)):
+                with open(self.file_hints, 'w') as f:
+                    f.write(f"{finalStr}")
 
     def on_package(self, cmd: str, args: dict):
         if cmd in {"RoomInfo"}:
@@ -188,7 +209,7 @@ class DRGContext(CommonContext):
             #print(f"{datapackage}")
             #HintStuff
             self.hintKey = f'hints_{self.team}_{self.slot}'
-            asyncio.create_task(self.send_msgs([{"cmd": "SetNotify","keys": f'[{self.hintKey}]'}]))
+            asyncio.create_task(self.send_msgs([{"cmd": "SetReply","key": f'[{self.hintKey}]'}]))
             #EndHintStuff
             self.locations_checked = set(args["checked_locations"])
             self.slot_data = args["slot_data"]
@@ -205,6 +226,7 @@ class DRGContext(CommonContext):
             self.file_deathget             = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APDeathGet)
             self.file_deathsend            = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APDeathSend)
             self.file_removedlocations     = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APRemovedLocations)
+            self.file_msgs                 = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APMsgs)
             #only print these files first time the save is loaded
             if not os.path.isdir(os.path.join(self.BaseDirectory,"Archipelago")) or not os.path.exists(os.path.join(self.BaseDirectory,"Archipelago")):
                 os.mkdir(os.path.join(self.BaseDirectory,"Archipelago"))
@@ -287,7 +309,6 @@ class DRGContext(CommonContext):
             else:
                 new_items = args['items']
             self.collected_items += new_items
-            #asyncio.create_task(self.updateHints())
             # put all the thingies into the output file
             asyncio.create_task(self.give_items(self.collected_items))
 
@@ -298,8 +319,6 @@ class DRGContext(CommonContext):
 
         if cmd in {"DataPackage"}:
             self.datagames = args["data"]["games"]
-            #print(f"{self.datagames}")
-            #asyncio.create_task(self.updateHints())
             if "Deep Rock Galactic" in args["data"]["games"]:
                 self.data_package_DRG_cache(args)
                 self.server_state_synchronized = True
@@ -320,38 +339,16 @@ class DRGContext(CommonContext):
             SlotName=SlotName.replace(" ","_")#DRG Needs to have underscores and no spaces
             self.file_msgs = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APMsgs)   
             if "type" in args: #check that its a data packet
-                if args["type"] == "Hint": #check that it's a hint
-                    asyncio.create_task(self.updateHints())
                 if args["type"] == "ItemSend": #item sending message
                     thisMsg = args["data"]
                     asyncio.create_task(self.sendInGameMsg(thisMsg,SlotName))
 
         #for recieving the raw hints info command
         if cmd in {"SetReply"}:
-            print(f"{args['key']}")
+            #print(f"{args['key']}")
             if (f"{self.hintKey}") in args["key"]:
                 self.hintsList = args["value"]
                 self.UpdateHintsTxT()
-              
-    def UpdateHintsTxT(self):
-        SlotName=(self.slot_info[self.slot].name)#self.slot_info[self.slot].name returns the name of the slot you connected to
-        SlotName=SlotName.replace(" ","_")#DRG Needs to have underscores and no spaces
-        self.file_hints = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APHints)
-        finalStr = ""
-        for h in self.hintsList:
-            slot_f = int(h["finding_player"])
-            slot_r = int(h["receiving_player"])
-            player_f = self.slot_info[slot_f].name
-            player_r = self.slot_info[slot_r].name
-            location = self.getLocNameFromGame(int(h["location"]),slot_f)
-            item = self.getItemNameFromGame(int(h["item"]),slot_r)
-            found = h["found"]
-            status = h["status"]
-            finalStr += f"{player_f},{player_r},{location},{item},{found},{status}\n"
-            #print(f"{finalStr}")
-            if os.path.isdir(os.path.join(self.BaseDirectory,"Archipelago",SlotName)):
-                with open(self.file_hints, 'w') as f:
-                    f.write(f"{finalStr}")
 
     #Since these are now defined in self already, do we need to do this again?
     def data_package_DRG_cache(self, args):
@@ -395,7 +392,7 @@ class DRGContext(CommonContext):
             location = self.getLocNameFromGame(int(thisMsg[6]["text"]),slot_f) #self.id_to_loc_name[int(thisMsg[6]["text"])]
             finalMsg = f"{player_f} sent {item} to {player_r} ({location})"
 
-        if os.path.isdir(os.path.join(self.BaseDirectory,"Archipelago",SlotName)) and not finalMsg:
+        if os.path.isdir(os.path.join(self.BaseDirectory,"Archipelago",SlotName)) and finalMsg != "":
             try:
                 with open(self.file_msgs, 'w') as f:
                     f.write(f"{finalMsg}")

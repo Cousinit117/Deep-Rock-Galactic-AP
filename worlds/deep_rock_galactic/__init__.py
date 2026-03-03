@@ -32,7 +32,10 @@ def launch_client():
     
 components.append(Component("DRG Client",
                             func=launch_client,
-                            component_type=Type.CLIENT))
+                            component_type=Type.CLIENT, 
+                            icon='drg'))
+
+icon_paths['drg'] = f"ap:{__name__}/icons/icon_drg.png"
 
 class DRGWorld(World):
     game = 'Deep Rock Galactic'
