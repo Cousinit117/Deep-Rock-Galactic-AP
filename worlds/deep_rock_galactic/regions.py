@@ -4,7 +4,7 @@ from BaseClasses import CollectionState
 
 from .subclasses import DRGLocation, DRGRegion
 from .locations import location_init, remove_locations, Biomes, MissionTypes, SecondaryObjectives, Events, Warnings
-from .items import Generic_Progressives, Carrying_Buffs
+from .items import Generic_Progressives, Carrying_Buffs, WEAPONS_PRIMARY, WEAPONS_SECONDARY
 
 class RegionData(NamedTuple):
     locations: list[DRGLocation] = []
@@ -42,10 +42,19 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
     def rule_ammo(state):
         return state.has('Progressive-Gun-Ammo',player,diffArr[5]) #Requires at least 2 ammo buffs
     def rule_biome(state,biomeVal):
-        if options.goal_mode == 1 and options.biome_start != 0 and options.biome_start != biomeVal: #only goal biomes matter for
+        if options.goal_mode.value == 1 and options.biome_start.value != 0 and options.biome_start.value != biomeVal: #only goal biomes matter for
             return state.has(biomeCheckList[biomeVal],player,1) #Requires at least 1 of the biome required
         else:
             return True
+    def rule_weapons(state):
+        if options.wep_rando.value == 1:
+            TotalWeps = state.count_from_list(WEAPONS_PRIMARY,player) + state.count_from_list(WEAPONS_SECONDARY,player)
+            if TotalWeps >= (diffArr[5]+2):
+                return True
+            else:
+                return False
+        else:
+            return False
 
     GoldRush=[Mission for Mission in ALL_LOCATIONS if
         'Gold Rush' in Mission

@@ -116,6 +116,48 @@ class StartingClasses(Choice):
     option_engineer = 4
     default = 0
 
+class WeaponRando(Choice):
+    """Set Weapons randomization Style"""
+    display_name = "Enable / Set Weapon Randomization"
+    option_off = 0
+    option_fully_random = 1
+    option_choose_starters = 2
+    default = 1
+
+class StartingWeaponPrimary(Choice):
+    """Set you starting primary weapon. (Make sure its for your starting class)"""
+    display_name = "Chosen Starting Primary Weapon"
+    option_driller_flamethrower = 0
+    option_driller_cryo_canon = 1
+    option_driller_sludge_pump = 2
+    option_engineer_warthog_shotgun = 3
+    option_engineer_stubby_smg = 4
+    option_engineer_LOK1_rifle = 5
+    option_gunner_minigun = 6
+    option_gunner_autocanon = 7
+    option_gunner_guided_rocket = 8
+    option_scout_assault_rifle = 9
+    option_scout_M1000_sniper = 10
+    option_scout_plasma_carbine = 11
+    default = 0
+
+class StartingWeaponSecondary(Choice):
+    """Set you starting secondary weapon. (Make sure its for your starting class)"""
+    display_name = "Chosen Starting Secondary Weapon"
+    option_driller_pistol = 0
+    option_driller_plasma_charger = 1
+    option_driller_wave_cooker = 2
+    option_engineer_deepcore_PGL = 3
+    option_engineer_breach_cutter = 4
+    option_engineer_shard_diffractor = 5
+    option_gunner_revolver = 6
+    option_gunner_burstfire_pistol = 7
+    option_gunner_coil_gun = 8
+    option_scout_boomstick = 9
+    option_scout_dual_pistols = 10
+    option_scout_crossbow = 11
+    default = 0
+
 class ErrorCubeChecks(Range):
     """Sets the number of checks to be Error cubes (Defaults to 10)"""
     range_start = 0
@@ -196,6 +238,9 @@ class DRGOptions(PerGameCommonOptions):
     death_link_all:         DeathLinkAll
     death_link_failure:     DeathLinkFailure
     avail_classes:          StartingClasses
+    wep_rando:              WeaponRando
+    wep_primary:            StartingWeaponPrimary
+    wep_secondary:          StartingWeaponSecondary
     error_cube_checks:      ErrorCubeChecks
     traps_on:               EnableTraps
     minigames_on:           EnableMinigames
@@ -238,7 +283,7 @@ option_groups = [
     ),
     OptionGroup(
         "Optional Features",
-        [ErrorCubeChecks,EnableTraps,EnableMinigames,MinigameMax,EnableMachineEvents]
+        [WeaponRando,StartingWeaponPrimary,StartingWeaponSecondary,ErrorCubeChecks,EnableTraps,EnableMinigames,MinigameMax,EnableMachineEvents]
     ),
     OptionGroup(
         "AP Coin Shop Options",
@@ -263,6 +308,9 @@ option_presets = {
         "death_link_failure":False,
         "locations_to_remove": 0,
         "avail_classes": 0,
+        "wep_rando": True,
+        "wep_primary": 0,
+        "wep_secondary": 0,
         "error_cube_checks": 10,
         "traps_on": True,
         "minigames_on": True,
@@ -292,6 +340,9 @@ option_presets = {
         "death_link_failure":False,
         "locations_to_remove": 0,
         "avail_classes": 0,
+        "wep_rando": True,
+        "wep_primary": 0,
+        "wep_secondary": 0,
         "error_cube_checks": 10,
         "traps_on": True,
         "minigames_on": True,
@@ -321,6 +372,9 @@ option_presets = {
         "death_link_failure":False,
         "locations_to_remove": 0,
         "avail_classes": 0,
+        "wep_rando": True,
+        "wep_primary": 0,
+        "wep_secondary": 0,
         "error_cube_checks": 10,
         "traps_on": True,
         "minigames_on": True,

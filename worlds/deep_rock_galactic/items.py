@@ -13,7 +13,7 @@ class ItemData(NamedTuple):
     trap:        int = 0
 
 ITEMS = {
-#Progression, highest number among items is now 104
+#Progression, highest number among items is now 128
     'Progressive-Flare-Count': 47,
     'Progressive-Flare-Recharge':1,
     'Progressive-Carriable-Throwing':2,
@@ -128,6 +128,32 @@ ITEMS = {
     'Biome-Salt-Pits':102,
     'Biome-Sandblasted-Corridors':103,
     'Biome-Ossuary-Depths':104,
+#weapon Items Primary
+    'Driller-Flamethrower':105,
+    'Driller-Cryo':106,
+    'Driller-SludgePump':107,
+    'Engineer-Warthog-Shotgun':108,
+    'Engineer-Stubby-SMG':109,
+    'Engineer-LOK1-Rifle':110,
+    'Gunner-Minigun':111,
+    'Gunner-Autocanon':112,
+    'Gunner-Guided-Rocket':113,
+    'Scout-Assault-Rifle':114,
+    'Scout-M1000-Sniper':115,
+    'Scout-Plasma-Carbine':116,
+#Weapon Items Secondary
+    'Driller-Pistol':117,
+    'Driller-Plasma-Charger':118,
+    'Driller-Wave-Cooker':119,
+    'Engineer-Deepcore-PGL':120,
+    'Engineer-Breach-Cutter':121,
+    'Engineer-Shard-Diffractor':122,
+    'Gunner-Revolver':123,
+    'Gunner-Burstfire-Pistol':124,
+    'Gunner-Coil-Gun':125,
+    'Scout-Boomstick-Shotgun':126,
+    'Scout-Dual-Pistols':127,
+    'Scout-Crossbow':128,
 }
 ITEMS = {k: v + 1 << ITEM_BITSHIFT_DEFAULT for k, v in ITEMS.items()}
 
@@ -630,6 +656,126 @@ ITEMS_COUNT = {
         useful=0,
         filler=0,
 ),
+    'Driller-Flamethrower':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Driller-Cryo':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Driller-SludgePump':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Engineer-Warthog-Shotgun':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Engineer-Stubby-SMG':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Engineer-LOK1-Rifle':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Gunner-Minigun':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Gunner-Autocanon':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Gunner-Guided-Rocket':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Scout-Assault-Rifle':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Scout-M1000-Sniper':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Scout-Plasma-Carbine':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Driller-Pistol':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Driller-Plasma-Charger':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Driller-Wave-Cooker':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Engineer-Deepcore-PGL':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Engineer-Breach-Cutter':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Engineer-Shard-Diffractor':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Gunner-Revolver':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Gunner-Burstfire-Pistol':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Gunner-Coil-Gun':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Scout-Boomstick-Shotgun':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Scout-Dual-Pistols':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
+    'Scout-Crossbow':ItemData(
+        progression=1,
+        useful=0,
+        filler=0,
+),
 }
 
 EVENT_ITEMS= {
@@ -710,6 +856,36 @@ BIOME_ITEM_CHECK = [
     'Biome-Salt-Pits',
     'Biome-Sandblasted-Corridors',
     'Biome-Ossuary-Depths',
+]
+
+WEAPONS_PRIMARY = [
+    'Driller-Flamethrower',
+    'Driller-Cryo',
+    'Driller-SludgePump',
+    'Engineer-Warthog-Shotgun',
+    'Engineer-Stubby-SMG',
+    'Engineer-LOK1-Rifle',
+    'Gunner-Minigun',
+    'Gunner-Autocanon',
+    'Gunner-Guided-Rocket',
+    'Scout-Assault-Rifle',
+    'Scout-M1000-Sniper',
+    'Scout-Plasma-Carbine',
+]
+
+WEAPONS_SECONDARY = [
+    'Driller-Pistol',
+    'Driller-Plasma-Charger',
+    'Driller-Wave-Cooker',
+    'Engineer-Deepcore-PGL',
+    'Engineer-Breach-Cutter',
+    'Engineer-Shard-Diffractor',
+    'Gunner-Revolver',
+    'Gunner-Burstfire-Pistol',
+    'Gunner-Coil-Gun',
+    'Scout-Boomstick-Shotgun',
+    'Scout-Dual-Pistols',
+    'Scout-Crossbow',
 ]
 
 #Checks for Sprint Enabled

@@ -56,13 +56,16 @@ class DRGCommands(ClientCommandProcessor):
         """Change the Game Directory for this session (Will reset to host.yaml on reload.)"""
         if isinstance(self.ctx, DRGContext):
             dir = Utils.open_directory("Select the <DRG Install>/FSD/Mods Folder", self.ctx.BaseDirectory)
-            if dir and dir != self.ctx.BaseDirectory:
-                self.ctx.game_options.update({"root_directory": dir})
-                self.ctx.game_options._changed = True
-                self.ctx.BaseDirectory = dir
-                self.output("Changed the directory to the following = " + self.ctx.BaseDirectory)
+            if (dir and 'FSD/Mods' in dir):
+                if (dir and dir != self.ctx.BaseDirectory):
+                    self.ctx.game_options.update({"root_directory": dir})
+                    self.ctx.game_options._changed = True
+                    self.ctx.BaseDirectory = dir
+                    self.output("Changed the directory to the following = " + self.ctx.BaseDirectory)
+                else:
+                    self.output("No change was made. Directory already matched or was invalid.")
             else:
-                self.output("No change was made. Directory already matched or was invalid.")
+                self.output("You've selected an incorrect directory. It should contain /FSD/Mods, please try again.")
 
     def _cmd_checkpath(self):
         """Check your currently set Game Directory (Should be <DRG Install>/FSD/Mods/)"""
@@ -199,7 +202,7 @@ class DRGContext(CommonContext):
     def on_package(self, cmd: str, args: dict):
         if cmd in {"RoomInfo"}:
             self.multiWorldGames = args["games"]
-            print(f'This multiworld has the following games: {self.multiWorldGames}')
+            #print(f'This multiworld has the following games: {self.multiWorldGames}')
             pass
         # print('on_package triggered')
         if cmd in {"Connected"}:
@@ -278,6 +281,7 @@ class DRGContext(CommonContext):
                 sprintOn = self.slot_data.get("sprint_start",0)
                 biomeS = self.slot_data.get("biome_start",1)
                 biomeE = self.slot_data.get("biome_end",7)
+                wepRando = self.slot_data.get("wep_rando",1)
                 f.write(f"Goal:{goalMode},CubesNeeded:{cubesNeeded},StartingClass:{classStart},"
                     f"TrapsEnabled:{trapsOn},DeathLink:{self.deathlinkOn},DeathAll:{deathlinkAll},DeathFailure:{deathlinkFailure},"
                     f"MinigamesEnabled:{minigameOn},APCoinCost:{APCoinCost},GoldToCoin:{goldToCoin},"
@@ -285,7 +289,7 @@ class DRGContext(CommonContext):
                     f"GoldRushVal:{goldRushVal},ShopItemNum:{shopNum},EventsOn:{eventsOn},"
                     f"MaxHazard:{maxHaz},HuntTrophy:{huntTrophy},HuntTargets:{huntTargets},"
                     f"MinigameNum:{minigameNum},SprintStart:{sprintOn},HuntBosses:{huntBosses},HuntBossCount:{huntTrophyB},"
-                    f"BiomeStart:{biomeS},BiomeEnd:{biomeE}")
+                    f"BiomeStart:{biomeS},BiomeEnd:{biomeE},WepRando:{wepRando}")
             #prints and saves the shop items for the mod to read
             with open(self.file_shop, 'w') as f:
                 shopItemDict = self.slot_data["shop_items"]
