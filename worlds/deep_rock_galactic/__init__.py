@@ -47,6 +47,7 @@ class DRGWorld(World):
     item_name_to_id = ALL_ITEMS
     location_name_to_id = location_init()
     event_items={}
+    randClass=1 #Gunner
 
     def __init__(self, multiworld, player):
         super().__init__(multiworld, player)
@@ -111,7 +112,7 @@ class DRGWorld(World):
             if (item_name in CLASS_ITEM_CHECK) and (self.options.avail_classes.value == 0):
                 continue
             #skip specific class if on
-            if (item_name in CLASS_ITEM_CHECK) and (self.options.avail_classes.value != 0):
+            if (item_name in CLASS_ITEM_CHECK) and (self.options.avail_classes.value not in  [0,5]):
                 if (item_name == CLASS_ITEM_CHECK[(self.options.avail_classes.value-1)]):
                     continue
             #skip adding biomes to item pool because they start unlocked
@@ -191,6 +192,7 @@ class DRGWorld(World):
         self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player)
 
         #START - Pecollected Items
+        self.randClass = random.randint(1,4) #Gunner, Driller, Scout, Engineer
         preItems = []
         #Class Items
         match (self.options.avail_classes.value):
@@ -202,6 +204,16 @@ class DRGWorld(World):
                 preItems.append("Class-Scout")
             case 4: #engi
                 preItems.append("Class-Engineer")
+            case 5:
+                match (self.randClass): #if 5 = random then select 1-4 randomly
+                    case 1: #gunner
+                        preItems.append("Class-Gunner")
+                    case 2: #driller
+                        preItems.append("Class-Driller")
+                    case 3: #scout
+                        preItems.append("Class-Scout")
+                    case 4: #engi
+                        preItems.append("Class-Engineer")
             case _: #all
                 preItems.extend(CLASS_ITEM_CHECK)
 
@@ -235,7 +247,18 @@ class DRGWorld(World):
         #Weapon Rando Items
         match (self.options.wep_rando.value):
             case 1:
-                randInt_prim = random.randint(0,len(WEAPONS_PRIMARY)-1)
+                if (self.options.avail_classes.value == 5):
+                    match (self.randClass): #if 5 = random then select 1-4 randomly
+                        case 1: #gunner
+                            randInt_prim = random.randint(6,8)
+                        case 2: #driller
+                            randInt_prim = random.randint(0,2)
+                        case 3: #scout
+                            randInt_prim = random.randint(9,11)
+                        case 4: #engi
+                            randInt_prim = random.randint(3,5)
+                else:    
+                    randInt_prim = random.randint(0,len(WEAPONS_PRIMARY)-1)
                 match (randInt_prim):
                     case 0 | 1 | 2: #limit to Driller
                         randInt_sec = random.randint(0,2)
@@ -254,7 +277,11 @@ class DRGWorld(World):
                 preItems.extend(WEAPONS_PRIMARY)
                 preItems.extend(WEAPONS_SECONDARY)
 
-        self.multiworld.push_precollected(preItems)
+        #preFinal = []
+        for item in preItems:
+            self.multiworld.push_precollected(self.create_item(item, ItemClassification.progression))
+        
+        #self.multiworld.push_precollected(preFinal)
 
     def create_regions(self):
         '''

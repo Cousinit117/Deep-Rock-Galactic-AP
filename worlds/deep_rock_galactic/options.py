@@ -114,7 +114,8 @@ class StartingClasses(Choice):
     option_driller = 2
     option_scout = 3
     option_engineer = 4
-    default = 0
+    option_random_class = 5
+    default = 5
 
 class WeaponRando(Choice):
     """Set Weapons randomization Style"""
