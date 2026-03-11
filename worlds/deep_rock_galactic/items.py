@@ -888,10 +888,6 @@ WEAPONS_SECONDARY = [
     'Scout-Crossbow',
 ]
 
-WEAPON_OCS = [
-    'Test-OC'
-]
-
 #Checks for Sprint Enabled
 SPRINT_ITEM_CHECK = [
     'Progressive-Movement-Speed',
