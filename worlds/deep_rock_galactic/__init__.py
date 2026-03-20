@@ -126,10 +126,10 @@ class DRGWorld(World):
             if (item_name in WEAPONS_PRIMARY or item_name in WEAPONS_SECONDARY) and (self.options.wep_rando.value == 0):
                 continue
             #skip weapon if selected
-            if (item_name in WEAPONS_PRIMARY and self.options.wep_rando.value == 1):
+            if (item_name in WEAPONS_PRIMARY and self.options.wep_rando.value == 2):
                 if (item_name == WEAPONS_PRIMARY[self.options.wep_primary.value]):
                     continue
-            if (item_name in WEAPONS_SECONDARY and self.options.wep_rando.value == 1):
+            if (item_name in WEAPONS_SECONDARY and self.options.wep_rando.value == 2):
                 if (item_name == WEAPONS_SECONDARY[self.options.wep_secondary.value]):
                     continue
             #generate Rest of Items

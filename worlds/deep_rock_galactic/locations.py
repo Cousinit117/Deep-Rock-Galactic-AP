@@ -64,7 +64,6 @@ SecondaryObjectives=[
 Events=[
     'Ebonite Mutation',
     'Kursite Infection',
-    'Tritilyte Crystal',
     'Omen Modular Exterminator',
 ]
 
@@ -84,7 +83,8 @@ Warnings=[
     'Swarmageddon',
     'Duck And Cover',
     'Ebonite Outbreak',
-    'Ossiran Colony',
+    'Pit Jaw Colony',
+    'Scrab Nesting Grounds',
 ]
 
 PassiveCreatures=[
