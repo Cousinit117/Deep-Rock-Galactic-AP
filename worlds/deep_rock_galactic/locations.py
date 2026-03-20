@@ -64,6 +64,7 @@ SecondaryObjectives=[
 Events=[
     'Ebonite Mutation',
     'Kursite Infection',
+    'Tritilyte Crystal',
     'Omen Modular Exterminator',
 ]
 
