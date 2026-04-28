@@ -13,7 +13,7 @@ class ItemData(NamedTuple):
     trap:        int = 0
 
 ITEMS = {
-#Progression, highest number among items is now 134
+#Progression, highest number among items is now 131
     'Progressive-Flare-Count': 47,
     'Progressive-Flare-Recharge':1,
     'Progressive-Carriable-Throwing':2,
@@ -117,11 +117,8 @@ ITEMS = {
     'Mushroom':92,
     'Gold-Chunk':93,
     'APCoin-1':129,
-    'APCoin-2':130,
-    'APCoin-3':131,
-    'APCoin-4':132,
-    'APCoin-5':133,
-    'APCoin-10':134,
+    'APCoin-5':130,
+    'APCoin-10':131,
 #biome Items
     'Biome-Azure-Weald':94,
     'Biome-Crystalline-Caverns':95,
@@ -798,11 +795,18 @@ EXTRA_FILLER_ITEMS = [
     #Contains only extra items used for filler generation
     'Free-Drink',
     'APCoin-1',
-    'APCoin-2',
-    'APCoin-3',
-    'APCoin-4',
     'APCoin-5',
     'APCoin-10',
+]
+
+DEPRECIATED_ITEMS = [
+    #Contains only extra items used for filler generation
+    'Beard-Waxing',
+    'Hydrate-Water',
+    'Gnome-Spray',
+    'Takeout-Food-Order',
+    'Mushroom',
+    'Gold-Chunk',
 ]
 
 #Item group hardcode

@@ -8,7 +8,7 @@ from BaseClasses import Tutorial, ItemClassification
 # from Fill import fast_fill
 from worlds.LauncherComponents import launch_subprocess
 from worlds.AutoWorld import World, WebWorld
-from .items import ALL_ITEMS, ITEMS_COUNT, EVENT_ITEMS, CLASS_ITEM_CHECK, EXTRA_FILLER_ITEMS, SPRINT_ITEM_CHECK, BIOME_ITEM_CHECK, WEAPONS_PRIMARY, WEAPONS_SECONDARY
+from .items import ALL_ITEMS, ITEMS_COUNT, EVENT_ITEMS, CLASS_ITEM_CHECK, EXTRA_FILLER_ITEMS, SPRINT_ITEM_CHECK, BIOME_ITEM_CHECK, WEAPONS_PRIMARY, WEAPONS_SECONDARY, DEPRECIATED_ITEMS
 from .locations import location_init, remove_locations, REMOVED_LOCATIONS
 from .regions import create_and_link_regions
 from .options import DRGOptions
@@ -106,6 +106,9 @@ class DRGWorld(World):
                 continue
             #skip junk items because they're junk
             if item_name in EXTRA_FILLER_ITEMS:
+                continue
+            #skip depreciated items because they're no longer used (remain for old world support only)
+            if item_name in DEPRECIATED_ITEMS:
                 continue
             counts = ITEMS_COUNT[item_name]
             #skip adding classes to item pool because they start unlocked
