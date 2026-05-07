@@ -196,7 +196,7 @@ class DRGContext(CommonContext):
             finalStr += f"{player_f},{player_r},{location},{item},{found},{status}\n"
             #print(f"{finalStr}")
             if os.path.isdir(os.path.join(self.BaseDirectory,"Archipelago",SlotName)):
-                with open(self.file_hints, 'w') as f:
+                with open(self.file_hints, 'w', newline='\r\n') as f:
                     f.write(f"{finalStr}")
 
     def on_package(self, cmd: str, args: dict):
@@ -236,13 +236,13 @@ class DRGContext(CommonContext):
             if not os.path.isdir(os.path.join(self.BaseDirectory,"Archipelago",SlotName)) or not os.path.exists(os.path.join(self.BaseDirectory,"Archipelago",SlotName)):#Does slot directory/save exist? if no, make it and the files
                 os.mkdir(os.path.join(self.BaseDirectory,"Archipelago",SlotName))
             #Set the active slot for DRG
-            with open(self.file_setslot, 'w') as f:
+            with open(self.file_setslot, 'w', newline='\r\n') as f:
                 f.write(f'{SlotName}')
             #init other files
-            open(self.file_items, 'w')
-            open(self.file_locations, 'w')
-            open(self.file_aplocations, 'w')
-            with open(self.file_locationhelper, 'w') as f:
+            open(self.file_items, 'w', newline='\r\n')
+            open(self.file_locations, 'w', newline='\r\n')
+            open(self.file_aplocations, 'w', newline='\r\n')
+            with open(self.file_locationhelper, 'w', newline='\r\n') as f:
                 #Make location helper here
                 all_checked=set(args["checked_locations"])
                 all_missing=set(args["missing_locations"])
@@ -252,10 +252,10 @@ class DRGContext(CommonContext):
                     locationhelper.add(self.id_to_loc_name[i])
                 f.write("\n".join(list(locationhelper)))
             #Sets Deathlink files to blank on connect
-            open(self.file_deathget, 'w')
-            open(self.file_deathsend, 'w')
+            open(self.file_deathget, 'w', newline='\r\n')
+            open(self.file_deathsend, 'w', newline='\r\n')
             #prints and save file settings for the mod to read
-            with open(self.file_settings, 'w') as f:
+            with open(self.file_settings, 'w', newline='\r\n') as f:
                 cubesNeeded = self.slot_data.get("error_cube_checks",10)
                 classStart = self.slot_data.get("avail_classes",0)
                 trapsOn = self.slot_data.get("traps_on",0)
@@ -291,7 +291,7 @@ class DRGContext(CommonContext):
                     f"MinigameNum:{minigameNum},SprintStart:{sprintOn},HuntBosses:{huntBosses},HuntBossCount:{huntTrophyB},"
                     f"BiomeStart:{biomeS},BiomeEnd:{biomeE},WepRando:{wepRando}")
             #prints and saves the shop items for the mod to read
-            with open(self.file_shop, 'w') as f:
+            with open(self.file_shop, 'w', newline='\r\n') as f:
                 shopItemDict = self.slot_data["shop_items"]
                 for shopKey in shopItemDict:
                     #print(f"{shopKey}={shopItemDict[shopKey]}")
@@ -300,7 +300,7 @@ class DRGContext(CommonContext):
                     playerN = self.slot_info[itemDict["player"]].name
                     f.write(f"{shopKey}|{playerN}={itemDict["item"]}\n")
             #prints and saves the removed locations
-            with open(self.file_removedlocations, 'w') as f:
+            with open(self.file_removedlocations, 'w', newline='\r\n') as f:
                 removedLocs = self.slot_data["removed_locations"]
                 for locKey in removedLocs:
                     f.write(f"{locKey}\n")
@@ -331,9 +331,9 @@ class DRGContext(CommonContext):
         #This will let unreal see all the checked locations for in-game tracker
         #should this if statement be tabbed one more to the right, to put it in datapackage command?
         if self.file_aplocations != "":
-            with open(self.file_aplocations, 'w') as file:
+            with open(self.file_aplocations, 'w', newline='\r\n') as file:
                 file.write('')
-            with open(self.file_aplocations, 'a') as file:
+            with open(self.file_aplocations, 'a', newline='\r\n') as file:
                 for location in self.locations_checked:
                     file.write(self.location_names.lookup_in_game(location)+'\n') #Prints all checked locations by name, after getting them by ID
 
@@ -398,7 +398,7 @@ class DRGContext(CommonContext):
 
         if os.path.isdir(os.path.join(self.BaseDirectory,"Archipelago",SlotName)) and finalMsg != "":
             try:
-                with open(self.file_msgs, 'w') as f:
+                with open(self.file_msgs, 'w', newline='\r\n') as f:
                     f.write(f"{finalMsg}")
                     #f.flush()
                     time.sleep(delay) #wait between writes (no worries if you miss some messages in a huge release)
@@ -441,12 +441,12 @@ class DRGContext(CommonContext):
         #print(items)
         if self.file_items is None:
             print('error, no items file found, attempting to create at referenced directory')
-            open(self.file_items, "w")
+            open(self.file_items, "w", newline='\r\n')
         items_counts = {}
         for item in items:
             items_counts[item] = items_counts.get(item, 0) + 1
         output_items = ','.join([f'{key}:{value}' for key, value in items_counts.items()])
-        with open(self.file_items, 'w') as f:
+        with open(self.file_items, 'w', newline='\r\n') as f:
             # nuke the txt file and shove it in. Can do so by just opening file with mode='w' (no append)
             f.write(output_items)
         
