@@ -411,7 +411,7 @@ class DRGContext(CommonContext):
             print('error, no locations file found')
             return
 
-        with open(self.file_locations, 'r', newline='\r\n') as f:
+        with open(self.file_locations, 'r') as f:
             locations = f.readlines()
         locations = {location.replace('\n','') for location in locations}
         #This for loop gives all locations of lower hazard than the mission that was completed
