@@ -115,7 +115,7 @@ class DRGWorld(World):
             if (item_name in CLASS_ITEM_CHECK) and (self.options.avail_classes.value == 0):
                 continue
             #skip specific class if on
-            if (item_name in CLASS_ITEM_CHECK) and (self.options.avail_classes.value not in  [0,5]):
+            if (item_name in CLASS_ITEM_CHECK) and (self.options.avail_classes.value not in [0,5]):
                 if (item_name == CLASS_ITEM_CHECK[(self.options.avail_classes.value-1)]):
                     continue
             #skip adding biomes to item pool because they start unlocked
@@ -197,28 +197,38 @@ class DRGWorld(World):
         #START - Pecollected Items
         self.randClass = random.randint(1,4) #Gunner, Driller, Scout, Engineer
         preItems = []
+        self.chosenClass = 2;
         #Class Items
         match (self.options.avail_classes.value):
             case 1: #gunner
                 preItems.append("Class-Gunner")
+                self.chosenClass = 1;
             case 2: #driller
                 preItems.append("Class-Driller")
+                self.chosenClass = 2;
             case 3: #scout
                 preItems.append("Class-Scout")
+                self.chosenClass = 3;
             case 4: #engi
                 preItems.append("Class-Engineer")
+                self.chosenClass = 4;
             case 5:
                 match (self.randClass): #if 5 = random then select 1-4 randomly
                     case 1: #gunner
                         preItems.append("Class-Gunner")
+                        self.chosenClass = 1;
                     case 2: #driller
                         preItems.append("Class-Driller")
+                        self.chosenClass = 2;
                     case 3: #scout
                         preItems.append("Class-Scout")
+                        self.chosenClass = 3;
                     case 4: #engi
                         preItems.append("Class-Engineer")
+                        self.chosenClass = 4;
             case _: #all
                 preItems.extend(CLASS_ITEM_CHECK)
+                self.chosenClass = 2;
 
         #Biome Items
         match (self.options.biome_start.value):
@@ -250,8 +260,8 @@ class DRGWorld(World):
         #Weapon Rando Items
         match (self.options.wep_rando.value):
             case 1:
-                if (self.options.avail_classes.value == 5):
-                    match (self.randClass): #if 5 = random then select 1-4 randomly
+                if (self.options.avail_classes.value > 0):
+                    match (self.chosenClass): #if 5 = random then select 1-4 randomly
                         case 1: #gunner
                             randInt_prim = random.randint(6,8)
                         case 2: #driller
