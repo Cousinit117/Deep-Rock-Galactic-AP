@@ -193,11 +193,11 @@ class DRGContext(CommonContext):
             item = self.getItemNameFromGame(int(h["item"]),slot_r)
             found = h["found"]
             status = h["status"]
-            finalStr += f"{player_f},{player_r},{location},{item},{found},{status}\n"
+            finalStr += f"{player_f},{player_r},{location},{item},{found},{status}\r\n"
             #print(f"{finalStr}")
-            if os.path.isdir(os.path.join(self.BaseDirectory,"Archipelago",SlotName)):
-                with open(self.file_hints, 'w') as f:
-                    f.write(f"{finalStr}")
+        if os.path.isdir(os.path.join(self.BaseDirectory,"Archipelago",SlotName)):
+            with open(self.file_hints, 'wb') as f:
+                f.write(f"{finalStr}".encode())
 
     def on_package(self, cmd: str, args: dict):
         if cmd in {"RoomInfo"}:
@@ -242,7 +242,7 @@ class DRGContext(CommonContext):
             open(self.file_items, 'w')
             open(self.file_locations, 'w')
             open(self.file_aplocations, 'w')
-            with open(self.file_locationhelper, 'w') as f:
+            with open(self.file_locationhelper, 'wb') as f:
                 #Make location helper here
                 all_checked=set(args["checked_locations"])
                 all_missing=set(args["missing_locations"])
@@ -250,12 +250,12 @@ class DRGContext(CommonContext):
                 locationhelper=set()
                 for i in all_locations:
                     locationhelper.add(self.id_to_loc_name[i])
-                f.write("\n".join(list(locationhelper)))
+                f.write("\r\n".join(list(locationhelper)).encode())
             #Sets Deathlink files to blank on connect
             open(self.file_deathget, 'w')
             open(self.file_deathsend, 'w')
             #prints and save file settings for the mod to read
-            with open(self.file_settings, 'w') as f:
+            with open(self.file_settings, 'wb') as f:
                 cubesNeeded = self.slot_data.get("error_cube_checks",10)
                 classStart = self.slot_data.get("avail_classes",0)
                 trapsOn = self.slot_data.get("traps_on",0)
@@ -289,21 +289,21 @@ class DRGContext(CommonContext):
                     f"GoldRushVal:{goldRushVal},ShopItemNum:{shopNum},EventsOn:{eventsOn},"
                     f"MaxHazard:{maxHaz},HuntTrophy:{huntTrophy},HuntTargets:{huntTargets},"
                     f"MinigameNum:{minigameNum},SprintStart:{sprintOn},HuntBosses:{huntBosses},HuntBossCount:{huntTrophyB},"
-                    f"BiomeStart:{biomeS},BiomeEnd:{biomeE},WepRando:{wepRando}")
+                    f"BiomeStart:{biomeS},BiomeEnd:{biomeE},WepRando:{wepRando}".encode())
             #prints and saves the shop items for the mod to read
-            with open(self.file_shop, 'w') as f:
+            with open(self.file_shop, 'wb') as f:
                 shopItemDict = self.slot_data["shop_items"]
                 for shopKey in shopItemDict:
                     #print(f"{shopKey}={shopItemDict[shopKey]}")
                     sName = shopKey
                     itemDict = shopItemDict[shopKey]
                     playerN = self.slot_info[itemDict["player"]].name
-                    f.write(f"{shopKey}|{playerN}={itemDict["item"]}\n")
+                    f.write(f"{shopKey}|{playerN}={itemDict["item"]}\r\n".encode())
             #prints and saves the removed locations
-            with open(self.file_removedlocations, 'w') as f:
+            with open(self.file_removedlocations, 'wb') as f:
                 removedLocs = self.slot_data["removed_locations"]
                 for locKey in removedLocs:
-                    f.write(f"{locKey}\n")
+                    f.write(f"{locKey}\r\n".encode())
 
         #handle getting new items
         if cmd in {"ReceivedItems"}:
@@ -331,11 +331,11 @@ class DRGContext(CommonContext):
         #This will let unreal see all the checked locations for in-game tracker
         #should this if statement be tabbed one more to the right, to put it in datapackage command?
         if self.file_aplocations != "":
-            with open(self.file_aplocations, 'w') as file:
-                file.write('')
-            with open(self.file_aplocations, 'a') as file:
+            with open(self.file_aplocations, 'wb') as file:
+                file.write(b'')
+            with open(self.file_aplocations, 'ab') as file:
                 for location in self.locations_checked:
-                    file.write(self.location_names.lookup_in_game(location)+'\n') #Prints all checked locations by name, after getting them by ID
+                    file.write((self.location_names.lookup_in_game(location)+'\r\n').encode()) #Prints all checked locations by name, after getting them by ID
 
         #used for hints and item messages
         if cmd in {"PrintJSON"}:
