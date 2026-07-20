@@ -301,6 +301,9 @@ class DRGContext(CommonContext):
                 biomeS = self.slot_data.get("biome_start",1)
                 biomeE = self.slot_data.get("biome_end",7)
                 wepRando = self.slot_data.get("wep_rando",1)
+                gauntletStages = self.slot_data.get("gauntlet_stages",10)
+                gauntletSeed = self.slot_data.get("gauntlet_seed",1234567)
+                gauntletStart = self.slot_data.get("gauntlet_start",1)
                 f.write(f"Goal:{goalMode},CubesNeeded:{cubesNeeded},StartingClass:{classStart},"
                     f"TrapsEnabled:{trapsOn},DeathLink:{self.deathlinkOn},DeathAll:{deathlinkAll},DeathFailure:{deathlinkFailure},"
                     f"MinigamesEnabled:{minigameOn},APCoinCost:{APCoinCost},GoldToCoin:{goldToCoin},"
@@ -308,7 +311,7 @@ class DRGContext(CommonContext):
                     f"GoldRushVal:{goldRushVal},ShopItemNum:{shopNum},EventsOn:{eventsOn},"
                     f"MaxHazard:{maxHaz},HuntTrophy:{huntTrophy},HuntTargets:{huntTargets},"
                     f"MinigameNum:{minigameNum},SprintStart:{sprintOn},HuntBosses:{huntBosses},HuntBossCount:{huntTrophyB},"
-                    f"BiomeStart:{biomeS},BiomeEnd:{biomeE},WepRando:{wepRando}")
+                    f"BiomeStart:{biomeS},BiomeEnd:{biomeE},WepRando:{wepRando},GauntletStages:{gauntletStages},GauntletSeed:{gauntletSeed},GauntletStart:{gauntletStart}")
             #prints and saves the shop items for the mod to read
             with open(self.file_shop, 'w', encoding='utf-8', newline='\r\n') as f:
                 shopItemDict = self.slot_data["shop_items"]

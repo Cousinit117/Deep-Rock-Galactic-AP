@@ -3,17 +3,40 @@ from Options import Choice, Range, Toggle, ItemDict, PerGameCommonOptions, Start
 
 
 class Goal(Choice):
-    """Set The Current Run Goal [Working Options = kill_caretaker (default), goldrush, hunter (In BETA, Expect Bugs [Pun Intended])]"""
+    """Set The Current Run Goal [Working Options = kill_caretaker (default) [Long], goldrush [Medium], hunter (beta) [Medium], gauntlet (beta) [Short]"""
     display_name = "Goal of the Run"
     option_kill_caretaker = 1
     option_goldrush = 2
     option_hunter = 3
+    option_gauntlet = 4
     default = 1
     #visibility = Visibility.none
 
+class GauntletStages(Range):
+    """Set The number of Stages to complete the Gauntlet (Gauntlet Goal)"""
+    display_name = "Gauntlet Goal Stages to Victory Mission"
+    range_start = 5
+    range_end   = 10
+    default     = 10
+
+class GauntletStagesStart(Range):
+    """Set The number of Stages you start with unlocked (Gauntlet Goal)"""
+    display_name = "Gauntlet Goal Stages to Start With"
+    range_start = 1
+    range_end   = 10
+    default     = 1
+
+class GauntletGenerationSeed(Range):
+    """Set a Mission Generation Seed for the Gauntlet (Gauntlet Goal)"""
+    display_name = "Gauntlet Mission Generation Seed"
+    range_start = 1000
+    range_end   = 100000000
+    default     = 1234567
+
 class HazMax(Choice):
-    """Determines how high the highest generated hazard level will be for objectives."""
+    """Determines how high the highest generated hazard level will be for objectives. (If Playing Gauntlet Goal, this is your Chosen Hazard Level)"""
     display_name = "Set Max Hazard for All Objectives"
+    option_haz2 = 2
     option_haz3 = 3
     option_haz4 = 4
     option_haz5 = 5
@@ -259,6 +282,9 @@ class DRGOptions(PerGameCommonOptions):
     sprint_start:           SprintStart
     biome_start:            BiomeStart
     biome_end:              BiomeEnd
+    gauntlet_stages:        GauntletStages
+    gauntlet_seed:          GauntletGenerationSeed
+    gauntlet_start:         GauntletStagesStart
 
 #set option groups for the web UI
 option_groups = [
@@ -267,16 +293,20 @@ option_groups = [
         [Goal,HazMax]
     ),
     OptionGroup(
-        "Goal Options (Kill Caretaker)",
+        "Goal Options (Kill Caretaker) [Long]",
         [BiomeStart,BiomeEnd]
     ),
     OptionGroup(
-        "Goal Options (Gold Rush)",
+        "Goal Options (Gold Rush) [Medium]",
         [GoldRushGoalValue]
     ),
     OptionGroup(
-        "Goal Options (Hunter)",
+        "Goal Options (Hunter) [Medium]",
         [HunterTrophyAmount,HunterTargets,HunterBossesNeeded,HunterTrophyAmountBoss]
+    ),
+    OptionGroup(
+        "Goal Options (Gauntlet) [Short]",
+        [GauntletStages,GauntletGenerationSeed,GauntletStagesStart]
     ),
     OptionGroup(
         "Difficulty Options",
@@ -329,6 +359,9 @@ option_presets = {
         "sprint_start": False,
         "biome_start": 1,
         "biome_end": 7,
+        "gauntlet_stages": 10,
+        "gauntlet_seed": 1234567,
+        "gauntlet_start": 1,
     },
     "haz5 kill caretaker standard": {
         "progression_diff": 2,
@@ -361,6 +394,9 @@ option_presets = {
         "sprint_start": False,
         "biome_start": 1,
         "biome_end": 7,
+        "gauntlet_stages": 10,
+        "gauntlet_seed": 1234567,
+        "gauntlet_start": 1,
     },
     "hunter mode standard": {
         "progression_diff": 2,
@@ -393,5 +429,8 @@ option_presets = {
         "sprint_start": False,
         "biome_start": 1,
         "biome_end": 7,
+        "gauntlet_stages": 10,
+        "gauntlet_seed": 1234567,
+        "gauntlet_start": 1,
     },
 }

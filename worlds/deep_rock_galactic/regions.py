@@ -55,6 +55,8 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
                 return False
         else:
             return False
+    def rule_gauntlet_stage(state,stage):
+        return state.has_from_list(Generic_Progressives,player,stage)
 
     GoldRush=[Mission for Mission in ALL_LOCATIONS if
         'Gold Rush' in Mission
@@ -62,6 +64,50 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
 
     Hunting=[Mission for Mission in ALL_LOCATIONS if
         ('Hunting Trophy' in Mission or 'Hunting Boss Trophy' in Mission or 'Trophy Hunter' in Mission)
+        ]
+
+    Gauntlet1=[Mission for Mission in ALL_LOCATIONS if
+        ('Gauntlet:Stage 1' in Mission or 'Gauntlet:Secondary 1' in Mission)
+        ]
+
+    Gauntlet2=[Mission for Mission in ALL_LOCATIONS if
+        ('Gauntlet:Stage 2' in Mission or 'Gauntlet:Secondary 2' in Mission)
+        ]
+
+    Gauntlet3=[Mission for Mission in ALL_LOCATIONS if
+        ('Gauntlet:Stage 3' in Mission or 'Gauntlet:Secondary 3' in Mission)
+        ]
+
+    Gauntlet4=[Mission for Mission in ALL_LOCATIONS if
+        ('Gauntlet:Stage 4' in Mission or 'Gauntlet:Secondary 4' in Mission)
+        ]
+
+    Gauntlet5=[Mission for Mission in ALL_LOCATIONS if
+        ('Gauntlet:Stage 5' in Mission or 'Gauntlet:Secondary 5' in Mission)
+        ]
+
+    Gauntlet6=[Mission for Mission in ALL_LOCATIONS if
+        ('Gauntlet:Stage 6' in Mission or 'Gauntlet:Secondary 6' in Mission)
+        ]
+
+    Gauntlet7=[Mission for Mission in ALL_LOCATIONS if
+        ('Gauntlet:Stage 7' in Mission or 'Gauntlet:Secondary 7' in Mission)
+        ]
+
+    Gauntlet8=[Mission for Mission in ALL_LOCATIONS if
+        ('Gauntlet:Stage 8' in Mission or 'Gauntlet:Secondary 8' in Mission)
+        ]
+
+    Gauntlet9=[Mission for Mission in ALL_LOCATIONS if
+        ('Gauntlet:Stage 9' in Mission or 'Gauntlet:Secondary 9' in Mission)
+        ]
+
+    Gauntlet10=[Mission for Mission in ALL_LOCATIONS if
+        ('Gauntlet:Stage 10' in Mission or 'Gauntlet:Secondary 10' in Mission)
+        ]
+
+    GauntletVictory=[Mission for Mission in ALL_LOCATIONS if
+        ('Gauntlet:Victory' in Mission)
         ]
 
     MissionsDefault=[Mission for Mission in ALL_LOCATIONS if (
@@ -141,6 +187,7 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
         'AlwaysAccessSecondaries', 'Secondaries3', 'Secondaries4', 'Secondaries5', \
         'CarryingSecondary12', 'CarryingSecondary3', 'CarryingSecondary4', 'CarryingSecondary5', \
         'AmmoSecondary12', 'AmmoSecondary3', 'AmmoSecondary4', 'AmmoSecondary5', \
+        'Gauntlet1', 'Gauntlet2', 'Gauntlet3', 'Gauntlet4', 'Gauntlet5', 'Gauntlet6', 'Gauntlet7', 'Gauntlet8', 'Gauntlet9', 'Gauntlet10', 'GauntletVictory',
         'VictoryAccess']), 
         # Should contain all
         
@@ -1224,6 +1271,63 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
             connected_regions        = [],
         ),
 
+        #Gauntlet Regions
+        'Gauntlet1': RegionData(
+            locations    = Gauntlet1,
+            entrancerule = lambda state: True,#rule_gauntlet_stage(state,0),
+            connected_regions        = [],
+        ),
+        'Gauntlet2': RegionData(
+            locations    = Gauntlet2,
+            entrancerule = lambda state: rule_gauntlet_stage(state,2),
+            connected_regions        = [],
+        ),
+        'Gauntlet3': RegionData(
+            locations    = Gauntlet3,
+            entrancerule = lambda state: rule_gauntlet_stage(state,3),
+            connected_regions        = [],
+        ),
+        'Gauntlet4': RegionData(
+            locations    = Gauntlet4,
+            entrancerule = lambda state: rule_gauntlet_stage(state,4),
+            connected_regions        = [],
+        ),
+        'Gauntlet5': RegionData(
+            locations    = Gauntlet5,
+            entrancerule = lambda state: rule_gauntlet_stage(state,5),
+            connected_regions        = [],
+        ),
+        'Gauntlet6': RegionData(
+            locations    = Gauntlet6,
+            entrancerule = lambda state: rule_gauntlet_stage(state,6),
+            connected_regions        = [],
+        ),
+        'Gauntlet7': RegionData(
+            locations    = Gauntlet7,
+            entrancerule = lambda state: rule_gauntlet_stage(state,7),
+            connected_regions        = [],
+        ),
+        'Gauntlet8': RegionData(
+            locations    = Gauntlet8,
+            entrancerule = lambda state: rule_gauntlet_stage(state,8),
+            connected_regions        = [],
+        ),
+        'Gauntlet9': RegionData(
+            locations    = Gauntlet9,
+            entrancerule = lambda state: rule_gauntlet_stage(state,9),
+            connected_regions        = [],
+        ),
+        'Gauntlet10': RegionData(
+            locations    = Gauntlet10,
+            entrancerule = lambda state: rule_gauntlet_stage(state,10),
+            connected_regions        = [],
+        ),
+        'GauntletVictory': RegionData(
+            locations    = GauntletVictory,
+            entrancerule = lambda state: rule_gauntlet_stage(state,options.gauntlet_stages.value),
+            connected_regions        = [],
+        ),
+
         #Sabotage mission is a carrying type mission, and must be on Haz 5 for victory
         'VictoryAccess': RegionData(
             locations    =  MissionVictory, #Haz5 on magmacore, sabotage.
@@ -1264,7 +1368,8 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
     ALL_LOCATIONS=remove_locations(ALL_LOCATIONS,totalToRemove,int(options.error_cube_checks.value),\
         bool(options.minigames_on.value),int(options.minigame_num.value),int(options.goal_mode.value),int(options.gold_rush_val.value),\
         int(options.shop_item_num.value),bool(options.events_on.value),int(options.max_hazard.value),\
-        int(options.hunter_trophies.value),int(options.hunter_targets.value),int(options.hunter_trophies_b.value),biomeNamesList[options.biome_end.value])
+        int(options.hunter_trophies.value),int(options.hunter_targets.value),int(options.hunter_trophies_b.value),\
+        biomeNamesList[options.biome_end.value],int(options.gauntlet_stages))
     # print(REGIONS)
 
     for region in REGIONS:

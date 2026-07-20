@@ -198,6 +198,17 @@ def getLocationGroup(group = "MainObj"):
             for hunt in PassiveCreatures:
                 for i in range(10,110,10):
                     thisList.append(f'Hunting Trophy:{hunt}:{i}')
+        case "GauntletObj":
+            thisList.append(f'Gauntlet:Victory')
+            for Mission in MissionTypes:
+                for i in range(1,11,1):
+                    for j in range(1,11,1):
+                        thisList.append(f'Gauntlet:Stage {i}:{j}')
+        case "GauntletSec":
+            for Mission in MissionTypes:
+                for i in range(1,11,1):
+                    for j in range(1,6,1):
+                        thisList.append(f'Gauntlet:Secondary {i}:{j}')
 
     return thisList
 
@@ -271,12 +282,22 @@ def location_init():
         MissionPermute[x]=CurrentID
         CurrentID+=1
 
+    GauntletObj = getLocationGroup("GauntletObj")
+    for x in GauntletObj:
+        MissionPermute[x]=CurrentID
+        CurrentID+=1
+
+    GauntletSec = getLocationGroup("GauntletSec")
+    for x in GauntletSec:
+        MissionPermute[x]=CurrentID
+        CurrentID+=1
+
     ALL_LOCATIONS = {k: v + 1 << (LOCATION_BITSHIFT_DEFAULT) for k, v in MissionPermute.items()}
     return ALL_LOCATIONS
 
 def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = True,\
     MGMax = 30, Goal = 1, GoldRushVal = 15000, ShopItems = 25, EventsOn = True, MaxHaz = 5,\
-    HunterNum = 50, HunterTargets = 1, HunterNumBoss = 5, FinalBiome = 'Magma Core'):
+    HunterNum = 50, HunterTargets = 1, HunterNumBoss = 5, FinalBiome = 'Magma Core', GauntletStages = 10):
     CurrentID=0
     RemovableLocations=[]
     MustRemove=[]
@@ -307,6 +328,15 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
                     RemovableLocations.append(f'OBJ:{Biome}:{Mission}:{Hazard}')
                 for Hazard in RemoveHaz:
                     MustRemove.append(f'OBJ:{Biome}:{Mission}:{Hazard}')
+
+    #Handle Goal removal of Sec and Hazards when Gauntlet
+    if Goal == 4:
+        for i in range(10,GauntletStages,-1):
+            for j in range(1,11,1):
+                MustRemove.append(f'Gauntlet:Stage {i}:{j}')
+        for i in range(10,GauntletStages,-1):
+            for j in range(1,6,1):
+                MustRemove.append(f'Gauntlet:Secondary {i}:{j}')
     
     #Handle Secondary objectives
     for Secondary in SecondaryObjectives:
@@ -375,21 +405,33 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
             MustRemove.extend(getLocationGroup("HunterNormal"))
             MustRemove.extend(getLocationGroup("HunterBoss"))
             MustRemove.extend(getLocationGroup("HunterPassive"))
+            MustRemove.extend(getLocationGroup("Gauntlet"))
         case 2: #goldrush
             MustRemove.extend(getLocationGroup("MainObj"))
             MustRemove.extend(getLocationGroup("HunterNormal"))
             MustRemove.extend(getLocationGroup("HunterBoss"))
             MustRemove.extend(getLocationGroup("HunterPassive"))
+            MustRemove.extend(getLocationGroup("Gauntlet"))
         case 3: #hunter
             MustRemove.extend(getLocationGroup("MainObj"))
             MustRemove.extend(getLocationGroup("GoldRush"))
-        #case 4: #world tour
+            MustRemove.extend(getLocationGroup("Gauntlet"))
+        case 4: #gauntlet
+            MustRemove.extend(getLocationGroup("MainObj"))
+            MustRemove.extend(getLocationGroup("GoldRush"))
+            MustRemove.extend(getLocationGroup("HunterNormal"))
+            MustRemove.extend(getLocationGroup("HunterBoss"))
+            MustRemove.extend(getLocationGroup("HunterPassive"))
+            #Also remove other secondary and warnings
+            MustRemove.extend(getLocationGroup("SecObj"))
+            MustRemove.extend(getLocationGroup("Warnings"))
         case _:
             #Remove Goldrush Goals, locations -401
             MustRemove.extend(getLocationGroup("GoldRush"))
             MustRemove.extend(getLocationGroup("HunterNormal"))
             MustRemove.extend(getLocationGroup("HunterBoss"))
             MustRemove.extend(getLocationGroup("HunterPassive"))
+            MustRemove.extend(getLocationGroup("Gauntlet"))
             print(f"Goal is defaulted. This shouldn't happen! PANIC!")
 
     #This subtracts a number of locations from the pool semi-randomly.

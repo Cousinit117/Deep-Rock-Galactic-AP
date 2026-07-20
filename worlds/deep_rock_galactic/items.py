@@ -1,12 +1,28 @@
 from typing import NamedTuple
+from enum import IntEnum, IntFlag, Enum, auto
+from BaseClasses import Item, ItemClassification as IC
 
 from .subclasses import DRGItem
+ITEM_BITSHIFT_DEFAULT = 8
 
-ITEM_BITSHIFT_DEFAULT       = 16
-
-#Do we need to add "Victory" as an item? And force its location to be on the Haz 5 sabotage?
+class GroupTag(IntFlag):
+    Equipment = auto()
+    Movement = auto()
+    Carrying = auto()
+    Mining = auto()
+    Stats = auto()
+    Melee = auto()
+    Perks = auto()
+    Weapon = auto()
+    Other = auto()
+    Bosco = auto()
+    Mutator = auto()
+    Biome = auto()
 
 class ItemData(NamedTuple):
+    #item_id: int | None
+    tags: GroupTag | None = None
+    mandatory:   int = 0
     progression: int = 0
     useful:      int = 0
     filler:      int = 0
@@ -157,627 +173,570 @@ ITEMS = {
     'Scout-Boomstick-Shotgun':126,
     'Scout-Dual-Pistols':127,
     'Scout-Crossbow':128,
+#Gauntlet
+    'Progressive-Gauntlet-Stage':132,
 }
 ITEMS = {k: v + 1 << ITEM_BITSHIFT_DEFAULT for k, v in ITEMS.items()}
 
 ITEMS_COUNT = {
     'Progressive-Flare-Count':ItemData(
-        progression=2,
-        useful=0,
+        tags = GroupTag.Equipment,
+        mandatory=1,
+        progression=1,
         filler=6,
 ),
     'Progressive-Flare-Recharge':ItemData(
+        tags = GroupTag.Equipment,
         progression=2,
-        useful=0,
         filler=2,
 ),
     'Progressive-Carriable-Throwing':ItemData(
-        progression=5,
+        tags = GroupTag.Carrying,
+        mandatory=2,
+        progression=3,
         useful=5,
         filler=20,
 ),
     'Progressive-Carrying-Speed': ItemData(
-        progression=5,
+        tags = GroupTag.Carrying,
+        mandatory=2,
+        progression=3,
         useful=7,
         filler=7,
 ),
     'Progressive-Morkite-Mining':ItemData(
-        progression=3,
+        tags = GroupTag.Mining,
+        mandatory=2,
+        progression=1,
         useful=7,
         filler=5,
 ),
     'Progressive-Movement-Speed':ItemData(
-        progression=6,
+        tags = GroupTag.Movement,
+        mandatory=3,
+        progression=3,
         useful=6,
-        filler=0,#should be 0
 ),
     'Progressive-RedSugar-Healing':ItemData(
+        tags = GroupTag.Stats,
         progression=2,
         useful=3,
-        filler=5,#was 5
+        filler=5,
 ),
     'Progressive-Resupply-Speed':ItemData(
-        progression=2,
+        tags = GroupTag.Stats,
+        mandatory=1,
+        progression=1,
         useful=5,
-        filler=5,#was 0
+        filler=5,
 ),
     'Progressive-Max-Health':ItemData(
-        progression=15,
+        tags = GroupTag.Stats,
+        mandatory=5,
+        progression=10,
         useful=10,
-        filler=0,#was 0
 ),
     'Progressive-Max-Shield':ItemData(
-        progression=5,
+        tags = GroupTag.Stats,
+        mandatory=3,
+        progression=2,
         useful=5,
         filler=5,
 ),
     'Progressive-Shield-Regen-Delay':ItemData(
-        progression=4,
+        tags = GroupTag.Stats,
+        mandatory=2,
+        progression=2,
         useful=3,
-        filler=0,
 ),
     'Progressive-Jet-Boots':ItemData(
+        tags = GroupTag.Movement,
         progression=2,
-        useful=0,
-        filler=0,
 ),
     'Progressive-Melee-Damage':ItemData(
+        tags = GroupTag.Melee,
         progression=10,
-        useful=0,
-        filler=5,#was 0
+        filler=5,
 ),
     'Progressive-Melee-Special-Damage':ItemData(
+        tags = GroupTag.Melee,
         progression=10,
-        useful=0,
-        filler=5,#was 0
+        filler=5,
 ),
     'Progressive-Melee-Cooldown':ItemData(
+        tags = GroupTag.Melee,
         progression=5,
-        useful=0,
-        filler=0,
 ),
     'Progressive-Melee-Range':ItemData(
+        tags = GroupTag.Melee,
         progression=5,
         useful=10,
-        filler=0,#was 0
 ),
     'Progressive-Vampirism':ItemData(
+        tags = GroupTag.Perks,
         progression=1,
-        useful=0,
-        filler=0,
 ),
     'Progressive-Thorns':ItemData(
+        tags = GroupTag.Perks,
         progression=1,
-        useful=0,
-        filler=0,
 ),
     'Progressive-Steve-Cooldown':ItemData(
+        tags = GroupTag.Perks,
         progression=1,
         useful=3,
-        filler=0,
 ),
     'Progressive-Berzerker':ItemData(
+        tags = GroupTag.Perks,
         progression=6,
-        useful=0,
-        filler=0,
 ),
     'Progressive-Field-Medic':ItemData(
+        tags = GroupTag.Perks,
         progression=2,
         useful=8,
-        filler=0,
 ),
     'Progressive-Iron-Will':ItemData(
-        progression=10,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Perks,
+        mandatory=1,
+        progression=9,
 ),
     'Progressive-Gun-Ammo':ItemData(
-        progression=5,
+        tags = GroupTag.Weapon,
+        mandatory=3,
+        progression=2,
         useful=5,
         filler=5,
 ),
     'Progressive-Traversal-Tool':ItemData(
-        progression=5,
+        tags = GroupTag.Equipment,
+        mandatory=1,
+        progression=4,
         useful=5,
-        filler=0,
 ),
     'Progressive-Utility':ItemData(
-        progression=5,
+        tags = GroupTag.Equipment,
+        mandatory=1,
+        progression=4,
         useful=5,
-        filler=0,
 ),
     'Progressive-Grenades':ItemData(
-        progression=6,
+        tags = GroupTag.Weapon,
+        mandatory=2,
+        progression=4,
         useful=4,
-        filler=0,
 ),       
     'Progressive-Resupply-Incremental-Cost':ItemData(
+        tags = GroupTag.Equipment,
         progression=3,
-        useful=0,
-        filler=0,
 ),
     'Progressive-Resupply-Start-Cost':ItemData(
+        tags = GroupTag.Equipment,
         progression=4,
         useful=1,
-        filler=0,
 ),  
     'Progressive-Flare-Throwing':ItemData(
-        progression=0,
+        tags = GroupTag.Equipment,
         useful=6,
         filler=7,
 ),
     'Progressive-Deposit-Speed':ItemData(
-        progression=0,
+        tags = GroupTag.Equipment,
         useful=2,
         filler=10,
 ),
     'Progressive-Fall-Resistance':ItemData(
-        progression=0,
+        tags = GroupTag.Stats,
         useful=6,
         filler=0,
 ),
     'Progressive-Sprint-Speed':ItemData(
-        progression=0,
+        tags = GroupTag.Movement,
         useful=5,
-        filler=5,#was 15
+        filler=5,
 ),
     'Progressive-Max-Shield-Regen':ItemData(
-        progression=0,
+        tags = GroupTag.Stats,
         useful=18,
-        filler=0,
 ),
     'Supply-Sentries':ItemData(
-        progression=0,
+        tags = GroupTag.Other,
         useful=10,
-        filler=0,
 ),
     'Progressive-Rock-Mining':ItemData(
-        progression=0,
+        tags = GroupTag.Mining,
         useful=2,
-        filler=0,
 ),
     'Dirt-Mining-Speed':ItemData(
-        progression=0,
+        tags = GroupTag.Mining,
         useful=1,
-        filler=0,
 ),
     'Progressive-Hover-Boots':ItemData(
-        progression=0,
+        tags = GroupTag.Perks,
         useful=4,
-        filler=0,
 ),
     'Progressive-See-You-In-Hell':ItemData(
-        progression=0,
+        tags = GroupTag.Perks,
         useful=4,
-        filler=0,
 ),
     'Progressive-Carrying-Capacity':ItemData(
-        progression=2,
+        tags = GroupTag.Carrying,
+        mandatory=1,
+        progression=1,
         useful=6,
         filler=10,
 ),
     'Progressive-Gold-Mining':ItemData(
-        progression=0,
-        useful=0,
+        tags = GroupTag.Mining,
         filler=5,
 ),
     'Resource-Mining-Strength':ItemData(
-        progression=0,
-        useful=0,
+        tags = GroupTag.Mining,
         filler=1,
 ),
     'Progressive-Gunner-Zipline':ItemData(
-        progression=0,
-        useful=0,
+        tags = GroupTag.Equipment,
         filler=5,
 ),
     'Progressive-Slow-Resistance':ItemData(
-        progression=0,
-        useful=0,
+        tags = GroupTag.Stats,
         filler=5,
 ),
     'Progressive-Revive-Speed':ItemData(
-        progression=0,
-        useful=0,
-        filler=10,#was 10
+        tags = GroupTag.Stats,
+        filler=10,
 ),
     'Progressive-Cold-Resistance':ItemData(
-        progression=0,
-        useful=0,
+        tags = GroupTag.Stats,
         filler=2,
 ),
     'Progressive-Poison-Resistance':ItemData(
-        progression=0,
-        useful=0,
+        tags = GroupTag.Stats,
         filler=2,
 ),
     'Progressive-Fire-Resistance':ItemData(
-        progression=0,
-        useful=0,
+        tags = GroupTag.Stats,
         filler=2,
 ),
     'Progressive-Radiation-Resistance':ItemData(
-        progression=0,
-        useful=0,
+        tags = GroupTag.Stats,
         filler=2,
 ),
     'Progressive-Electric-Resistance':ItemData(
-        progression=0,
-        useful=0,
+        tags = GroupTag.Stats,
         filler=2,
 ),
     'Progressive-Bosco-Revive':ItemData(
-        progression=4,
+        tags = GroupTag.Bosco,
+        mandatory=1,
+        progression=3,
         useful=4,
-        filler=0,
 ),
     'Progressive-Bosco-Gun':ItemData(
-        progression=4,
+        tags = GroupTag.Bosco,
+        mandatory=2,
+        progression=2,
         useful=4,
-        filler=0,
 ),
     'Trap-Extraction-Bulk':ItemData(
-        progression=0,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Other,
         trap=5,
 ),
     'Trap-Cave-Haunting':ItemData(
-        progression=0,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Other,
         trap=5,
 ),
     'Trap-Bedrock-Encasing':ItemData(
-        progression=0,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Other,
         trap=5,
 ),
     'Trap-MULE-Coolant-Leak':ItemData(
-        progression=0,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Other,
         trap=3,
 ),
     'Trap-Not-The-Bees':ItemData(
-        progression=0,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Other,
         trap=10,
 ),
     'Trap-Phase-Bomb':ItemData(
-        progression=0,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Other,
         trap=10,
 ),
     'Trap-Jumpscare-Bulk':ItemData(
-        progression=0,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Other,
         trap=5,
 ),
     'Progressive-BET-C':ItemData(
-        progression=0,
-        useful=0,
+        tags = GroupTag.Other,
         filler=3,
 ),
     'Trap-Intoxication':ItemData(
-        progression=0,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Other,
         trap=5,
 ),
     'Mutator-Critical-Weakness':ItemData(
-        progression=0,
+        tags = GroupTag.Mutator,
         useful=2,
-        filler=0,
 ),
     'Mutator-Gold-Rush':ItemData(
-        progression=0,
-        useful=0,
+        tags = GroupTag.Mutator,
         filler=2,
 ),
     'Mutator-Golden-Bugs':ItemData(
-        progression=0,
-        useful=0,
+        tags = GroupTag.Mutator,
         filler=2,
 ),
     'Mutator-Low-Gravity':ItemData(
-        progression=0,
+        tags = GroupTag.Mutator,
         useful=1,
         filler=1,
 ),
     'Mutator-Mineral-Mania':ItemData(
-        progression=0,
-        useful=0,
+        tags = GroupTag.Mutator,
         filler=2,
 ),
     'Mutator-Rich-Atmosphere':ItemData(
-        progression=0,
+        tags = GroupTag.Mutator,
         useful=1,
         filler=1,
 ),
     'Mutator-Volatile-Guts':ItemData(
-        progression=0,
-        useful=0,
+        tags = GroupTag.Mutator,
         filler=2,
 ),
     'Mutator-Blood-Sugar':ItemData(
-        progression=0,
-        useful=0,
+        tags = GroupTag.Mutator,
         filler=2,
 ),
     'Progressive-Bosco-Mining':ItemData(
-        progression=0,
-        useful=0,
+        tags = GroupTag.Bosco,
         filler=5,
 ),
     'Progressive-Gunner-Shield':ItemData(
-        progression=2,
+        tags = GroupTag.Equipment,
+        mandatory=1,
+        progression=1,
         useful=3,
-        filler=0,
 ),
     'Progressive-Engineer-Platforms':ItemData(
-        progression=3,
+        tags = GroupTag.Equipment,
+        mandatory=1,
+        progression=2,
         useful=3,
-        filler=0,
 ),
     'Progressive-Engineer-Turrets':ItemData(
-        progression=1,
+        tags = GroupTag.Equipment,
+        mandatory=1,
         useful=3,
         filler=1,
 ),
     'Progressive-Scout-Grapple':ItemData(
-        progression=2,
+        tags = GroupTag.Equipment,
+        mandatory=1,
+        progression=1,
         useful=4,
-        filler=0,
 ),
     'Progressive-Scout-FlareGun':ItemData(
-        progression=2,
+        tags = GroupTag.Equipment,
+        mandatory=1,
+        progression=1,
         useful=4,
-        filler=0,
 ),
     'Progressive-Driller-Drills':ItemData(
-        progression=3,
-        useful=4,
-        filler=0,
-),
-    'Progressive-Driller-C4':ItemData(
+        tags = GroupTag.Equipment,
+        mandatory=1,
         progression=2,
         useful=4,
-        filler=0,
+),
+    'Progressive-Driller-C4':ItemData(
+        tags = GroupTag.Equipment,
+        mandatory=1,
+        progression=1,
+        useful=4,
 ),
     'Class-Gunner':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Other,
+        mandatory=1,
 ),
     'Class-Driller':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Other,
+        mandatory=1,
 ),
     'Class-Scout':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Other,
+        mandatory=1,
 ),
     'Class-Engineer':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Other,
+        mandatory=1,
 ),
     'Open-Bar':ItemData(
+        tags = GroupTag.Other,
         progression=1,
-        useful=0,
-        filler=0,
 ),
     'Free-Drink':ItemData(
-        progression=0,
-        useful=0,
+        tags = GroupTag.Other,
         filler=25,
 ),
     'Overclocks-Unlocked':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Progressive-Gear-Upgrades':ItemData(
-        progression=5,
+        tags = GroupTag.Weapon,
+        mandatory=5,
         useful=3,
-        filler=0,
 ),
     'Progressive-Dash':ItemData(
-        progression=0,
+        tags = GroupTag.Perks,
         useful=6,
         filler=0,
 ),
     'Progressive-Heightened-Senses':ItemData(
-        progression=0,
+        tags = GroupTag.Perks,
         useful=6,
-        filler=0,
 ),
     'Progressive-Born-Ready':ItemData(
-        progression=0,
+        tags = GroupTag.Perks,
         useful=1,
-        filler=0,
 ),
     'Biome-Azure-Weald':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Biome,
+        mandatory=1,
 ),
     'Biome-Crystalline-Caverns':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Biome,
+        mandatory=1,
 ),
     'Biome-Fungus-Bogs':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Biome,
+        mandatory=1,
 ),
     'Biome-Hollow-Bough':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Biome,
+        mandatory=1,
 ),
     'Biome-Glacial-Strata':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Biome,
+        mandatory=1,
 ),
     'Biome-Dense-Biozone':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Biome,
+        mandatory=1,
 ),
     'Biome-Magma-Core':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Biome,
+        mandatory=1,
 ),
     'Biome-Radioactive-Exclusion-Zone':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Biome,
+        mandatory=1,
 ),
     'Biome-Salt-Pits':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Biome,
+        mandatory=1,
 ),
     'Biome-Sandblasted-Corridors':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Biome,
+        mandatory=1,
 ),
     'Biome-Ossuary-Depths':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Biome,
+        mandatory=1,
 ),
     'Driller-Flamethrower':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Driller-Cryo':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Driller-SludgePump':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Engineer-Warthog-Shotgun':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Engineer-Stubby-SMG':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Engineer-LOK1-Rifle':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Gunner-Minigun':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Gunner-Autocanon':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Gunner-Guided-Rocket':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Scout-Assault-Rifle':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Scout-M1000-Sniper':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Scout-Plasma-Carbine':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Driller-Pistol':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Driller-Plasma-Charger':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Driller-Wave-Cooker':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Engineer-Deepcore-PGL':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Engineer-Breach-Cutter':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Engineer-Shard-Diffractor':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Gunner-Revolver':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Gunner-Burstfire-Pistol':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Gunner-Coil-Gun':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Scout-Boomstick-Shotgun':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Scout-Dual-Pistols':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
     'Scout-Crossbow':ItemData(
-        progression=1,
-        useful=0,
-        filler=0,
+        tags = GroupTag.Weapon,
+        mandatory=1,
 ),
 }
 
@@ -901,6 +860,10 @@ WEAPONS_SECONDARY = [
 #Checks for Sprint Enabled
 SPRINT_ITEM_CHECK = [
     'Progressive-Movement-Speed',
+]
+
+GAUNTLET_ITEMS = [
+    'Progressive-Gauntlet-Stage',
 ]
 #state.has_from_list(Generic_Progressives,player,5)
 #has_from_list(self, items: Iterable[str], player: int, count: int) 

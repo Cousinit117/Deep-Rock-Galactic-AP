@@ -8,7 +8,7 @@ from BaseClasses import Tutorial, ItemClassification
 # from Fill import fast_fill
 from worlds.LauncherComponents import launch_subprocess
 from worlds.AutoWorld import World, WebWorld
-from .items import ALL_ITEMS, ITEMS_COUNT, EVENT_ITEMS, CLASS_ITEM_CHECK, EXTRA_FILLER_ITEMS, SPRINT_ITEM_CHECK, BIOME_ITEM_CHECK, WEAPONS_PRIMARY, WEAPONS_SECONDARY, DEPRECIATED_ITEMS
+from .items import ALL_ITEMS, ITEMS_COUNT, EVENT_ITEMS, CLASS_ITEM_CHECK, EXTRA_FILLER_ITEMS, SPRINT_ITEM_CHECK, BIOME_ITEM_CHECK, WEAPONS_PRIMARY, WEAPONS_SECONDARY, DEPRECIATED_ITEMS, GAUNTLET_ITEMS
 from .locations import location_init, remove_locations, REMOVED_LOCATIONS
 from .regions import create_and_link_regions
 from .options import DRGOptions
@@ -38,6 +38,19 @@ components.append(Component("DRG Client",
 
 icon_paths['drg'] = f"ap:{__name__}/icons/icon_drg.png"
 
+@staticmethod
+def create_groups(obj: dict[str, ITEMS_COUNT]) -> dict[str, set[str]]:
+    groups: dict[str, set[str]] = dict()
+    for key, data in obj.items():
+        if data.tags is None:
+            continue
+        for tag in data.tags:
+            tag_name = tag.name.replace('_', ' ')
+            if tag_name not in groups:
+                groups[tag_name] = set()
+            groups[tag_name].add(str(key))
+    return groups
+
 class DRGWorld(World):
     game = 'Deep Rock Galactic'
     web = DRGWebWorld()
@@ -45,6 +58,7 @@ class DRGWorld(World):
     options: DRGOptions
     settings: DRGSettings
     item_name_to_id = ALL_ITEMS
+    item_name_groups = create_groups(ITEMS_COUNT)
     location_name_to_id = location_init()
     event_items={}
     randClass=1 #Gunner
@@ -60,7 +74,7 @@ class DRGWorld(World):
             'gold_to_coin_rate','beermat_to_coin_rate','progression_diff','starting_stats',\
             'gold_rush_val','shop_item_num','events_on','max_hazard','hunter_trophies',\
             'hunter_targets','hunter_bosses','hunter_trophies_b','sprint_start','biome_start','biome_end',\
-            'wep_rando'))
+            'wep_rando','gauntlet_stages','gauntlet_seed','gauntlet_start'))
         
         ShopItemsDict = {}
         for i in range(1,(int(self.options.shop_item_num.value) + 1)): 
@@ -98,7 +112,20 @@ class DRGWorld(World):
         Fills ItemPool..
         '''
         
-        item_pool = []
+        #set all item pools
+        item_pool_final = []
+        items_required = []
+        items_mandatory = []
+        items_useful = []
+        items_filler = []
+        items_traps = []
+
+        #Check for gauntlet manditory stages first
+        if(self.options.goal_mode.value == 4):
+            stagesToAdd = self.options.gauntlet_stages.value - self.options.gauntlet_start.value
+            items_mandatory += [self.create_item('Progressive-Gauntlet-Stage', ItemClassification.progression) for _ in range(stagesToAdd)]
+
+        #START ITEM LOOP
         movement_remove = 0
         for item_name in ALL_ITEMS:
             #skip event items because they have set locations
@@ -107,10 +134,12 @@ class DRGWorld(World):
             #skip junk items because they're junk
             if item_name in EXTRA_FILLER_ITEMS:
                 continue
+            #skip gauntlet items because they're already handled
+            if item_name in GAUNTLET_ITEMS:
+                continue
             #skip depreciated items because they're no longer used (remain for old world support only)
             if item_name in DEPRECIATED_ITEMS:
                 continue
-            counts = ITEMS_COUNT[item_name]
             #skip adding classes to item pool because they start unlocked
             if (item_name in CLASS_ITEM_CHECK) and (self.options.avail_classes.value == 0):
                 continue
@@ -135,24 +164,83 @@ class DRGWorld(World):
             if (item_name in WEAPONS_SECONDARY and self.options.wep_rando.value == 2):
                 if (item_name == WEAPONS_SECONDARY[self.options.wep_secondary.value]):
                     continue
-            #generate Rest of Items
-            item_pool += [self.create_item(item_name, ItemClassification.progression) for _ in range(counts.progression)]
-            item_pool += [self.create_item(item_name, ItemClassification.useful     ) for _ in range(counts.useful     )]
-            item_pool += [self.create_item(item_name, ItemClassification.filler     ) for _ in range(counts.filler     )]
-            if bool(self.options.traps_on):
-                item_pool += [self.create_item(item_name, ItemClassification.trap       ) for _ in range(counts.trap       )]
 
+            counts = ITEMS_COUNT[item_name]
+            #generate Rest of Items
+            items_mandatory += [self.create_item(item_name, ItemClassification.progression) for _ in range(counts.mandatory)]
+            items_required += [self.create_item(item_name, ItemClassification.progression) for _ in range(counts.progression)]
+            items_useful += [self.create_item(item_name, ItemClassification.useful     ) for _ in range(counts.useful     )]
+            items_filler += [self.create_item(item_name, ItemClassification.filler     ) for _ in range(counts.filler     )]
+            if bool(self.options.traps_on):
+                items_traps += [self.create_item(item_name, ItemClassification.trap       ) for _ in range(counts.trap       )]
+            #FINISHED ITEM LOOP
+        
         #fill as needed
-        Unfilled_Locations = len(self.multiworld.get_unfilled_locations(self.player))
-        Needed_Filler = Unfilled_Locations - len(item_pool) - 1 #for range fix
-        if Needed_Filler < 0:
-            print(f"You've generated a negative number of unfilled locations. Generally this means some math went wrong with too many items.")
-        if Needed_Filler > 0:
-            print(f"Extra Items Needed:{Needed_Filler} = {Unfilled_Locations} - {len(item_pool)}")
-            item_pool += [self.create_item(self.random.choice(EXTRA_FILLER_ITEMS), ItemClassification.filler) for _ in range(Needed_Filler)]
+        Total_Locations = len(self.multiworld.get_unfilled_locations(self.player)) - 1 #fixes for victory location
+        Max_Items = len(items_mandatory) + len(items_required) + len(items_useful) + len(items_filler) + len(items_traps)
+        Needed_Items = Total_Locations - Max_Items #for range fix
+        
+        if Needed_Items < 0: #too many items, so remove some
+            print(f"DRG - Too Many Items: {Needed_Items} = I({Max_Items}) - L({Total_Locations}), Adjusting Items Down")
+            #needs < mandatory
+            if(Total_Locations < len(items_mandatory)): 
+                for item in items_mandatory:
+                    if(len(item_pool_final) < Total_Locations):
+                        item_pool_final.append(item)
+                print(f"DRG - Too Few Locations for Required Items: {len(item_pool_final)}. Not all Mandatory Items placed! Add More Locations to your Yaml.")
+            #needs mandatory + some required
+            elif(len(items_mandatory) <= Total_Locations <= (len(items_mandatory)+len(items_required))): 
+                item_pool_final.extend(items_mandatory)
+                for item in items_required:
+                    if(len(item_pool_final) < Total_Locations):
+                        item_pool_final.append(item)
+                print(f"DRG - Generated mandatory + some required: {len(item_pool_final)}")
+            #needs mandatory, required + some useful
+            elif((len(items_mandatory)+len(items_required)) <= Total_Locations <= (len(items_mandatory)+len(items_required)+len(items_useful))): 
+                item_pool_final.extend(items_mandatory)
+                item_pool_final.extend(items_required)
+                for item in items_useful:
+                    if(len(item_pool_final) < Total_Locations):
+                        item_pool_final.append(item)
+                print(f"DRG - Generated mandatory + required + some useful: {len(item_pool_final)}")
+            #needs manditory + required + useful + some filler
+            elif((len(items_mandatory)+len(items_required)+len(items_useful)) <= Total_Locations <= (len(items_mandatory)+len(items_required)+len(items_useful)+len(items_filler))): 
+                item_pool_final.extend(items_mandatory)
+                item_pool_final.extend(items_required)
+                item_pool_final.extend(items_useful)
+                for item in items_filler:
+                    if(len(item_pool_final) < Total_Locations):
+                        item_pool_final.append(item)
+                print(f"DRG - Generated required + useful + some filler: {len(item_pool_final)}")
+            #needs required + useful + some filler + traps
+            else: 
+                item_pool_final.extend(items_mandatory)
+                item_pool_final.extend(items_required)
+                item_pool_final.extend(items_useful)
+                item_pool_final.extend(items_filler)
+                for item in items_traps:
+                    if(len(item_pool_final) < Total_Locations):
+                        item_pool_final.append(item)
+                print(f"DRG - Generated required + useful + filler + some traps: {len(item_pool_final)}")
+        #needs more items, so add filler
+        elif Needed_Items > 0: 
+            print(f"DRG - Extra Items Needed: {Needed_Items} = L({Total_Locations}) - I({Max_Items}), Generating Extras")
+            item_pool_final.extend(items_required)
+            item_pool_final.extend(items_useful)
+            item_pool_final.extend(items_filler)
+            item_pool_final.extend(items_traps)
+            item_pool_final += [self.create_item(self.random.choice(EXTRA_FILLER_ITEMS), ItemClassification.filler) for _ in range(Needed_Items-1)]
+            print(f"DRG - Generated + Extras: {len(item_pool_final)}")
+        #flawless execution
+        else: 
+            print(f"DRG - Items Match Perfectly!")
+            item_pool_final.extend(items_required)
+            item_pool_final.extend(items_useful)
+            item_pool_final.extend(items_filler)
+            item_pool_final.extend(items_traps)
         
         #add to multiworld pool
-        self.multiworld.itempool += item_pool
+        self.multiworld.itempool += item_pool_final
         
     def get_pre_fill_items_dictionary(self):
         # raise Exception()
@@ -189,6 +277,8 @@ class DRGWorld(World):
             self.multiworld.get_location("Gold Rush:RICH", self.player).place_locked_item(victory_item)
         elif self.options.goal_mode.value == 3: #trophy hunter win condition
             self.multiworld.get_location("Trophy Hunter:MASTERED", self.player).place_locked_item(victory_item)
+        elif self.options.goal_mode.value == 4: #gauntlet win condition
+            self.multiworld.get_location("Gauntlet:Victory", self.player).place_locked_item(victory_item)
         else: #default win condition = Haz 5 Caretaker
             self.multiworld.get_location(f"OBJ:{biomeOptionNames[self.options.biome_end.value]}:Industrial Sabotage:5", self.player).place_locked_item(victory_item)
         
@@ -289,6 +379,10 @@ class DRGWorld(World):
             case _:
                 preItems.extend(WEAPONS_PRIMARY)
                 preItems.extend(WEAPONS_SECONDARY)
+
+        if(self.options.goal_mode.value == 4):
+            for i in range(self.options.gauntlet_start.value):
+                preItems.append('Progressive-Gauntlet-Stage')
 
         #preFinal = []
         for item in preItems:
