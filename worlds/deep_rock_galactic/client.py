@@ -208,6 +208,7 @@ class DRGContext(CommonContext):
             if os.path.isdir(os.path.join(self.BaseDirectory,"Archipelago",SlotName)):
                 with open(self.file_hints, 'w', encoding='utf-8', newline='\r\n') as f:
                     f.write(f"{finalStr}")
+                    f.write(f"{finalStr}".encode())
 
     def on_package(self, cmd: str, args: dict):
         if cmd in {"RoomInfo"}:
@@ -258,10 +259,10 @@ class DRGContext(CommonContext):
             with open(self.file_setslot, 'w', encoding='utf-8', newline='\r\n') as f:
                 f.write(f'{SlotName}')
             #init other files
-            open(self.file_items, 'w', encoding='utf-8', newline='\r\n')
-            open(self.file_locations, 'w', encoding='utf-8', newline='\r\n')
-            open(self.file_aplocations, 'w', encoding='utf-8', newline='\r\n')
-            with open(self.file_locationhelper, 'w', encoding='utf-8', newline='\r\n') as f:
+            open(self.file_items, 'w')
+            open(self.file_locations, 'w')
+            open(self.file_aplocations, 'w')
+            with open(self.file_locationhelper, 'wb') as f:
                 #Make location helper here
                 all_checked=set(args["checked_locations"])
                 all_missing=set(args["missing_locations"])
@@ -269,12 +270,12 @@ class DRGContext(CommonContext):
                 locationhelper=set()
                 for i in all_locations:
                     locationhelper.add(self.id_to_loc_name[i])
-                f.write("\n".join(list(locationhelper)))
+                f.write("\r\n".join(list(locationhelper)).encode())
             #Sets Deathlink files to blank on connect
-            open(self.file_deathget, 'w', encoding='utf-8', newline='\r\n')
-            open(self.file_deathsend, 'w', encoding='utf-8', newline='\r\n')
+            open(self.file_deathget, 'w')
+            open(self.file_deathsend, 'w')
             #prints and save file settings for the mod to read
-            with open(self.file_settings, 'w', encoding='utf-8', newline='\r\n') as f:
+            with open(self.file_settings, 'wb') as f:
                 cubesNeeded = self.slot_data.get("error_cube_checks",10)
                 classStart = self.slot_data.get("avail_classes",0)
                 trapsOn = self.slot_data.get("traps_on",0)
@@ -311,70 +312,77 @@ class DRGContext(CommonContext):
                     f"GoldRushVal:{goldRushVal},ShopItemNum:{shopNum},EventsOn:{eventsOn},"
                     f"MaxHazard:{maxHaz},HuntTrophy:{huntTrophy},HuntTargets:{huntTargets},"
                     f"MinigameNum:{minigameNum},SprintStart:{sprintOn},HuntBosses:{huntBosses},HuntBossCount:{huntTrophyB},"
-                    f"BiomeStart:{biomeS},BiomeEnd:{biomeE},WepRando:{wepRando},GauntletStages:{gauntletStages},GauntletSeed:{gauntletSeed},GauntletStart:{gauntletStart}")
+                    f"BiomeStart:{biomeS},BiomeEnd:{biomeE},WepRando:{wepRando},GauntletStages:{gauntletStages},"
+                    f"GauntletSeed:{gauntletSeed},GauntletStart:{gauntletStart}".encode())
             #prints and saves the shop items for the mod to read
-            with open(self.file_shop, 'w', encoding='utf-8', newline='\r\n') as f:
+            with open(self.file_shop, 'wb') as f:
                 shopItemDict = self.slot_data["shop_items"]
                 for shopKey in shopItemDict:
                     #print(f"{shopKey}={shopItemDict[shopKey]}")
                     sName = shopKey
                     itemDict = shopItemDict[shopKey]
                     playerN = self.slot_info[itemDict["player"]].name
-                    f.write(f"{shopKey}|{playerN}={itemDict["item"]}\n")
+                    f.write(f"{shopKey}|{playerN}={itemDict["item"]}\r\n".encode())
             #prints and saves the removed locations
-            with open(self.file_removedlocations, 'w', encoding='utf-8', newline='\r\n') as f:
+            with open(self.file_removedlocations, 'wb') as f:
                 removedLocs = self.slot_data["removed_locations"]
                 for locKey in removedLocs:
-                    f.write(f"{locKey}\n")
+                    f.write(f"{locKey}\r\n".encode())
 
         #handle getting new items
         if cmd in {"ReceivedItems"}:
-            start_index = args["index"]
-            if start_index < len(self.collected_items):
-                new_items = args['items'][len(self.collected_items) - start_index:]
-            else:
-                new_items = args['items']
-            self.collected_items += new_items
-            # put all the thingies into the output file
-            asyncio.create_task(self.give_items(self.collected_items))
+            if not self.finished_game: #Skip if victory achieved
+                start_index = args["index"]
+                if start_index < len(self.collected_items):
+                    new_items = args['items'][len(self.collected_items) - start_index:]
+                else:
+                    new_items = args['items']
+                self.collected_items += new_items
+                # put all the thingies into the output file
+                asyncio.create_task(self.give_items(self.collected_items))
 
         if cmd in {"RoomUpdate"}:
-            if "checked_locations" in args:
-                new_locations = set(args["checked_locations"])
-                self.locations_checked |= new_locations
+            if not self.finished_game: #Skip if victory achieved
+                if "checked_locations" in args:
+                    new_locations = set(args["checked_locations"])
+                    self.locations_checked |= new_locations
 
         if cmd in {"DataPackage"}:
-            self.datagames = args["data"]["games"]
-            if "Deep Rock Galactic" in args["data"]["games"]:
-                self.data_package_DRG_cache(args)
-                self.server_state_synchronized = True
             asyncio.create_task(self.send_msgs([{'cmd': 'Sync'}])) # request new items
+            if not self.finished_game: #Skip if victory achieved
+                self.datagames = args["data"]["games"]
+                if "Deep Rock Galactic" in args["data"]["games"]:
+                    self.data_package_DRG_cache(args)
+                    self.server_state_synchronized = True
+                asyncio.create_task(self.send_msgs([{'cmd': 'Sync'}])) # request new items
         #Runs at bottom of package, so that items can in theory be init first
         #This will let unreal see all the checked locations for in-game tracker
         #should this if statement be tabbed one more to the right, to put it in datapackage command?
         if self.file_aplocations != "":
-            with open(self.file_aplocations, 'w', encoding='utf-8', newline='\r\n') as file:
-                file.write('')
-            with open(self.file_aplocations, 'a', encoding='utf-8', newline='\r\n') as file:
+            with open(self.file_aplocations, 'wb') as file:
+                file.write(b'')
+            with open(self.file_aplocations, 'ab') as file:
                 for location in self.locations_checked:
-                    file.write(self.location_names.lookup_in_game(location)+'\n') #Prints all checked locations by name, after getting them by ID
+                    file.write((self.location_names.lookup_in_game(location)+'\r\n').encode()) #Prints all checked locations by name, after getting them by ID
 
         #used for hints and item messages
         if cmd in {"PrintJSON"}:
-            SlotName=(self.slot_info[self.slot].name)#self.slot_info[self.slot].name returns the name of the slot you connected to
-            SlotName=SlotName.replace(" ","_")#DRG Needs to have underscores and no spaces
-            self.file_msgs = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APMsgs)   
-            if "type" in args: #check that its a data packet
-                if args["type"] == "ItemSend" and self.msgsInGame: #item sending message
-                    thisMsg = args["data"]
-                    asyncio.create_task(self.sendInGameMsg(thisMsg,SlotName,0.2))
+            if not self.finished_game: #Skip if victory achieved
+                SlotName=(self.slot_info[self.slot].name)#self.slot_info[self.slot].name returns the name of the slot you connected to
+                SlotName=SlotName.replace(" ","_")#DRG Needs to have underscores and no spaces
+                self.file_msgs = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APMsgs)   
+                if "type" in args: #check that its a data packet
+                    if args["type"] == "ItemSend" and self.msgsInGame: #item sending message
+                        thisMsg = args["data"]
+                        asyncio.create_task(self.sendInGameMsg(thisMsg,SlotName,0.2))
 
         #for recieving the raw hints info command
         if cmd in {"SetReply"}:
-            #print(f"{args['key']}")
-            if (f"{self.hintKey}") in args["key"]:
-                self.hintsList = args["value"]
-                self.UpdateHintsTxT()
+            if not self.finished_game: #Skip if victory achieved
+                #print(f"{args['key']}")
+                if (f"{self.hintKey}") in args["key"]:
+                    self.hintsList = args["value"]
+                    self.UpdateHintsTxT()
 
     #Since these are now defined in self already, do we need to do this again?
     def data_package_DRG_cache(self, args):
