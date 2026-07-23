@@ -26,6 +26,11 @@ class GauntletStagesStart(Range):
     range_end   = 10
     default     = 1
 
+class GauntletStarterKit(Toggle): 
+    """Adds some additional starting stats in Gauntlet Mode to Balance the early game (Gauntlet Goal). Turn this off for added difficulty."""
+    display_name = "Enable Gauntlet Starter Kit (Balanced Starting Stats)"
+    default = True
+
 class GauntletGenerationSeed(Range):
     """Set a Mission Generation Seed for the Gauntlet (Gauntlet Goal)"""
     display_name = "Gauntlet Mission Generation Seed"
@@ -141,7 +146,7 @@ class StartingClasses(Choice):
     default = 5
 
 class WeaponRando(Choice):
-    """Set Weapons randomization Style"""
+    """Set Weapons randomization Style (Fully Random disables Starting Weapon Choices)"""
     display_name = "Enable / Set Weapon Randomization"
     option_off = 0
     option_fully_random = 1
@@ -285,6 +290,7 @@ class DRGOptions(PerGameCommonOptions):
     gauntlet_stages:        GauntletStages
     gauntlet_seed:          GauntletGenerationSeed
     gauntlet_start:         GauntletStagesStart
+    gauntlet_help:          GauntletStarterKit
 
 #set option groups for the web UI
 option_groups = [
@@ -306,7 +312,7 @@ option_groups = [
     ),
     OptionGroup(
         "Goal Options (Gauntlet) [Short]",
-        [GauntletStages,GauntletGenerationSeed,GauntletStagesStart]
+        [GauntletStages,GauntletGenerationSeed,GauntletStagesStart,GauntletStarterKit]
     ),
     OptionGroup(
         "Difficulty Options",
@@ -362,6 +368,7 @@ option_presets = {
         "gauntlet_stages": 10,
         "gauntlet_seed": 1234567,
         "gauntlet_start": 1,
+        "gauntlet_help": True,
     },
     "haz5 kill caretaker standard": {
         "progression_diff": 2,
@@ -397,6 +404,7 @@ option_presets = {
         "gauntlet_stages": 10,
         "gauntlet_seed": 1234567,
         "gauntlet_start": 1,
+        "gauntlet_help": True,
     },
     "hunter mode standard": {
         "progression_diff": 2,
@@ -432,5 +440,6 @@ option_presets = {
         "gauntlet_stages": 10,
         "gauntlet_seed": 1234567,
         "gauntlet_start": 1,
+        "gauntlet_help": True,
     },
 }

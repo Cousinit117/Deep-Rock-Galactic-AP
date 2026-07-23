@@ -441,6 +441,8 @@ class DRGContext(CommonContext):
         for location in locations.copy():
             if location == 'Magma Core:Industrial Sabotage:5': continue
             if location == 'Gold Rush:RICH': continue
+            if location == 'Trophy Hunter:MASTERED': continue
+            if location == 'Gauntlet:Victory': continue
             if "Shop Item" in location: continue
             if location[-1].isdigit():
                 hazard_lvl = int(location[-1:])

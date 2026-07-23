@@ -288,7 +288,7 @@ class DRGWorld(World):
         self.randClass = random.randint(1,4) #Gunner, Driller, Scout, Engineer
         preItems = []
         self.chosenClass = 2;
-        #Class Items
+        #START - Class Items
         match (self.options.avail_classes.value):
             case 1: #gunner
                 preItems.append("Class-Gunner")
@@ -319,8 +319,9 @@ class DRGWorld(World):
             case _: #all
                 preItems.extend(CLASS_ITEM_CHECK)
                 self.chosenClass = 2;
+        #END - Class Items
 
-        #Biome Items
+        #START - Biome Items
         match (self.options.biome_start.value):
             case 1:
                 preItems.append('Biome-Azure-Weald')
@@ -346,8 +347,9 @@ class DRGWorld(World):
                 preItems.append('Biome-Ossuary-Depths')
             case _:
                 preItems.extend(BIOME_ITEM_CHECK)
+        #END - Biome Items
 
-        #Weapon Rando Items
+        #START - Weapon Rando Items
         match (self.options.wep_rando.value):
             case 1:
                 if (self.options.avail_classes.value > 0):
@@ -379,10 +381,20 @@ class DRGWorld(World):
             case _:
                 preItems.extend(WEAPONS_PRIMARY)
                 preItems.extend(WEAPONS_SECONDARY)
+        #END - Wep Rando Settings
 
+        #START - Gauntlet Items
         if(self.options.goal_mode.value == 4):
             for i in range(self.options.gauntlet_start.value):
                 preItems.append('Progressive-Gauntlet-Stage')
+
+        if(self.options.gauntlet_help.value == True):
+            #100% movement speed, ammo, shield base
+            the_kit = ['Progressive-Movement-Speed','Progressive-Movement-Speed',\
+            'Progressive-Max-Health','Progressive-Max-Shield','Progressive-Shield-Regen-Delay',\
+            'Progressive-Gun-Ammo','Progressive-Gun-Ammo','Progressive-Gun-Ammo','Progressive-Resupply-Incremental-Cost',\
+            'Progressive-Resupply-Start-Cost','Progressive-Carrying-Speed','Progressive-Carrying-Speed']
+            preItems.extend(the_kit)
 
         #preFinal = []
         for item in preItems:
