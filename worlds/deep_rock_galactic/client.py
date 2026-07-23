@@ -206,8 +206,7 @@ class DRGContext(CommonContext):
             finalStr += f"{player_f},{player_r},{location},{item},{found},{status}\n"
             #print(f"{finalStr}")
             if os.path.isdir(os.path.join(self.BaseDirectory,"Archipelago",SlotName)):
-                with open(self.file_hints, 'w', encoding='utf-8', newline='\r\n') as f:
-                    f.write(f"{finalStr}")
+                with open(self.file_hints, 'wb') as f:
                     f.write(f"{finalStr}".encode())
 
     def on_package(self, cmd: str, args: dict):
@@ -348,7 +347,6 @@ class DRGContext(CommonContext):
                     self.locations_checked |= new_locations
 
         if cmd in {"DataPackage"}:
-            asyncio.create_task(self.send_msgs([{'cmd': 'Sync'}])) # request new items
             if not self.finished_game: #Skip if victory achieved
                 self.datagames = args["data"]["games"]
                 if "Deep Rock Galactic" in args["data"]["games"]:
