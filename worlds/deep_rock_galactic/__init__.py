@@ -225,15 +225,17 @@ class DRGWorld(World):
         #needs more items, so add filler
         elif Needed_Items > 0: 
             print(f"DRG - Extra Items Needed: {Needed_Items} = L({Total_Locations}) - I({Max_Items}), Generating Extras")
+            item_pool_final.extend(items_mandatory)
             item_pool_final.extend(items_required)
             item_pool_final.extend(items_useful)
             item_pool_final.extend(items_filler)
             item_pool_final.extend(items_traps)
-            item_pool_final += [self.create_item(self.random.choice(EXTRA_FILLER_ITEMS), ItemClassification.filler) for _ in range(Needed_Items-1)]
+            item_pool_final += [self.create_item(self.random.choice(EXTRA_FILLER_ITEMS), ItemClassification.filler) for _ in range(Needed_Items)]
             print(f"DRG - Generated + Extras: {len(item_pool_final)}")
-        #flawless execution
+        #flawless execution Needed_Items = 0
         else: 
             print(f"DRG - Items Match Perfectly!")
+            item_pool_final.extend(items_mandatory)
             item_pool_final.extend(items_required)
             item_pool_final.extend(items_useful)
             item_pool_final.extend(items_filler)

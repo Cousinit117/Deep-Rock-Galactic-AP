@@ -90,17 +90,17 @@ Warnings=[
 
 PassiveCreatures=[
     'LootBug', #Covers Gold Too
-    #'Huuli Hoarder',
+    'Huuli Hoarder',
     #'Naedocyte Cave Cruiser',
     'Fester Flea',
-    #'Hexwing Gniffer',
+    'Hexwing Gniffer',
     #'Cave Vine',
-    #'Mobula Cave Angel',
+    'Mobula Cave Angel',
     #'Silicate Harvester',
 ]
 
 EnemiesNormal=[
-    #'Glyphid Swarmer', #Too Small
+    'Glyphid Swarmer', #Too Small
     'Glyphid Exploder',
     'Glyphid Webspitter',
     'Glyphid Grunt',
@@ -405,17 +405,20 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
             MustRemove.extend(getLocationGroup("HunterNormal"))
             MustRemove.extend(getLocationGroup("HunterBoss"))
             MustRemove.extend(getLocationGroup("HunterPassive"))
-            MustRemove.extend(getLocationGroup("Gauntlet"))
+            MustRemove.extend(getLocationGroup("GauntletObj"))
+            MustRemove.extend(getLocationGroup("GauntletSec"))
         case 2: #goldrush
             MustRemove.extend(getLocationGroup("MainObj"))
             MustRemove.extend(getLocationGroup("HunterNormal"))
             MustRemove.extend(getLocationGroup("HunterBoss"))
             MustRemove.extend(getLocationGroup("HunterPassive"))
-            MustRemove.extend(getLocationGroup("Gauntlet"))
+            MustRemove.extend(getLocationGroup("GauntletObj"))
+            MustRemove.extend(getLocationGroup("GauntletSec"))
         case 3: #hunter
             MustRemove.extend(getLocationGroup("MainObj"))
             MustRemove.extend(getLocationGroup("GoldRush"))
-            MustRemove.extend(getLocationGroup("Gauntlet"))
+            MustRemove.extend(getLocationGroup("GauntletObj"))
+            MustRemove.extend(getLocationGroup("GauntletSec"))
         case 4: #gauntlet
             MustRemove.extend(getLocationGroup("MainObj"))
             MustRemove.extend(getLocationGroup("GoldRush"))
@@ -431,7 +434,8 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
             MustRemove.extend(getLocationGroup("HunterNormal"))
             MustRemove.extend(getLocationGroup("HunterBoss"))
             MustRemove.extend(getLocationGroup("HunterPassive"))
-            MustRemove.extend(getLocationGroup("Gauntlet"))
+            MustRemove.extend(getLocationGroup("GauntletObj"))
+            MustRemove.extend(getLocationGroup("GauntletSec"))
             print(f"Goal is defaulted. This shouldn't happen! PANIC!")
 
     #This subtracts a number of locations from the pool semi-randomly.
