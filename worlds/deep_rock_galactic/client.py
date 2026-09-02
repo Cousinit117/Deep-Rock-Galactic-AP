@@ -17,6 +17,8 @@ import enum
 from . import DRGWorld, DRGSettings
 import webbrowser
 
+APVersion = "0.20"
+
 class HintStatus(enum.IntEnum):
     HINT_UNSPECIFIED = 0  # The receiving player has not specified any status
     HINT_NO_PRIORITY = 10 # The receiving player has specified that the item is unneeded
@@ -71,6 +73,11 @@ class DRGCommands(ClientCommandProcessor):
         """Check your currently set Game Directory (Should be <DRG Install>/FSD/Mods/)"""
         if isinstance(self.ctx, DRGContext):
             self.output("Current directory = " + self.ctx.BaseDirectory)
+
+    def _cmd_apversion(self):
+        """Check yooour current DRG apworld version."""
+        if isinstance(self.ctx, DRGContext):
+            self.output(f"Currently Running DRG APworld version {APVersion}")
 
     def _cmd_onlineguide(self):
         """Opens a browser with the online setup guide"""
@@ -239,6 +246,7 @@ class DRGContext(CommonContext):
             SlotName=(self.slot_info[self.slot].name)#self.slot_info[self.slot].name returns the name of the slot you connected to
             SlotName=SlotName.replace(" ","_") #DRG Needs to have no spaces
             self.file_setslot              = os.path.join(self.BaseDirectory,"Archipelago","ActiveSlot.txt") #sets the current slot
+            self.file_setversion           = os.path.join(self.BaseDirectory,"Archipelago","APVersion.txt") #sets the current ap version
             self.file_items                = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APChecklist)#Defines names, but they may not exist yet
             self.file_locations            = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APLocationlist)
             self.file_aplocations          = os.path.join(self.BaseDirectory,"Archipelago",SlotName,self.APLocationsChecked)
@@ -257,6 +265,9 @@ class DRGContext(CommonContext):
             #Set the active slot for DRG
             with open(self.file_setslot, 'w', encoding='utf-8', newline='\r\n') as f:
                 f.write(f'{SlotName}')
+            #Set the active version for DRG
+            with open(self.file_setversion, 'w', encoding='utf-8', newline='\r\n') as f:
+                f.write(f'{APVersion}')
             #init other files
             open(self.file_items, 'w')
             open(self.file_locations, 'w')
@@ -290,6 +301,7 @@ class DRGContext(CommonContext):
                 goalMode = self.slot_data.get("goal_mode",1)
                 startStats = self.slot_data.get("starting_stats",3)
                 goldRushVal = self.slot_data.get("gold_rush_val",15000)
+                goldRushIncrement = self.slot_data.get("gold_rush_increment",50)
                 shopNum = self.slot_data.get("shop_item_num",25)
                 eventsOn = self.slot_data.get("events_on",1)
                 maxHaz = self.slot_data.get("max_hazard",5)
@@ -304,15 +316,20 @@ class DRGContext(CommonContext):
                 gauntletStages = self.slot_data.get("gauntlet_stages",10)
                 gauntletSeed = self.slot_data.get("gauntlet_seed",1234567)
                 gauntletStart = self.slot_data.get("gauntlet_start",1)
-                f.write(f"Goal:{goalMode},CubesNeeded:{cubesNeeded},StartingClass:{classStart},"
-                    f"TrapsEnabled:{trapsOn},DeathLink:{self.deathlinkOn},DeathAll:{deathlinkAll},DeathFailure:{deathlinkFailure},"
-                    f"MinigamesEnabled:{minigameOn},APCoinCost:{APCoinCost},GoldToCoin:{goldToCoin},"
-                    f"BeerToCoin:{beerToCoin},ProgDiff:{progDiff},StartStats:{startStats},"
-                    f"GoldRushVal:{goldRushVal},ShopItemNum:{shopNum},EventsOn:{eventsOn},"
-                    f"MaxHazard:{maxHaz},HuntTrophy:{huntTrophy},HuntTargets:{huntTargets},"
-                    f"MinigameNum:{minigameNum},SprintStart:{sprintOn},HuntBosses:{huntBosses},HuntBossCount:{huntTrophyB},"
-                    f"BiomeStart:{biomeS},BiomeEnd:{biomeE},WepRando:{wepRando},GauntletStages:{gauntletStages},"
-                    f"GauntletSeed:{gauntletSeed},GauntletStart:{gauntletStart}".encode())
+                blBiomes = self.slot_data.get("blacklist_biome",[])
+                blObj = self.slot_data.get("blacklist_obj",[])
+                blSec = self.slot_data.get("blacklist_sec",[])
+                blWarn = self.slot_data.get("blacklist_warn",[])
+                f.write(f"Goal:{goalMode}|CubesNeeded:{cubesNeeded}|StartingClass:{classStart}|"
+                    f"TrapsEnabled:{trapsOn}|DeathLink:{self.deathlinkOn}|DeathAll:{deathlinkAll}|DeathFailure:{deathlinkFailure}|"
+                    f"MinigamesEnabled:{minigameOn}|APCoinCost:{APCoinCost}|GoldToCoin:{goldToCoin}|"
+                    f"BeerToCoin:{beerToCoin}|ProgDiff:{progDiff}|StartStats:{startStats}|"
+                    f"GoldRushVal:{goldRushVal}|ShopItemNum:{shopNum}|EventsOn:{eventsOn}|"
+                    f"MaxHazard:{maxHaz}|HuntTrophy:{huntTrophy}|HuntTargets:{huntTargets}|"
+                    f"MinigameNum:{minigameNum}|SprintStart:{sprintOn}|HuntBosses:{huntBosses}|HuntBossCount:{huntTrophyB}|"
+                    f"BiomeStart:{biomeS}|BiomeEnd:{biomeE}|WepRando:{wepRando}|GauntletStages:{gauntletStages}|"
+                    f"GauntletSeed:{gauntletSeed}|GauntletStart:{gauntletStart}|GoldRushIncrement:{goldRushIncrement}|"
+                    f"BLBiomes:{blBiomes}|BLObj:{blObj}|BLSec:{blSec}|BLWarn:{blWarn}".encode())
             #prints and saves the shop items for the mod to read
             with open(self.file_shop, 'wb') as f:
                 shopItemDict = self.slot_data["shop_items"]

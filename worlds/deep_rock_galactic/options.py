@@ -1,6 +1,71 @@
 from dataclasses import dataclass
-from Options import Choice, Range, Toggle, ItemDict, PerGameCommonOptions, StartInventory, Visibility, DeathLink, OptionGroup
+from Options import Choice, Range, Toggle, ItemDict, PerGameCommonOptions, StartInventory, Visibility, DeathLink, OptionGroup, OptionSet, OptionError
 
+Valid_Biomes=[
+    'Azure Weald',
+    'Crystalline Caverns',
+    'Fungus Bogs',
+    'Hollow Bough',
+    'Glacial Strata',
+    'Dense Biozone',
+    'Magma Core',
+    'Radioactive Exclusion Zone',
+    'Salt Pits',
+    'Sandblasted Corridors',
+    'Ossuary Depths'
+]
+
+Valid_Objectives=[
+    'Egg Hunt',
+    'Elimination',
+    'Escort Duty', #requires Carrying
+    'Mining Expedition', #Requires morkite mining
+    'Point Extraction', #Requires carrying
+    'On-site Refining',
+    'Salvage Operation', #Requires carrying
+    'Deep Scan',
+    'Heavy Excavation'
+]
+
+Valid_Secondaries=[
+    'Glyphid Eggs',
+    'Bha Barnacles',
+    'Apoca Blooms',
+    'Boolo Caps',
+    'Ebonuts',
+    'Alien Fossils',
+    'Gunk Seeds', #Requires Carrying /sometimes/. Might be best to just set as always needed.
+    'Fester Fleas',
+    'Dystrum',
+    'Hollomite',
+    'Black Box',
+    'Oil Pumping',
+    'Secondary Scan',
+    'Dreadnought Eggs',
+    'Mini Mules',
+    'Alien Eggs',
+    'Secondary Excavation'
+]
+
+Valid_Warnings=[ 
+    'Cave Leech Cluster',
+    'Elite Threat',
+    'Exploder Infestation',
+    'Haunted Cave',
+    'Lethal Enemies',
+    'Lithophage Outbreak',
+    'Low Oxygen',
+    'Mactera Plague',
+    'Parasites',
+    'Regenerative Bugs',
+    'Rival Presence',
+    'Shield Disruption',
+    'Swarmageddon',
+    'Duck And Cover',
+    'Ebonite Outbreak',
+    'Pit Jaw Colony',
+    'Scrab Nesting Grounds'
+]
 
 class Goal(Choice):
     """Set The Current Run Goal [Working Options = kill_caretaker (default) [Long], goldrush [Medium], hunter (beta) [Medium], gauntlet (beta) [Short]"""
@@ -81,11 +146,18 @@ class BiomeEnd(Choice):
     default = 7
 
 class GoldRushGoalValue(Range):
-    """Set The Current Gold Rush Gold needed (GoldRush Goal) [Must be Multiple of 50]"""
+    """Set The Current Gold Rush Gold needed (GoldRush Goal) [Must be Multiple of 10 and >5000]"""
     display_name = "Goal Gold for Gold Rush"
-    range_start = 7500
-    range_end   = 20000
+    range_start = 5000
+    range_end   = 30000
     default     = 15000
+
+class GoldRushIncrementValue(Range):
+    """Set The Amount of Gold Needed per Check (GoldRush Goal) [Must be Multiple of 10 and >30]"""
+    display_name = "Gold Increment for Checks for Gold Rush"
+    range_start = 30
+    range_end   = 1000
+    default     = 50
 
 class HunterTrophyAmount(Range):
     """Set The Current Hunter Trophies Needed per enemy (Hunter Goal)"""
@@ -257,12 +329,35 @@ class SprintStart(Toggle):
     display_name = "Should Start with Sprinting Unlocked?"
     default = False
 
+class BiomeBlacklist(OptionSet):
+    """Prevents certain biomes from being included in generation. (Only affects Kill Caretaker)"""
+    display_name = "Biome Blacklist"
+    valid_keys = Valid_Biomes
+    #valid_keys = ['Azure Weald','Crystalline Caverns','Fungus Bogs','Hollow Bough','Glacial Strata','Dense Biozone',\
+    #'Magma Core','Radioactive Exclusion Zone','Salt Pits','Sandblasted Corridors','Ossuary Depths']
+
+class ObjectiveBlacklist(OptionSet):
+    """Prevents certain objectives from being included in generation. (Only affects Kill Caretaker)"""
+    display_name = "Objective Blacklist"
+    valid_keys = Valid_Objectives
+
+class SecondaryBlacklist(OptionSet):
+    """Prevents certain objectives from being included in generation. (Only affects Kill Caretaker)"""
+    display_name = "Secondary Blacklist"
+    valid_keys = Valid_Secondaries
+
+class WarningBlacklist(OptionSet):
+    """Prevents certain objectives from being included in generation. (Only affects Kill Caretaker)"""
+    display_name = "Warning Blacklist"
+    valid_keys = Valid_Warnings
+
 @dataclass
 class DRGOptions(PerGameCommonOptions):
     progression_diff:       ProgressionDifficulty
     starting_stats:         StartingStats
     goal_mode:              Goal
     gold_rush_val:          GoldRushGoalValue
+    gold_rush_increment:    GoldRushIncrementValue
     death_link:             DeathLink
     death_link_all:         DeathLinkAll
     death_link_failure:     DeathLinkFailure
@@ -291,6 +386,10 @@ class DRGOptions(PerGameCommonOptions):
     gauntlet_seed:          GauntletGenerationSeed
     gauntlet_start:         GauntletStagesStart
     gauntlet_help:          GauntletStarterKit
+    blacklist_biome:        BiomeBlacklist
+    blacklist_obj:          ObjectiveBlacklist
+    blacklist_sec:          SecondaryBlacklist
+    blacklist_warn:         WarningBlacklist
 
 #set option groups for the web UI
 option_groups = [
@@ -304,7 +403,7 @@ option_groups = [
     ),
     OptionGroup(
         "Goal Options (Gold Rush) [Medium]",
-        [GoldRushGoalValue]
+        [GoldRushGoalValue,GoldRushIncrementValue]
     ),
     OptionGroup(
         "Goal Options (Hunter) [Medium]",
@@ -330,6 +429,10 @@ option_groups = [
         "Deathlink Options",
         [DeathLink,DeathLinkAll,DeathLinkFailure]
     ),
+    OptionGroup(
+        "BlackList Options",
+        [BiomeBlacklist,ObjectiveBlacklist,SecondaryBlacklist,WarningBlacklist]
+    )
 ]
 
 #Set presets
@@ -340,6 +443,7 @@ option_presets = {
         "goal_mode": 2,
         "max_hazard": 5,
         "gold_rush_val": 15000,
+        "gold_rush_increment": 50,
         "death_link": False,
         "death_link_all": False,
         "death_link_failure":False,
@@ -376,6 +480,7 @@ option_presets = {
         "goal_mode": 1,
         "max_hazard": 5,
         "gold_rush_val": 15000,
+        "gold_rush_increment": 50,
         "death_link": False,
         "death_link_all": False,
         "death_link_failure":False,
@@ -412,6 +517,7 @@ option_presets = {
         "goal_mode": 3,
         "max_hazard": 5,
         "gold_rush_val": 15000,
+        "gold_rush_increment": 50,
         "death_link": False,
         "death_link_all": False,
         "death_link_failure":False,
@@ -439,6 +545,43 @@ option_presets = {
         "biome_end": 7,
         "gauntlet_stages": 10,
         "gauntlet_seed": 1234567,
+        "gauntlet_start": 1,
+        "gauntlet_help": True,
+    },
+    "gauntlet mode standard": {
+        "progression_diff": 2,
+        "starting_stats": 2,
+        "goal_mode": 4,
+        "max_hazard": 3,
+        "gold_rush_val": 15000,
+        "gold_rush_increment": 50,
+        "death_link": False,
+        "death_link_all": False,
+        "death_link_failure":False,
+        "locations_to_remove": 0,
+        "avail_classes": 0,
+        "wep_rando": True,
+        "wep_primary": 0,
+        "wep_secondary": 0,
+        "error_cube_checks": 10,
+        "traps_on": True,
+        "minigames_on": True,
+        "minigame_num": 30,
+        "events_on": True,
+        "coin_shop_prices": 5,
+        "shop_item_num": 25,
+        "gold_to_coin_rate": 50,
+        "beermat_to_coin_rate": 2,
+        "hunter_trophies": 50,
+        "hunter_complete": 2,
+        "hunter_targets": 1,
+        "hunter_bosses": 3,
+        "hunter_trophies_b": 5,
+        "sprint_start": False,
+        "biome_start": 1,
+        "biome_end": 7,
+        "gauntlet_stages": 10,
+        "gauntlet_seed": 1234568,
         "gauntlet_start": 1,
         "gauntlet_help": True,
     },

@@ -179,7 +179,7 @@ def getLocationGroup(group = "MainObj"):
                 thisList.append(f'Shop Item:{i}')
         case "GoldRush":
             thisList.append('Gold Rush:RICH')
-            for i in range(50,20050,50):
+            for i in range(10,30100,10):
                 thisList.append(f'Gold Rush:{i}')
         case "Warnings":
             for warn in Warnings:
@@ -297,22 +297,27 @@ def location_init():
 
 def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = True,\
     MGMax = 30, Goal = 1, GoldRushVal = 15000, ShopItems = 25, EventsOn = True, MaxHaz = 5,\
-    HunterNum = 50, HunterTargets = 1, HunterNumBoss = 5, FinalBiome = 'Magma Core', GauntletStages = 10):
+    HunterNum = 50, HunterTargets = 1, HunterNumBoss = 5, FinalBiome = 'Magma Core', GauntletStages = 10, \
+    GoldRushIncrement = 50, BLBiome = [], BLObj = [], BLSec = [], BLWarn = []):
     CurrentID=0
     RemovableLocations=[]
     MustRemove=[]
     ValidHaz=[2,3,4,5]
+    SecHaz=[1,2,3,4,5]
     RemoveHaz=[]
     #generate Haz Removal
     match MaxHaz:
         case 3:
             ValidHaz=[2,3]
+            SecHaz=[1,2,3]
             RemoveHaz=[4,5]
         case 4:
             ValidHaz=[2,3,4]
+            SecHaz=[1,2,3,4]
             RemoveHaz=[5]
         case _:
             ValidHaz=[2,3,4,5]
+            SecHaz=[1,2,3,4,5]
             RemoveHaz=[]
 
     #Handle Goal Objectives Caretaker
@@ -320,8 +325,13 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
         for Biome in Biomes:
             for Mission in MissionTypes:
                 for Hazard in [1,2,3,4,5]: #check for bad biome every hazard
-                    if Biome == FinalBiome: #remove non victory from end biome
+                    if Mission in BLObj: #remove blacklisted Mission Objectives
                         MustRemove.append(f'OBJ:{Biome}:{Mission}:{Hazard}')
+                    elif Biome == FinalBiome: #remove non victory from end biome
+                        MustRemove.append(f'OBJ:{Biome}:{Mission}:{Hazard}')
+                    elif Biome in BLBiome: #remove blacklisted Biomes
+                        MustRemove.append(f'OBJ:{Biome}:{Mission}:{Hazard}')
+                        MustRemove.append(f'OBJ:{Biome}:Industrial Sabotage:5')
                     else: #remove victory from non end biome
                         MustRemove.append(f'OBJ:{Biome}:Industrial Sabotage:5')
                 for Hazard in ValidHaz:
@@ -340,8 +350,11 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
     
     #Handle Secondary objectives
     for Secondary in SecondaryObjectives:
-        for Hazard in ValidHaz:
-            RemovableLocations.append(f'Secondary:{Secondary}:{Hazard}')
+        for Hazard in SecHaz:
+            if Secondary in BLSec: #remove blacklisted secondaries
+                MustRemove.append(f'Secondary:{Secondary}:{Hazard}')
+            else:
+                RemovableLocations.append(f'Secondary:{Secondary}:{Hazard}')
         for Hazard in RemoveHaz:
             MustRemove.append(f'Secondary:{Secondary}:{Hazard}')
     
@@ -369,13 +382,21 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
         MustRemove.append(f'JettyBoot:{i}')
 
     #Handle GoldRush Gold value
-    for i in range(20000,GoldRushVal,-50):
+    AllGRVals = list(range(10,30100,10))
+    GRRemoval = [x for x in AllGRVals if (x > GoldRushVal or x % GoldRushIncrement == 0)]
+    #for i in range(30000,GoldRushVal,-GoldRush):
+    for i in GRRemoval:
         MustRemove.append(f'Gold Rush:{i}')
 
     #Handle Warnings
     for warn in Warnings:
-        for Hazard in RemoveHaz:
-           MustRemove.append(f'Warning:{warn}:{Hazard}')
+        for Hazard in [1,2,3,4,5]:
+            if Hazard in RemoveHaz:
+                MustRemove.append(f'Warning:{warn}:{Hazard}')
+            else:
+                if warn in BLWarn: #Remove blacklisted warnings
+                    MustRemove.append(f'Warning:{warn}:{Hazard}')
+                
 
     #Handle Trophy Hunter
     match HunterTargets:

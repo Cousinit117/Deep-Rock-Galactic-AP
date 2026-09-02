@@ -74,7 +74,8 @@ class DRGWorld(World):
             'gold_to_coin_rate','beermat_to_coin_rate','progression_diff','starting_stats',\
             'gold_rush_val','shop_item_num','events_on','max_hazard','hunter_trophies',\
             'hunter_targets','hunter_bosses','hunter_trophies_b','sprint_start','biome_start','biome_end',\
-            'wep_rando','gauntlet_stages','gauntlet_seed','gauntlet_start'))
+            'wep_rando','gauntlet_stages','gauntlet_seed','gauntlet_start','gold_rush_increment',\
+            'blacklist_biome','blacklist_obj','blacklist_sec','blacklist_warn'))
         
         ShopItemsDict = {}
         for i in range(1,(int(self.options.shop_item_num.value) + 1)): 
@@ -257,6 +258,28 @@ class DRGWorld(World):
         Execute /some/ options based stuff, like location deletions
         '''
         self.location_name_to_id = location_init()#int(self.options.error_cube_checks.value),bool(self.options.minigames_on.value))
+
+        #fix matching start and end biomes
+        if self.options.biome_start.value == self.options.biome_end.value:
+            if self.options.biome_end.value != 7:
+                self.options.biome_end.value = 7
+                #raise OptionError("DRG - Your Starting and Ending Biomes cannot be the same.")
+                print("DRG - Starting and Ending Biome Cannot Match. Ending Biome Changed to Magma Core.")
+            else:
+                self.options.biome_end.value = 11
+                print("DRG - Starting and Ending Biome Cannot Match. Ending Biome Changed to Ossuary Depths.")
+
+        biome_keys = {"azure_weald":"Azure Weald","crystalline_caverns":"Crystalline Caverns","fungus_bogs":"Fungus Bogs","hollow_bough":"Hollow Bough",\
+        "glacial_strata":"Glacial Strata","dense_biozone":"Dense Biozone","magma_core":"Magma Core","radioactive_exclusion_zone":"Radioactive Exclusion Zone",\
+        "salt_pits":"Salt Pits","sandblasted_corridors":"Sandblasted Corridors","ossuary_depths":"Ossuary Depths"}
+
+        #fix excluded start biome
+        if biome_keys[self.options.biome_start.current_key] in self.options.blacklist_biome.value:
+            self.options.blacklist_biome.value.discard(biome_keys[self.options.biome_start.current_key])
+
+        #fix excluded end biome
+        if biome_keys[self.options.biome_end.current_key] in self.options.blacklist_biome.value:
+            self.options.blacklist_biome.value.discard(biome_keys[self.options.biome_end.current_key])
 
         return
     
@@ -443,7 +466,7 @@ class DRGWorld(World):
         # fight_rules.set_kh2_fight_rules()
         # universal_logic.set_kh2_rules()
         # form_logic.set_kh2_form_rules()
-        print('TODO: rules')
+        # print('TODO: rules')
 
     def generate_output(self, output_directory: str):
         '''

@@ -1369,7 +1369,8 @@ def create_and_link_regions(multiworld, player, options, ALL_LOCATIONS, diffArr 
         bool(options.minigames_on.value),int(options.minigame_num.value),int(options.goal_mode.value),int(options.gold_rush_val.value),\
         int(options.shop_item_num.value),bool(options.events_on.value),int(options.max_hazard.value),\
         int(options.hunter_trophies.value),int(options.hunter_targets.value),int(options.hunter_trophies_b.value),\
-        biomeNamesList[options.biome_end.value],int(options.gauntlet_stages))
+        biomeNamesList[options.biome_end.value],int(options.gauntlet_stages),int(options.gold_rush_increment),\
+        options.blacklist_biome.value,options.blacklist_obj.value,options.blacklist_sec.value,options.blacklist_warn.value)
     # print(REGIONS)
 
     for region in REGIONS:
