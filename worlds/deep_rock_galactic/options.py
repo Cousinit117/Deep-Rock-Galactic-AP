@@ -342,12 +342,12 @@ class ObjectiveBlacklist(OptionSet):
     valid_keys = Valid_Objectives
 
 class SecondaryBlacklist(OptionSet):
-    """Prevents certain objectives from being included in generation. (Only affects Kill Caretaker)"""
+    """Prevents certain objectives from being included in generation. (Affects Most Goals)"""
     display_name = "Secondary Blacklist"
     valid_keys = Valid_Secondaries
 
 class WarningBlacklist(OptionSet):
-    """Prevents certain objectives from being included in generation. (Only affects Kill Caretaker)"""
+    """Prevents certain objectives from being included in generation. (Affects Most Goals)"""
     display_name = "Warning Blacklist"
     valid_keys = Valid_Warnings
 

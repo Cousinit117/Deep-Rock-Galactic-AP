@@ -18,6 +18,7 @@ from . import DRGWorld, DRGSettings
 import webbrowser
 
 APVersion = "0.20"
+APSubVersion = "1"
 
 class HintStatus(enum.IntEnum):
     HINT_UNSPECIFIED = 0  # The receiving player has not specified any status

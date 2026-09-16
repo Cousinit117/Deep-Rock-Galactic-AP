@@ -413,7 +413,7 @@ class DRGWorld(World):
             for i in range(self.options.gauntlet_start.value):
                 preItems.append('Progressive-Gauntlet-Stage')
 
-        if(self.options.gauntlet_help.value == True):
+        if(self.options.gauntlet_help.value == True and self.options.goal_mode.value == 4):
             #100% movement speed, ammo, shield base
             the_kit = ['Progressive-Movement-Speed','Progressive-Movement-Speed',\
             'Progressive-Max-Health','Progressive-Max-Shield','Progressive-Shield-Regen-Delay',\
