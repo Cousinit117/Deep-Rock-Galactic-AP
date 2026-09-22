@@ -383,7 +383,7 @@ def remove_locations(ALL_LOCATIONS, LocationDifference, Cubes = 10, MiniGames = 
 
     #Handle GoldRush Gold value
     AllGRVals = list(range(10,30100,10))
-    GRRemoval = [x for x in AllGRVals if (x > GoldRushVal or x % GoldRushIncrement == 0)]
+    GRRemoval = [x for x in AllGRVals if (x > GoldRushVal or x % GoldRushIncrement != 0)]
     #for i in range(30000,GoldRushVal,-GoldRush):
     for i in GRRemoval:
         MustRemove.append(f'Gold Rush:{i}')
